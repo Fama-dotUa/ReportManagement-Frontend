@@ -1,21 +1,22 @@
-import { useState } from 'react'
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	useLocation,
+} from 'react-router-dom'
+
 import './App.css'
 
+import StartPages from './pages/StartPages/StartPages'
+
 function App() {
-	const [count, setCount] = useState(0)
 	return (
 		<>
-			<div className='App'>
-				<header className='App-header'>
-					<h1>Report Management System</h1>
-				</header>
-				<main>
-					<p>Welcome to the Report Management System!</p>
-				</main>
-			</div>
-			<footer className='App-footer'>
-				<p>&copy; 2023 Report Management System</p>
-			</footer>
+			<Router>
+				<Routes>
+					<Route path='/' element={<StartPages />} />
+				</Routes>
+			</Router>
 		</>
 	)
 }
