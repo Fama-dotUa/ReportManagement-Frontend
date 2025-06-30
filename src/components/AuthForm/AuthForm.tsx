@@ -1,78 +1,63 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
 import './AuthForm.css'
-
-type AuthMode = 'login' | 'register'
 
 const AuthForm: React.FC = () => {
 	const API_URL = import.meta.env.VITE_API_URL
-
-	const [authMode, setAuthMode] = useState<AuthMode>('login')
-	const [form, setForm] = useState({
-		username: '',
-		email: '',
-		password: '',
-	})
+	const [form, setForm] = useState({ email: '', password: '' })
+	const [error, setError] = useState<string | null>(null)
 	const navigate = useNavigate()
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({ ...form, [e.target.name]: e.target.value })
 	}
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault()
-
-		const url =
-			authMode === 'login'
-				? `${API_URL}/api/auth/local`
-				: `${API_URL}/api/auth/local/register`
-
-		const payload =
-			authMode === 'login'
-				? {
-						identifier: form.email,
-						password: form.password,
-				  }
-				: {
-						username: form.username,
-						email: form.email,
-						password: form.password,
-				  }
+		setError(null)
 
 		try {
-			const res = await fetch(url, {
+			const res = await fetch(`${API_URL}/api/auth/local`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify(payload),
+				body: JSON.stringify({
+					identifier: form.email,
+					password: form.password,
+				}),
 			})
 
 			const data = await res.json()
+			console.log('LOGIN RESPONSE:', data)
 
 			if (res.ok) {
-				localStorage.setItem('jwt', data.jwt)
-				navigate('/officer', { replace: true })
+				const token = data.jwt
+
+				const userRes = await fetch(`${API_URL}/api/users/me?populate=role`, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				})
+
+				const user = await userRes.json()
+
+				if (user?.role?.name === 'officer') {
+					localStorage.setItem('jwt', token)
+					navigate('/officer')
+				} else {
+					setError('Ты мясо, а не офицер')
+				}
 			} else {
-				alert(data?.error?.message || 'Ошибка')
+				setError(data?.error?.message || 'Неверный логин или пароль')
 			}
 		} catch {
-			alert('Ошибка подключения к серверу')
+			setError('Ошибка подключения к серверу')
 		}
 	}
 
 	return (
 		<div className='auth-container'>
-			<h2>{authMode === 'login' ? 'Вход' : 'Регистрация'}</h2>
+			<h2>Вход</h2>
 			<form onSubmit={handleSubmit}>
-				{authMode === 'register' && (
-					<input
-						type='text'
-						name='username'
-						placeholder='Имя пользователя'
-						value={form.username}
-						onChange={handleChange}
-						required
-					/>
-				)}
 				<input
 					type='email'
 					name='email'
@@ -89,21 +74,9 @@ const AuthForm: React.FC = () => {
 					onChange={handleChange}
 					required
 				/>
-				<button type='submit'>
-					{authMode === 'login' ? 'Войти' : 'Зарегистрироваться'}
-				</button>
+				<button type='submit'>Войти</button>
+				{error && <p className='auth-error'>{error}</p>}
 			</form>
-			<p>
-				{authMode === 'login' ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}{' '}
-				<span
-					className='auth-toggle'
-					onClick={() =>
-						setAuthMode(authMode === 'login' ? 'register' : 'login')
-					}
-				>
-					{authMode === 'login' ? 'Зарегистрироваться' : 'Войти'}
-				</span>
-			</p>
 		</div>
 	)
 }
