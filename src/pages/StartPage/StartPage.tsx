@@ -20,14 +20,9 @@ function StartPages() {
 				</div>
 			</div>
 			<div className='section transparent third' />
-			{showAuth && (
-				<div className='auth-overlay'>
-					<div className='auth-wrapper'>
-						<AuthForm />
-					</div>
-				</div>
-			)}
+			{showAuth && <AuthForm onClose={() => setShowAuth(false)} />}
 		</div>
 	)
 }
+
 export default StartPages

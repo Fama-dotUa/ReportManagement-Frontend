@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import './AuthForm.css'
 
-const AuthForm: React.FC = () => {
+type AuthFormProps = {
+	onClose: () => void
+}
+
+const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 	const API_URL = import.meta.env.VITE_API_URL
 	const [form, setForm] = useState({ username: '', password: '' })
 	const [error, setError] = useState<string | null>(null)
-	const navigate = useNavigate()
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({ ...form, [e.target.name]: e.target.value })
@@ -27,25 +29,11 @@ const AuthForm: React.FC = () => {
 			})
 
 			const data = await res.json()
-			console.log('LOGIN RESPONSE:', data)
 
 			if (res.ok) {
 				const token = data.jwt
-
-				const userRes = await fetch(`${API_URL}/api/users/me?populate=role`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				})
-
-				const user = await userRes.json()
-
-				if (user?.role?.name === 'officer') {
-					localStorage.setItem('jwt', token)
-					navigate('/officer')
-				} else {
-					setError('Ты мясо, а не офицер')
-				}
+				localStorage.setItem('jwt', token)
+				window.location.reload()
 			} else {
 				setError(data?.error?.message || 'Неверный логин или пароль')
 			}
@@ -55,29 +43,36 @@ const AuthForm: React.FC = () => {
 	}
 
 	return (
-		<div className='auth-container'>
-			<h2>Вход</h2>
-			<form onSubmit={handleSubmit}>
-				<input
-					type='text'
-					name='username'
-					placeholder='Имя пользователя'
-					value={form.username}
-					onChange={handleChange}
-					required
-				/>
+		<div className='auth-overlay'>
+			<div className='auth-wrapper'>
+				<button className='auth-close' onClick={onClose}>
+					×
+				</button>
+				<div className='auth-container'>
+					<h2>Вход</h2>
+					<form onSubmit={handleSubmit}>
+						<input
+							type='text'
+							name='username'
+							placeholder='Имя пользователя'
+							value={form.username}
+							onChange={handleChange}
+							required
+						/>
 
-				<input
-					type='password'
-					name='password'
-					placeholder='Пароль'
-					value={form.password}
-					onChange={handleChange}
-					required
-				/>
-				<button type='submit'>Войти</button>
-				{error && <p className='auth-error'>{error}</p>}
-			</form>
+						<input
+							type='password'
+							name='password'
+							placeholder='Пароль'
+							value={form.password}
+							onChange={handleChange}
+							required
+						/>
+						<button type='submit'>Войти</button>
+						{error && <p className='auth-error'>{error}</p>}
+					</form>
+				</div>
+			</div>
 		</div>
 	)
 }
