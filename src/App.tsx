@@ -1,13 +1,8 @@
-import {
-	BrowserRouter as Router,
-	Routes,
-	Route,
-	useLocation,
-} from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import './App.css'
 
-import StartPages from './pages/StartPages/StartPages'
+import StartPages from './pages/StartPage/StartPage'
 
 function App() {
 	return (
