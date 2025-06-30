@@ -4,7 +4,7 @@ import './AuthForm.css'
 
 const AuthForm: React.FC = () => {
 	const API_URL = import.meta.env.VITE_API_URL
-	const [form, setForm] = useState({ email: '', password: '' })
+	const [form, setForm] = useState({ username: '', password: '' })
 	const [error, setError] = useState<string | null>(null)
 	const navigate = useNavigate()
 
@@ -21,7 +21,7 @@ const AuthForm: React.FC = () => {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					identifier: form.email,
+					identifier: form.username,
 					password: form.password,
 				}),
 			})
@@ -59,13 +59,14 @@ const AuthForm: React.FC = () => {
 			<h2>Вход</h2>
 			<form onSubmit={handleSubmit}>
 				<input
-					type='email'
-					name='email'
-					placeholder='Email'
-					value={form.email}
+					type='text'
+					name='username'
+					placeholder='Имя пользователя'
+					value={form.username}
 					onChange={handleChange}
 					required
 				/>
+
 				<input
 					type='password'
 					name='password'
