@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import './AuthForm.css'
 
 type AuthMode = 'login' | 'register'
 
 const AuthForm: React.FC = () => {
-	// @ts-ignore
-	const API_URL = process.env.REACT_APP_API_URL
+	const API_URL = import.meta.env.VITE_API_URL
 
 	const [authMode, setAuthMode] = useState<AuthMode>('login')
 	const [form, setForm] = useState({
@@ -13,7 +14,7 @@ const AuthForm: React.FC = () => {
 		email: '',
 		password: '',
 	})
-
+	const navigate = useNavigate()
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({ ...form, [e.target.name]: e.target.value })
 	}
@@ -49,7 +50,7 @@ const AuthForm: React.FC = () => {
 
 			if (res.ok) {
 				localStorage.setItem('jwt', data.jwt)
-				alert(`Успешный ${authMode === 'login' ? 'вход' : 'регистрация'}`)
+				navigate('/officer', { replace: true })
 			} else {
 				alert(data?.error?.message || 'Ошибка')
 			}
