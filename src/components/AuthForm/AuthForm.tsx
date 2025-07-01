@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './AuthForm.css'
 
 type AuthFormProps = {
@@ -9,7 +10,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 	const API_URL = import.meta.env.VITE_API_URL
 	const [form, setForm] = useState({ username: '', password: '' })
 	const [error, setError] = useState<string | null>(null)
-
+	const navigate = useNavigate()
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({ ...form, [e.target.name]: e.target.value })
 	}
@@ -33,7 +34,7 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 			if (res.ok) {
 				const token = data.jwt
 				localStorage.setItem('jwt', token)
-				window.location.reload()
+				navigate('/officer')
 			} else {
 				setError(data?.error?.message || 'Неверный логин или пароль')
 			}

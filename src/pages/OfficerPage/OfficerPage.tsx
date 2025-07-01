@@ -12,15 +12,29 @@ const OfficerPage: React.FC = () => {
 		localStorage.removeItem('jwt')
 		navigate('/')
 	}
-
+	console.log('OfficerPage rendered')
 	return (
 		<div className='officer-page'>
 			<div className='blur-background'></div>
 
 			<div className='officer-nav'>
-				<button onClick={() => setActiveTab('all')}>Все солдаты</button>
-				<button onClick={() => setActiveTab('report')}>Создать рапорт</button>
-				<button onClick={handleLogout}>Выход</button>
+				<button
+					className={activeTab === 'all' ? 'nav-button active' : 'nav-button'}
+					onClick={() => setActiveTab('all')}
+				>
+					Все солдаты
+				</button>
+				<button
+					className={
+						activeTab === 'report' ? 'nav-button active' : 'nav-button'
+					}
+					onClick={() => setActiveTab('report')}
+				>
+					Создать рапорт
+				</button>
+				<button className='nav-button' onClick={handleLogout}>
+					Выход
+				</button>
 			</div>
 
 			<div className='officer-layout'>

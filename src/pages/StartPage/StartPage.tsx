@@ -9,7 +9,7 @@ function StartPages() {
 	const toggleAuthForm = () => {
 		setShowAuth(prev => !prev)
 	}
-
+	console.log('StartPages rendered')
 	return (
 		<div className='start-pages'>
 			<div className='section transparent first' />
