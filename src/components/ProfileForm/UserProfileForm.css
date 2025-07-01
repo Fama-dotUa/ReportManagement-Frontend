@@ -1,0 +1,117 @@
+/* Модальное окно */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.6);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+}
+
+.modal-content {
+	background: #fff;
+	padding: 2rem;
+	border-radius: 10px;
+	width: 520px;
+	max-width: 95vw;
+	position: relative;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Кнопка закрытия */
+.close-button {
+	position: absolute;
+	top: 0.5rem;
+	right: 0.75rem;
+	background: none;
+	border: none;
+	font-size: 1.8rem;
+	cursor: pointer;
+	color: #333;
+	line-height: 1;
+}
+
+/* Форма профиля */
+.user-profile-form {
+	padding: 1.5rem 0 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	background: #f9f9f9;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+}
+
+/* Сетка: аватар слева, данные справа */
+.form-grid {
+	display: flex;
+	gap: 1.5rem;
+}
+
+/* Левая часть */
+.avatar-block {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 140px;
+}
+
+.avatar-img {
+	width: 120px;
+	height: 120px;
+	object-fit: cover;
+	border-radius: 8px;
+	margin-bottom: 0.5rem;
+	border: 1px solid #ccc;
+}
+
+/* Правая часть */
+.info-block {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+/* Поля формы */
+.field-row {
+	display: flex;
+	flex-direction: column;
+}
+
+.field-row label {
+	font-weight: bold;
+	margin-bottom: 0.25rem;
+	font-size: 14px;
+}
+
+.field-row input {
+	width: 100%;
+	padding: 0.5rem;
+	font-size: 14px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	background: #4c4a4a;
+}
+
+/* Кнопка submit */
+.user-profile-form button[type='submit'] {
+	align-self: flex-end;
+	padding: 0.5rem 1.2rem;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 15px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+	margin-top: 1rem;
+}
+
+.user-profile-form button[type='submit']:hover {
+	background-color: #0056b3;
+}
