@@ -84,12 +84,7 @@
 	border-left: 1px solid #ccc;
 }
 
-.left-panel h3 {
-	margin: 0;
-	padding: 0;
-	font-weight: 500;
-	border-bottom: rgba(0, 0, 0, 0.15) 1px solid;
-}
+.left-panel h3,
 .right-panel h3 {
 	margin: 0;
 	padding: 0;
@@ -106,26 +101,24 @@
 	border-radius: 2px;
 }
 
-.right-panel ul {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
-.right-panel li {
-	padding: 4px 0;
-	font-size: 14px;
-}
-
+.right-panel ul,
 .left-panel ul {
 	list-style: none;
 	padding: 0;
 	margin: 0;
 }
 
-.left-panel li {
-	padding: 4px 0;
+.right-panel li button,
+.left-panel li button {
+	padding: 6px 10px;
+	width: 100%;
+	text-align: left;
+	background: rgba(193, 192, 192, 0.5);
+	border: none;
+	border-radius: 2px;
+	cursor: pointer;
 	font-size: 14px;
+	transition: all 0.2s ease-in-out;
 }
 
 .add-soldier {
