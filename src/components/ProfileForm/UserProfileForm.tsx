@@ -1,11 +1,15 @@
-// Обновлённый компонент UserProfileForm с контролем стилей ника и дискорда + выпадающие списки для звания и роли
+// Обновлённый компонент UserProfileForm с отображением и редактированием системной роли (publick/officer)
 import React, { useState, useEffect } from 'react'
 import { FaEdit, FaCheck, FaTimes } from 'react-icons/fa'
 import type { User } from '../../types/User'
 import './UserProfileForm.css'
 
-const AVAILABLE_RANKS = ['Рядовой', 'Сержант', 'Капитан', 'Майор']
-const AVAILABLE_ROLES = ['Штурмовик', 'Медик', 'Разведчик', 'Инженер']
+const ROLE_OPTIONS = [
+	{ value: 'authenticated', label: 'Мясо' },
+	{ value: 'officer', label: 'Дисциплинарный офицер' },
+]
+
+const API_URL = import.meta.env.VITE_API_URL
 
 type Props = {
 	user: User
@@ -26,10 +30,25 @@ const UserProfileForm: React.FC<Props> = ({
 		[key in keyof User]?: boolean
 	}>({})
 	const [changed, setChanged] = useState(false)
+	const [ranks, setRanks] = useState<string[]>([])
 
 	useEffect(() => {
 		setChanged(JSON.stringify(formData) !== JSON.stringify(originalData))
 	}, [formData, originalData])
+
+	useEffect(() => {
+		const fetchRanks = async () => {
+			try {
+				const res = await fetch(`${API_URL}/api/ranks?populate=*`)
+				const data = await res.json()
+				const rankNames = data.data.map((item: any) => item.name)
+				setRanks(rankNames)
+			} catch (err) {
+				console.error('Ошибка при загрузке званий:', err)
+			}
+		}
+		fetchRanks()
+	}, [])
 
 	const handleFieldChange = (field: keyof User, value: string) => {
 		setFormData(prev => ({ ...prev, [field]: value }))
@@ -150,6 +169,52 @@ const UserProfileForm: React.FC<Props> = ({
 		</div>
 	)
 
+	const renderRoleField = () => {
+		const currentValue =
+			typeof formData.role === 'object' && formData.role !== null
+				? (formData.role as any).type
+				: formData.role || 'authenticated'
+		const currentLabel =
+			ROLE_OPTIONS.find(r => r.value === currentValue)?.label || currentValue
+
+		return (
+			<div className='field-row'>
+				<label>Системная роль:</label>
+				{editFields['role'] ? (
+					<div className='editable-row'>
+						<select
+							defaultValue={currentValue}
+							onChange={e => handleFieldChange('role', e.target.value)}
+						>
+							{ROLE_OPTIONS.map(opt => (
+								<option key={opt.value} value={opt.value}>
+									{opt.label}
+								</option>
+							))}
+						</select>
+						<div className='edit-actions'>
+							<button type='button' onClick={() => confirmEdit('role')}>
+								<FaCheck />
+							</button>
+							<button type='button' onClick={() => cancelEdit('role')}>
+								<FaTimes />
+							</button>
+						</div>
+					</div>
+				) : (
+					<div className='readonly-row'>
+						<h2>{currentLabel}</h2>
+						{editable && (
+							<button type='button' onClick={() => toggleEdit('role')}>
+								<FaEdit />
+							</button>
+						)}
+					</div>
+				)}
+			</div>
+		)
+	}
+
 	return (
 		<form onSubmit={handleSubmit} className='user-profile-form'>
 			<button
@@ -166,8 +231,14 @@ const UserProfileForm: React.FC<Props> = ({
 				<div className='info-block'>
 					{renderTextField('', 'username', 'username')}
 					{renderTextField('', 'discord', 'discord')}
-					{renderSelectField('Звание:', 'rank', AVAILABLE_RANKS)}
-					{renderSelectField('Роль:', 'role', AVAILABLE_ROLES)}
+					{renderSelectField('Звание:', 'rank', ranks)}
+					{renderSelectField('Роль:', 'role', [
+						'Штурмовик',
+						'Медик',
+						'Разведчик',
+						'Инженер',
+					])}
+					{renderRoleField()}
 				</div>
 			</div>
 			{editable && (
