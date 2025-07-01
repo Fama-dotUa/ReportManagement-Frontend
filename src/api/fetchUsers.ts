@@ -13,7 +13,6 @@ export const fetchUsers = async () => {
 	})
 	if (!res.ok) throw new Error('Не удалось загрузить пользователей')
 	const rawUsers = await res.json()
-	console.log('rawUsers:', rawUsers)
 
 	if (!Array.isArray(rawUsers)) {
 		throw new Error('Ответ Strapi не является массивом пользователей')

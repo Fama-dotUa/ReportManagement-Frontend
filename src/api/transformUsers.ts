@@ -9,6 +9,7 @@ type RawUser = {
 	rank?: {
 		name: string
 	}
+	role?: string | { type: string }
 }
 
 export const transformUsers = (data: any[]) => {
@@ -19,6 +20,7 @@ export const transformUsers = (data: any[]) => {
 		username: user.username,
 		discord: user.discord,
 		rank: user.rank?.name ?? '',
-		icon: user.Icon?.url ? API_URL + user.Icon.url : '', // 🔧 правильный путь
+		icon: user.Icon?.url ? API_URL + user.Icon.url : '',
+		role: user.role?.type || 'authenticated',
 	}))
 }
