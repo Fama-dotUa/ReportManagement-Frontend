@@ -9,9 +9,13 @@ const OfficerPage: React.FC = () => {
 	const navigate = useNavigate()
 
 	const handleLogout = () => {
-		localStorage.removeItem('jwt')
-		navigate('/')
+		const confirmLogout = window.confirm('Вы действительно хотите выйти?')
+		if (confirmLogout) {
+			localStorage.removeItem('jwt')
+			navigate('/')
+		}
 	}
+
 	console.log('OfficerPage rendered')
 	return (
 		<div className='officer-page'>
