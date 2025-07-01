@@ -18,10 +18,12 @@ const UserProfileModal: React.FC<Props> = ({
 	return (
 		<div className='modal-overlay'>
 			<div className='modal-content'>
-				<button className='close-button' onClick={onClose}>
-					×
-				</button>
-				<UserProfileForm user={user} editable={editable} onSubmit={onSubmit} />
+				<UserProfileForm
+					user={user}
+					editable={editable}
+					onSubmit={onSubmit}
+					onClose={onClose}
+				/>
 			</div>
 		</div>
 	)

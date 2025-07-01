@@ -5,7 +5,7 @@
 	left: 0;
 	width: 100vw;
 	height: 100vh;
-	background: rgba(0, 0, 0, 0.6);
+	background: rgba(0, 0, 0, 0.45);
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -13,46 +13,46 @@
 }
 
 .modal-content {
-	background: #fff;
-	padding: 2rem;
-	border-radius: 10px;
-	width: 520px;
+	background: rgba(255, 255, 255, 0.5);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	padding: 12px;
+	border-radius: 2px;
+	width: 540px;
 	max-width: 95vw;
 	position: relative;
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
 
-/* Кнопка закрытия */
-.close-button {
+.close-button.fixed {
 	position: absolute;
-	top: 0.5rem;
-	right: 0.75rem;
+	top: -8px;
+	right: 0px;
+	z-index: 10;
+	font-size: 32px;
 	background: none;
 	border: none;
-	font-size: 1.8rem;
+	padding: 0;
 	cursor: pointer;
-	color: #333;
-	line-height: 1;
+	color: rgba(149, 63, 54, 0.7);
 }
 
-/* Форма профиля */
+/* Форма */
 .user-profile-form {
-	padding: 1.5rem 0 0;
+	padding: 2rem 0 0;
 	display: flex;
 	flex-direction: column;
-	gap: 1.25rem;
-	background: #f9f9f9;
-	border: 1px solid #ddd;
-	border-radius: 10px;
+	gap: 2rem;
+	background: initial;
+	position: relative;
 }
 
-/* Сетка: аватар слева, данные справа */
+/* Аватар и блоки */
 .form-grid {
 	display: flex;
-	gap: 1.5rem;
+	gap: 1.6rem;
 }
 
-/* Левая часть */
 .avatar-block {
 	display: flex;
 	flex-direction: column;
@@ -64,12 +64,11 @@
 	width: 120px;
 	height: 120px;
 	object-fit: cover;
-	border-radius: 8px;
+	border-radius: 2px;
 	margin-bottom: 0.5rem;
 	border: 1px solid #ccc;
 }
 
-/* Правая часть */
 .info-block {
 	flex: 1;
 	display: flex;
@@ -77,28 +76,87 @@
 	gap: 0.75rem;
 }
 
-/* Поля формы */
+/* Поля */
 .field-row {
 	display: flex;
 	flex-direction: column;
+	position: relative;
 }
-
+.field-row.discord {
+	margin-top: -1.3rem;
+	color: rgba(102, 56, 162, 0.867);
+}
+.field-row.discord h2 {
+	font-size: 14px;
+}
+.field-row.discord input {
+	font-size: 14px !important;
+}
 .field-row label {
 	font-weight: bold;
-	margin-bottom: 0.25rem;
+	margin-bottom: 0.3rem;
 	font-size: 14px;
 }
+.field-row.username .username {
+	font-size: 30px;
+}
+/* Просмотр значения */
+.readonly-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+}
 
-.field-row input {
-	width: 100%;
+.readonly-row h2 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 400;
+}
+
+.readonly-row button {
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: #333;
+	padding: 2px;
+}
+
+/* Редактируемое поле */
+.editable-row {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.editable-row select {
+	flex: 1;
 	padding: 0.5rem;
 	font-size: 14px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	background: #4c4a4a;
+	color: #ffffff;
 }
 
-/* Кнопка submit */
+.edit-actions {
+	display: flex;
+	gap: 5px;
+}
+
+.edit-actions button {
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 16px;
+	color: #333;
+	padding: 2px;
+	transition: color 0.2s ease-in-out;
+}
+
+.edit-actions button:hover {
+	color: #007bff;
+}
+
+/* Кнопка сохранения */
 .user-profile-form button[type='submit'] {
 	align-self: flex-end;
 	padding: 0.5rem 1.2rem;
@@ -112,6 +170,11 @@
 	margin-top: 1rem;
 }
 
-.user-profile-form button[type='submit']:hover {
+.user-profile-form button[type='submit']:disabled {
+	background-color: #999;
+	cursor: default;
+}
+
+.user-profile-form button[type='submit']:hover:enabled {
 	background-color: #0056b3;
 }

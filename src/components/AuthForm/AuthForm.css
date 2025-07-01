@@ -14,8 +14,8 @@
 .auth-wrapper {
 	position: relative;
 	background-color: rgba(135, 134, 134, 0.5);
-	backdrop-filter: blur(10px); /* Размытие фона */
-	-webkit-backdrop-filter: blur(10px); /* Для Safari */
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
 	padding: 30px;
 	border: 1px solid #ccc;
 	border-radius: 10px;
