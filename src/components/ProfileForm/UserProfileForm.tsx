@@ -2,14 +2,24 @@
 import React from 'react'
 import './UserProfileForm.css'
 import { useUserProfileForm } from './useUserProfileForm'
+import { useUsers } from '../../hooks/useUsers'
 import type { User } from '../../types/User'
 
-const UserProfileForm: React.FC<{
+type Props = {
 	user: User
 	editable?: boolean
 	onSubmit?: (u: User) => void
 	onClose: () => void
-}> = ({ user, editable = true, onSubmit, onClose }) => {
+}
+
+const UserProfileForm: React.FC<Props> = ({
+	user,
+	editable = true,
+	onSubmit,
+	onClose,
+}) => {
+	const { currentUserId } = useUsers()
+
 	const {
 		formData,
 		changed,
@@ -19,7 +29,14 @@ const UserProfileForm: React.FC<{
 		renderSelectField,
 		renderRoleField,
 		ranks,
-	} = useUserProfileForm(user, editable, onSubmit, onClose)
+	} = useUserProfileForm(
+		user,
+		editable,
+		onSubmit,
+		onClose,
+		currentUserId ?? undefined
+	)
+
 	return (
 		<form onSubmit={handleSubmit} className='user-profile-form'>
 			<button

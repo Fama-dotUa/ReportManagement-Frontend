@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { FaEdit, FaCheck, FaTimes } from 'react-icons/fa'
 import type { User } from '../../types/User'
+import { useUpdateUser } from '../../hooks/useUpdateUser'
 
 const API_URL = import.meta.env.VITE_API_URL
 
@@ -13,7 +14,8 @@ export const useUserProfileForm = (
 	initialUser?: User,
 	editable: boolean = true,
 	onSubmitCallback?: (user: User) => void,
-	onCloseCallback?: () => void
+	onCloseCallback?: () => void,
+	currentUserId?: number
 ) => {
 	const [formData, setFormData] = useState<User>(initialUser || ({} as User))
 	const [originalData, setOriginalData] = useState<User>(
@@ -24,6 +26,8 @@ export const useUserProfileForm = (
 	}>({})
 	const [changed, setChanged] = useState(false)
 	const [ranks, setRanks] = useState<string[]>([])
+
+	const { updateUser } = useUpdateUser(currentUserId || null)
 
 	useEffect(() => {
 		setChanged(JSON.stringify(formData) !== JSON.stringify(originalData))
@@ -60,23 +64,29 @@ export const useUserProfileForm = (
 		setEditFields(prev => ({ ...prev, [field]: false }))
 	}
 
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault()
-		if (onSubmitCallback) {
-			onSubmitCallback(formData)
+	const saveChanges = async () => {
+		const result = await updateUser(formData)
+		if (result.success) {
 			setOriginalData(formData)
 			setChanged(false)
+			onSubmitCallback?.(formData)
+		} else {
+			alert(result.message || 'Не удалось сохранить изменения')
 		}
 	}
 
-	const handleClose = () => {
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault()
+		await saveChanges()
+	}
+
+	const handleClose = async () => {
 		if (changed) {
 			const confirm = window.confirm(
 				'Вы внесли изменения. Сохранить перед выходом?'
 			)
 			if (confirm) {
-				onSubmitCallback?.(formData)
-				setOriginalData(formData)
+				await saveChanges()
 			}
 		}
 		onCloseCallback?.()
@@ -210,15 +220,13 @@ export const useUserProfileForm = (
 
 	return {
 		formData,
-		editable,
-		changed,
-		onSubmit: onSubmitCallback,
-		onClose: onCloseCallback,
 		handleClose,
 		handleSubmit,
+		changed,
+		ranks,
 		renderTextField,
 		renderSelectField,
 		renderRoleField,
-		ranks,
+		editable,
 	}
 }

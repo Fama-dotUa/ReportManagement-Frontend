@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { useUsers } from './useUsers'
+import { useUsers } from '../../hooks/useUsers'
 import { useSearch } from '../../hooks/useSearch'
 import UserProfileModal from '../../components/ProfileForm/UserProfileModal'
+import { useUpdateUser } from '../../hooks/useUpdateUser'
 
 import type { User } from '../../types/User'
 
@@ -11,15 +12,21 @@ const RightPanel: React.FC = () => {
 	const filteredUsers = useSearch(users, searchQuery)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 	const [isOfficer, setIsOfficer] = useState<boolean>(true)
+	const { updateUser } = useUpdateUser(currentUserId)
 
 	const handleClick = (user: any) => {
 		setSelectedUser(user)
 	}
 
-	const handleUpdate = (updatedUser: User) => {
-		console.log('Отправить обновлённые данные на сервер:', updatedUser)
-		// TODO: вызов API для сохранения
+	const handleUpdate = async (updatedUser: User) => {
+		const result = await updateUser(updatedUser)
+		if (result.success) {
+			console.log('Обновлено успешно')
+		} else {
+			console.error('Ошибка при обновлении:', result.message)
+		}
 	}
+
 	return (
 		<div className='right-panel'>
 			<h3>Солдаты</h3>

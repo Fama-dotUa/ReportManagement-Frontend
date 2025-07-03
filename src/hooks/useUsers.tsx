@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { fetchUsers } from '../../api/fetchUsers'
-import { transformUsers } from '../../api/transformUsers'
+import { fetchUsers } from '../api/fetchUsers'
+import { transformUsers } from '../api/transformUsers'
 
 type User = {
 	id: number
