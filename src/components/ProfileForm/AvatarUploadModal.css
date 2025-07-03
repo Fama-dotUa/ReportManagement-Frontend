@@ -1,0 +1,107 @@
+/* Затемнение и модальное окно */
+.avatar-upload-modal__overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.45);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 10000;
+}
+
+.avatar-upload-modal__content {
+	background: rgba(255, 255, 255, 0.5);
+	backdrop-filter: blur(10px);
+	border-radius: 2px;
+	padding: 2.5rem;
+	width: 520px;
+	max-width: 95vw;
+	box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.avatar-upload-modal__title {
+	margin: 0;
+	text-align: center;
+	font-size: 1.4rem;
+	font-weight: bold;
+}
+
+/* Кнопка закрытия (крестик) */
+.avatar-upload-modal__close {
+	position: absolute;
+	top: 10px;
+	right: 12px;
+	background: none;
+	border: none;
+	font-size: 22px;
+	color: #666;
+	cursor: pointer;
+}
+.avatar-upload-modal__close:hover {
+	color: #000;
+}
+
+/* Область drag-and-drop */
+.avatar-upload-modal__dropzone {
+	border: 3px dashed #aaa;
+	border-radius: 6px;
+	padding: 1.2rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background-color: #c8dcba;
+	transition: border-color 0.3s ease;
+	cursor: pointer;
+}
+
+.avatar-upload-modal__dropzone:hover {
+	border-color: #007bff;
+}
+
+.avatar-upload-modal__preview {
+	width: 120px;
+	height: 120px;
+	object-fit: cover;
+	border-radius: 4px;
+	border: 1px solid #ccc;
+	margin-bottom: 1rem;
+}
+
+/* Кнопки управления */
+.avatar-upload-modal__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}
+
+.avatar-upload-modal__button {
+	padding: 0.5rem 1.2rem;
+	font-size: 14px;
+
+	border-radius: 4px;
+	cursor: pointer;
+	border: none;
+}
+
+.avatar-upload-modal__button:disabled {
+	background-color: #ccc;
+	cursor: not-allowed;
+}
+
+.avatar-upload-modal__button--cancel {
+	background-color: #f44336;
+	color: white;
+}
+
+.avatar-upload-modal__button--apply {
+	background-color: #4caf50;
+	color: #131313;
+}

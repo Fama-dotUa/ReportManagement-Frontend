@@ -1,6 +1,7 @@
-// Обновлённый компонент UserProfileForm — визуальный слой, логика вынесена в хук
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { FaPencilAlt } from 'react-icons/fa'
 import './UserProfileForm.css'
+import AvatarUploadModal from './AvatarUploadModal'
 import { useUserProfileForm } from './useUserProfileForm'
 import { useUsers } from '../../hooks/useUsers'
 import type { User } from '../../types/User'
@@ -19,6 +20,7 @@ const UserProfileForm: React.FC<Props> = ({
 	onClose,
 }) => {
 	const { currentUserId } = useUsers()
+	const [showAvatarModal, setShowAvatarModal] = useState(false)
 
 	const {
 		formData,
@@ -29,6 +31,8 @@ const UserProfileForm: React.FC<Props> = ({
 		renderSelectField,
 		renderRoleField,
 		ranks,
+		tempIcon,
+		applyTempIcon,
 	} = useUserProfileForm(
 		user,
 		editable,
@@ -48,7 +52,24 @@ const UserProfileForm: React.FC<Props> = ({
 			</button>
 			<div className='form-grid'>
 				<div className='avatar-block'>
-					<img src={formData.icon} alt='avatar' className='avatar-img' />
+					<div className='avatar-block'>
+						<div style={{ position: 'relative' }}>
+							<img
+								src={tempIcon || formData.icon}
+								alt='avatar'
+								className='avatar-img'
+							/>
+							{editable && (
+								<button
+									type='button'
+									id='edit-avatar-button'
+									onClick={() => setShowAvatarModal(true)}
+								>
+									<FaPencilAlt />
+								</button>
+							)}
+						</div>
+					</div>
 				</div>
 				<div className='info-block'>
 					{renderTextField('', 'username', 'username')}
@@ -61,6 +82,17 @@ const UserProfileForm: React.FC<Props> = ({
 				<button type='submit' disabled={!changed}>
 					Сохранить
 				</button>
+			)}
+
+			{showAvatarModal && (
+				<AvatarUploadModal
+					initialImage={tempIcon || formData.icon}
+					onClose={() => setShowAvatarModal(false)}
+					onApply={(file, preview) => {
+						applyTempIcon(file, preview)
+						setShowAvatarModal(false)
+					}}
+				/>
 			)}
 		</form>
 	)

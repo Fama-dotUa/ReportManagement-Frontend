@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaEdit, FaCheck, FaTimes } from 'react-icons/fa'
+import { FaCheck, FaTimes, FaPencilAlt } from 'react-icons/fa'
 import type { User } from '../../types/User'
 import { useUpdateUser } from '../../hooks/useUpdateUser'
 
@@ -29,9 +29,15 @@ export const useUserProfileForm = (
 
 	const { updateUser } = useUpdateUser(currentUserId || null)
 
+	const [tempIcon, setTempIcon] = useState<string | null>(null)
+	const [iconFile, setIconFile] = useState<File | null>(null)
+
 	useEffect(() => {
-		setChanged(JSON.stringify(formData) !== JSON.stringify(originalData))
-	}, [formData, originalData])
+		const baseChanged =
+			JSON.stringify(formData) !== JSON.stringify(originalData)
+		const iconChanged = !!iconFile
+		setChanged(baseChanged || iconChanged)
+	}, [formData, originalData, iconFile])
 
 	useEffect(() => {
 		const fetchRanks = async () => {
@@ -65,11 +71,33 @@ export const useUserProfileForm = (
 	}
 
 	const saveChanges = async () => {
-		const result = await updateUser(formData)
+		if (iconFile && formData.id) {
+			try {
+				const token = localStorage.getItem('jwt')
+				const form = new FormData()
+				form.append('files', iconFile)
+				form.append('ref', 'plugin::users-permissions.user')
+				form.append('refId', formData.id.toString())
+				form.append('field', 'icon')
+
+				await fetch(`${API_URL}/api/upload`, {
+					method: 'POST',
+					headers: { Authorization: `Bearer ${token}` },
+					body: form,
+				})
+			} catch (err) {
+				console.error('Ошибка загрузки и привязки аватарки:', err)
+			}
+		}
+
+		const result = await updateUser(formData) // icon НЕ передаём
+
 		if (result.success) {
-			setOriginalData(formData)
+			setOriginalData({ ...formData })
+			setTempIcon(null)
+			setIconFile(null)
 			setChanged(false)
-			onSubmitCallback?.(formData)
+			onSubmitCallback?.({ ...formData })
 		} else {
 			alert(result.message || 'Не удалось сохранить изменения')
 		}
@@ -120,7 +148,7 @@ export const useUserProfileForm = (
 					<h2 className={customClass}>{formData[field] || '—'}</h2>
 					{editable && (
 						<button type='button' onClick={() => toggleEdit(field)}>
-							<FaEdit />
+							<FaPencilAlt />
 						</button>
 					)}
 				</div>
@@ -164,7 +192,7 @@ export const useUserProfileForm = (
 					<h2>{formData[field] || '—'}</h2>
 					{editable && (
 						<button type='button' onClick={() => toggleEdit(field)}>
-							<FaEdit />
+							<FaPencilAlt />
 						</button>
 					)}
 				</div>
@@ -209,13 +237,18 @@ export const useUserProfileForm = (
 						<h2>{currentLabel}</h2>
 						{editable && (
 							<button type='button' onClick={() => toggleEdit('role')}>
-								<FaEdit />
+								<FaPencilAlt />
 							</button>
 						)}
 					</div>
 				)}
 			</div>
 		)
+	}
+
+	const applyTempIcon = (file: File, previewUrl: string) => {
+		setTempIcon(previewUrl)
+		setIconFile(file)
 	}
 
 	return {
@@ -228,5 +261,7 @@ export const useUserProfileForm = (
 		renderSelectField,
 		renderRoleField,
 		editable,
+		tempIcon,
+		applyTempIcon,
 	}
 }

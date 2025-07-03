@@ -21,7 +21,10 @@ const UserProfileModal: React.FC<Props> = ({
 				<UserProfileForm
 					user={user}
 					editable={editable}
-					onSubmit={onSubmit}
+					onSubmit={updatedUser => {
+						onSubmit?.(updatedUser)
+						onClose()
+					}}
 					onClose={onClose}
 				/>
 			</div>

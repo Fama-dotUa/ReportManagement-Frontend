@@ -178,3 +178,27 @@
 .user-profile-form button[type='submit']:hover:enabled {
 	background-color: #0056b3;
 }
+
+.upload-area {
+	border: 2px dashed #aaa;
+	padding: 1rem;
+	text-align: center;
+	cursor: pointer;
+	margin-bottom: 1rem;
+}
+.upload-area img {
+	width: 100px;
+	height: 100px;
+	object-fit: cover;
+	border-radius: 2px;
+}
+#edit-avatar-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	padding: 0;
+	font-size: 1rem;
+	background: none;
+	color: rgba(193, 137, 18, 0.83);
+	cursor: 'pointer';
+}

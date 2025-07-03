@@ -77,6 +77,10 @@ export const useUpdateUser = (currentUserId: number | null) => {
 					}
 				}
 
+				if (updatedUser.icon) {
+					payload.icon = updatedUser.icon
+				}
+
 				const res = await fetch(`${API_URL}/api/users/${userId}`, {
 					method: 'PUT',
 					headers: {
