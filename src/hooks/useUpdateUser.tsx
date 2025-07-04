@@ -53,7 +53,6 @@ export const useUpdateUser = (currentUserId: number | null) => {
 					discord: updatedUser.discord,
 				}
 
-				// Роль — по type → ID
 				if (!isSelf && updatedUser.role) {
 					const roleType =
 						typeof updatedUser.role === 'object'
@@ -67,7 +66,6 @@ export const useUpdateUser = (currentUserId: number | null) => {
 					}
 				}
 
-				// Звание — по имени → ID
 				if (updatedUser.rank) {
 					const rankId = await getRankIdByName(updatedUser.rank)
 					if (rankId !== null) {
@@ -76,11 +74,9 @@ export const useUpdateUser = (currentUserId: number | null) => {
 						console.warn('ID звания не найден')
 					}
 				}
-
 				if (updatedUser.icon) {
-					payload.icon = updatedUser.icon
+					// ничего не делаем — иначе перезатрётся ручная связка
 				}
-
 				const res = await fetch(`${API_URL}/api/users/${userId}`, {
 					method: 'PUT',
 					headers: {

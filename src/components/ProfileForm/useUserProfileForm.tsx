@@ -69,28 +69,57 @@ export const useUserProfileForm = (
 	const confirmEdit = (field: keyof User) => {
 		setEditFields(prev => ({ ...prev, [field]: false }))
 	}
+	const deleteOldIcon = async (iconId: number) => {
+		const token = localStorage.getItem('jwt')
+		await fetch(`${API_URL}/api/upload/files/${iconId}`, {
+			method: 'DELETE',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
+	}
+	const getCurrentUserIconId = async (
+		userId: number
+	): Promise<number | null> => {
+		const token = localStorage.getItem('jwt')
+		const res = await fetch(`${API_URL}/api/users/${userId}?populate=*`, {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		})
+		const data = await res.json()
+		console.log('Полученные данные пользователя:', data)
+		return data.Icon?.id || data.Icon?.id || null
+	}
 
 	const saveChanges = async () => {
 		if (iconFile && formData.id) {
-			try {
-				const token = localStorage.getItem('jwt')
-				const form = new FormData()
-				form.append('files', iconFile)
-				form.append('ref', 'plugin::users-permissions.user')
-				form.append('refId', formData.id.toString())
-				form.append('field', 'icon')
+			const token = localStorage.getItem('jwt')
 
-				await fetch(`${API_URL}/api/upload`, {
-					method: 'POST',
-					headers: { Authorization: `Bearer ${token}` },
-					body: form,
-				})
-			} catch (err) {
-				console.error('Ошибка загрузки и привязки аватарки:', err)
+			const oldIconId = await getCurrentUserIconId(formData.id)
+			if (oldIconId) {
+				await deleteOldIcon(oldIconId)
 			}
+
+			const form = new FormData()
+			form.append('files', iconFile)
+			form.append('ref', 'plugin::users-permissions.user')
+			form.append('refId', formData.id.toString())
+			form.append('field', 'icon')
+			form.append('source', 'plugin::users-permissions')
+
+			await fetch(`${API_URL}/api/upload`, {
+				method: 'POST',
+				headers: { Authorization: `Bearer ${token}` },
+				body: form,
+			})
 		}
 
-		const result = await updateUser(formData) // icon НЕ передаём
+		// 3. Сохраняем пользователя (без icon)
+		const cleanedData = { ...formData }
+		delete cleanedData.icon
+
+		const result = await updateUser(cleanedData)
 
 		if (result.success) {
 			setOriginalData({ ...formData })
