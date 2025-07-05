@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import SoldierList from './SoldierList'
 import './CenterPanel.css'
+import MDEditor from '@uiw/react-md-editor'
 
 const ReportForm: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
 	const [reason, setReason] = useState('')
 	const [days, setDays] = useState('')
-	const [description, setDescription] = useState('')
+	const [value, setValue] = useState<string | undefined>('**Текст рапорта**')
 
 	return (
 		<div className='center'>
@@ -38,19 +39,12 @@ const ReportForm: React.FC = () => {
 							/>
 						</div>
 
-						<div className='form-group'>
+						<div className='form-group description'>
 							<label>Описание</label>
-							<textarea
-								rows={6}
-								value={description}
-								onChange={e => setDescription(e.target.value)}
-							/>
+							<div data-color-mode='dark'>
+								<MDEditor value={value} onChange={setValue} height={300} />
+							</div>
 						</div>
-
-						<div className='user-info'>
-							Солдата ID: <strong>{selectedId}</strong>
-						</div>
-
 						<button className='submit-btn'>Добавить рапорт</button>
 					</>
 				)}
