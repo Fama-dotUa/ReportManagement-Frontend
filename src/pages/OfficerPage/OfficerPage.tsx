@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import LeftPanel from './LeftPanel'
 import RightPanel from './RightPanel'
+import AllSoldiers from '../../components/CenterForms/AllSoldiers'
+import ReportForm from '../../components/CenterForms/ReportForm'
 import './OfficerPage.css'
 
 const OfficerPage: React.FC = () => {
@@ -45,12 +47,8 @@ const OfficerPage: React.FC = () => {
 				<LeftPanel />
 
 				<div className='officer-content'>
-					{activeTab === 'all' && (
-						<div className='placeholder'>[Здесь будет список солдат]</div>
-					)}
-					{activeTab === 'report' && (
-						<div className='placeholder'>[Здесь будет форма рапорта]</div>
-					)}
+					{activeTab === 'all' && <AllSoldiers />}
+					{activeTab === 'report' && <ReportForm />}
 				</div>
 
 				<RightPanel />

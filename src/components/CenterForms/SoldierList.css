@@ -1,0 +1,38 @@
+.soldier-list {
+	width: 200px;
+	background: rgba(255, 255, 255, 0.65);
+	padding: 8px;
+	border-right: 1px solid #ccc;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.search-input {
+	width: 100%;
+	padding: 6px 10px;
+	border: 1px solid #ccc;
+	border-radius: 2px;
+	font-size: 14px;
+}
+
+.soldier-list ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.soldier-list li button {
+	width: 100%;
+	background: rgba(193, 192, 192, 0.5);
+	border: none;
+	border-radius: 2px;
+	padding: 6px 10px;
+	text-align: left;
+	cursor: pointer;
+	transition: 0.2s;
+}
+
+.soldier-list li button.active {
+	background: rgba(138, 183, 107, 0.5);
+}
