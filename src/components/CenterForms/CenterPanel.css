@@ -1,9 +1,23 @@
+.center {
+	display: flex;
+	height: 100%;
+	gap: 20px;
+}
+
 .center-panel {
 	display: flex;
 	flex-direction: column;
 	gap: 15px;
+	color: #333;
 	width: 100%;
 	height: 100%;
+}
+
+.center-panel h3 {
+	margin: 0;
+	font-size: 20px;
+	text-align: center;
+	border-radius: 3px;
 }
 
 .soldiers-table {
@@ -74,7 +88,9 @@
 .report-list {
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
 	margin-top: 10px;
 }
 
@@ -82,8 +98,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: rgba(230, 230, 230, 0.7);
-	padding: 6px 12px;
+	background: rgba(92, 92, 92, 0.55);
+	color: rgba(255, 255, 255, 0.76);
+	font-size: 14px;
+	padding: 2px 10px;
 	border-radius: 3px;
 }
 
@@ -97,9 +115,15 @@
 }
 
 .report-item .actions button {
-	margin-left: 8px;
 	background: none;
 	border: none;
-	cursor: pointer;
-	font-size: 18px;
+	padding: 12px;
+	font-size: 24px;
+}
+.report-item .actions .eye {
+	color: rgba(82, 163, 197, 0.9);
+}
+.report-item .actions .download {
+	margin-left: 8px;
+	color: rgba(138, 183, 107, 0.877);
 }

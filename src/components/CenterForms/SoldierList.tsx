@@ -1,34 +1,36 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './SoldierList.css'
-
-export interface Soldier {
-	id: string
-	name: string
-	tag: string
-}
+import { useUsers } from '../../hooks/useUsers'
+import { useSearch } from '../../hooks/useSearch'
+import type { User } from '../../types/User'
 
 interface Props {
-	soldiers: Soldier[]
 	selectedId: string | null
 	onSelect: (id: string) => void
 }
 
-const SoldierList: React.FC<Props> = ({ soldiers, selectedId, onSelect }) => {
+const SoldierList: React.FC<Props> = ({ selectedId, onSelect }) => {
+	const { users } = useUsers()
+	const [searchQuery, setSearchQuery] = useState('')
+	const filteredUsers = useSearch(users, searchQuery)
+
 	return (
 		<div className='soldier-list'>
 			<input
 				type='text'
 				placeholder='Поиск солдата...'
 				className='search-input'
+				value={searchQuery}
+				onChange={e => setSearchQuery(e.target.value)}
 			/>
 			<ul>
-				{soldiers.map(s => (
-					<li key={s.id}>
+				{filteredUsers.map((user: User) => (
+					<li key={user.id}>
 						<button
-							className={selectedId === s.id ? 'active' : ''}
-							onClick={() => onSelect(s.id)}
+							className={selectedId === String(user.id) ? 'active' : ''}
+							onClick={() => onSelect(String(user.id))}
 						>
-							{`${s.name} | @${s.tag}`}
+							{user.username} | @{user.discord}
 						</button>
 					</li>
 				))}
