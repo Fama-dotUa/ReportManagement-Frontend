@@ -18,7 +18,6 @@ const OfficerPage: React.FC = () => {
 		}
 	}
 
-	console.log('OfficerPage rendered')
 	return (
 		<div className='officer-page'>
 			<div className='blur-background'></div>

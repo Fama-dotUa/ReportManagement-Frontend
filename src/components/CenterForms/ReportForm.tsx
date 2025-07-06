@@ -1,13 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import SoldierList from './SoldierList'
 import './CenterPanel.css'
 import MDEditor from '@uiw/react-md-editor'
+import { getReasons } from '../../api/getReasons'
 
 const ReportForm: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
 	const [reason, setReason] = useState('')
-	const [days, setDays] = useState('')
+	const [days, setDays] = useState('0')
 	const [value, setValue] = useState<string | undefined>('**Текст рапорта**')
+	const [reasons, setReasons] = useState<{ id: number; label: string }[]>([])
+
+	useEffect(() => {
+		getReasons().then(setReasons).catch(console.error)
+	}, [])
 
 	return (
 		<div className='center'>
@@ -21,22 +27,31 @@ const ReportForm: React.FC = () => {
 
 				{selectedId && (
 					<>
-						<div className='form-group'>
-							<label>Номер причины</label>
+						<div className='form-group reason'>
+							<label>Номер причины:</label>
 							<select value={reason} onChange={e => setReason(e.target.value)}>
 								<option value=''>Выбрать...</option>
-								<option value='1'>1. Нарушение</option>
-								<option value='2'>2. Прогул</option>
+								{reasons.map(r => (
+									<option key={r.id} value={r.id}>
+										{r.label}
+									</option>
+								))}
 							</select>
 						</div>
 
-						<div className='form-group'>
-							<label>Срок (кол-во дней)</label>
-							<input
-								type='number'
-								value={days}
-								onChange={e => setDays(e.target.value)}
-							/>
+						<div className='form-group term'>
+							<label>Срок:</label>
+							<div className='slider-container'>
+								<input
+									type='range'
+									min={0}
+									max={30}
+									step={1}
+									value={Number(days)}
+									onChange={e => setDays(e.target.value)}
+								/>
+								<span className='slider-value'>{days} дн.</span>
+							</div>
 						</div>
 
 						<div className='form-group description'>

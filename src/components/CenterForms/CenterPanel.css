@@ -49,6 +49,43 @@
 .report-form .form-group {
 	display: flex;
 }
+
+.report-form .form-group.reason {
+	gap: 10px;
+}
+.report-form .form-group.reason label {
+	margin-top: 4px;
+}
+.report-form .form-group.reason select {
+	flex: 1;
+	background-color: rgba(92, 92, 92, 0.75);
+	color: rgba(255, 255, 255, 0.76);
+}
+
+.report-form .form-group.term {
+	gap: 10px;
+}
+.slider-container {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-top: 4px;
+}
+
+.slider-container input[type='range'] {
+	flex: 1;
+	padding: 0;
+	margin-top: -5px;
+}
+
+.slider-value {
+	font-weight: bold;
+	min-width: 50px;
+	margin-top: -8px;
+	text-align: right;
+	color: #333333e4;
+}
+
 .report-form .form-group.description {
 	flex-direction: column;
 	margin-top: 10px;
@@ -134,7 +171,7 @@
 .w-md-editor {
 	background-color: #1e1e2f !important;
 	border: 1px solid #444 !important;
-	border-radius: 10px !important;
+	border-radius: 4px !important;
 }
 
 /* Поле ввода */
