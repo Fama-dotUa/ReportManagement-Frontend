@@ -3,6 +3,7 @@ import SoldierList from './SoldierList'
 import './CenterPanel.css'
 import MDEditor from '@uiw/react-md-editor'
 import { getReasons } from '../../api/getReasons'
+import { createReport } from '../../hooks/useCreateReport'
 
 const ReportForm: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -14,6 +15,33 @@ const ReportForm: React.FC = () => {
 	useEffect(() => {
 		getReasons().then(setReasons).catch(console.error)
 	}, [])
+	const handleSubmit = async () => {
+		if (
+			!selectedId ||
+			!reason ||
+			!value?.trim() ||
+			Number(days) < 0 ||
+			Number(days) > 30
+		) {
+			alert('Пожалуйста, заполните все поля корректно.')
+			return
+		}
+
+		try {
+			await createReport({
+				userId: selectedId,
+				reasonId: Number(reason),
+				days: Number(days),
+				description: value,
+			})
+			alert('Рапорт успешно создан!')
+			setReason('')
+			setDays('0')
+			setValue('**Текст рапорта**')
+		} catch (err: any) {
+			alert(`Ошибка: ${err.message}`)
+		}
+	}
 
 	return (
 		<div className='center'>
@@ -60,7 +88,9 @@ const ReportForm: React.FC = () => {
 								<MDEditor value={value} onChange={setValue} height={300} />
 							</div>
 						</div>
-						<button className='submit-btn'>Добавить рапорт</button>
+						<button className='submit-btn' onClick={handleSubmit}>
+							Добавить рапорт
+						</button>
 					</>
 				)}
 			</div>

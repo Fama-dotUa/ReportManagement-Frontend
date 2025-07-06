@@ -6,6 +6,7 @@ interface Reason {
 }
 
 export function transformReason(item: Reason): { id: number; label: string } {
-	const label = `${item.cipher}-${item.number} | ${item.description}`
-	return { id: item.id, label }
+	const label = `${item.cipher}-${item.number} | ${item.description}
+	`
+	return { id: item.id - 1, label }
 }
