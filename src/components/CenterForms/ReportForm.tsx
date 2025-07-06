@@ -26,6 +26,8 @@ const ReportForm: React.FC = () => {
 			alert('Пожалуйста, заполните все поля корректно.')
 			return
 		}
+		const confirm = window.confirm('Нету ли ошибок в тексте?')
+		if (!confirm) return
 
 		try {
 			await createReport({
@@ -58,7 +60,6 @@ const ReportForm: React.FC = () => {
 						<div className='form-group reason'>
 							<label>Номер причины:</label>
 							<select value={reason} onChange={e => setReason(e.target.value)}>
-								<option value=''>Выбрать...</option>
 								{reasons.map(r => (
 									<option key={r.id} value={r.id}>
 										{r.label}
@@ -79,6 +80,7 @@ const ReportForm: React.FC = () => {
 									onChange={e => setDays(e.target.value)}
 								/>
 								<span className='slider-value'>{days} дн.</span>
+								<span className='value-description'>0 → бессрочно</span>
 							</div>
 						</div>
 

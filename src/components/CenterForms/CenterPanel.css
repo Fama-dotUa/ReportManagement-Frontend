@@ -206,3 +206,15 @@
 	background-color: #1e1e2f !important;
 	color: #dcdcdc !important;
 }
+
+.value-description {
+	font-size: 12px;
+	min-width: 50px;
+	margin-top: -8px;
+	text-align: right;
+	color: #333333e4;
+}
+
+.report-item.active-report {
+	background-color: rgba(255, 77, 0, 0.705); /* или любой другой */
+}

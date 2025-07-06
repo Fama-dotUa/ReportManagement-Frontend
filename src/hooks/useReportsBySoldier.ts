@@ -2,9 +2,16 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
-export interface ReportView {
+type ReportView = {
 	id: number
-	text: string
+	time_to_free: number
+	createdAt: string
+	description: string
+	reason: {
+		cipher: string
+		number: number
+		description: string
+	}
 }
 
 export const useReportsBySoldier = (soldierId: string | null) => {
@@ -44,25 +51,17 @@ export const useReportsBySoldier = (soldierId: string | null) => {
 					return
 				}
 
-				const result: ReportView[] = raw.map((r: any) => {
-					const reason = r.reason
-					const created = dayjs(r.createdAt)
-
-					const whenIssued = created.format('DD.MM.YY HH:mm:ss')
-					const status =
-						r.time_to_free === 0
-							? 'Бессрочно'
-							: `Активно еще ${
-									r.time_to_free - dayjs().diff(created, 'day')
-							  } дн.`
-
-					const text = `${reason.cipher}-${reason.number} | ${reason.description} | ${status} ${whenIssued}`
-
-					return {
-						id: r.id,
-						text,
-					}
-				})
+				const result: ReportView[] = raw.map((r: any) => ({
+					id: r.id,
+					time_to_free: r.time_to_free,
+					createdAt: r.createdAt,
+					description: r.description,
+					reason: {
+						cipher: r.reason?.cipher || '',
+						number: r.reason?.number || 0,
+						description: r.reason?.description || '',
+					},
+				}))
 
 				setReports(result)
 			})
