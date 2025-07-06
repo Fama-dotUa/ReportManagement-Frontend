@@ -2,15 +2,11 @@ import React, { useState } from 'react'
 import SoldierList from './SoldierList'
 import './CenterPanel.css'
 import { FaEye, FaDownload } from 'react-icons/fa'
-
-const dummyReports = [
-	{ id: 'r1', title: 'Нарушение порядка' },
-	{ id: 'r2', title: 'Неявка на построение' },
-	{ id: 'r3', title: 'Самовольная отлучка' },
-]
+import { useReportsBySoldier } from '../../hooks/useReportsBySoldier'
 
 const AllSoldiers: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
+	const { reports, loading, error } = useReportsBySoldier(selectedId)
 
 	return (
 		<div className='center'>
@@ -18,22 +14,28 @@ const AllSoldiers: React.FC = () => {
 			<div className='center-panel'>
 				<h3>Рапорты</h3>
 				{selectedId ? (
-					<ul className='report-list'>
-						{dummyReports.map((r, idx) => (
-							<li key={r.id} className='report-item'>
-								<span className='index'>#{idx + 1}</span>
-								<span className='title'>{r.title}</span>
-								<div className='actions'>
-									<button title='Предпросмотр'>
-										<FaEye className='eye' />
-									</button>
-									<button title='Скачать'>
-										<FaDownload className='download' />
-									</button>
-								</div>
-							</li>
-						))}
-					</ul>
+					loading ? (
+						<p>Загрузка...</p>
+					) : error ? (
+						<p>{error}</p>
+					) : (
+						<ul className='report-list'>
+							{reports.map((r, idx) => (
+								<li key={r.id} className='report-item'>
+									<span className='index'>#{idx + 1}</span>
+									<span className='title'>{r.text}</span>
+									<div className='actions'>
+										<button title='Предпросмотр' disabled>
+											<FaEye className='eye' />
+										</button>
+										<button title='Скачать' disabled>
+											<FaDownload className='download' />
+										</button>
+									</div>
+								</li>
+							))}
+						</ul>
+					)
 				) : (
 					<p className='placeholder'>Выберите солдата слева</p>
 				)}
