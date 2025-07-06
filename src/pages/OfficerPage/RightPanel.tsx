@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useUsers } from '../../hooks/useUsers'
 import { useSearch } from '../../hooks/useSearch'
 import UserProfileModal from '../../components/ProfileForm/UserProfileModal'
 import { useUpdateUser } from '../../hooks/useUpdateUser'
-
+import { useAuth } from '../../hooks/useAuth'
 import type { User } from '../../types/User'
 
 const RightPanel: React.FC = () => {
@@ -13,6 +13,7 @@ const RightPanel: React.FC = () => {
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 	const [isOfficer, setIsOfficer] = useState<boolean>(true)
 	const { updateUser } = useUpdateUser(currentUserId)
+	const { role } = useAuth()
 
 	const handleClick = (user: any) => {
 		setSelectedUser(user)
@@ -26,6 +27,13 @@ const RightPanel: React.FC = () => {
 			console.error('Ошибка при обновлении:', result.message)
 		}
 	}
+	useEffect(() => {
+		if (role === 'officer') {
+			setIsOfficer(true)
+		} else {
+			setIsOfficer(false)
+		}
+	}, [role])
 
 	return (
 		<div className='right-panel'>

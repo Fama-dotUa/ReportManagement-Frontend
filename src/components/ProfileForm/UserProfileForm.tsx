@@ -15,7 +15,7 @@ type Props = {
 
 const UserProfileForm: React.FC<Props> = ({
 	user,
-	editable = true,
+	editable,
 	onSubmit,
 	onClose,
 }) => {

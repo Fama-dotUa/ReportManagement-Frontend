@@ -5,11 +5,12 @@ import RightPanel from './RightPanel'
 import AllSoldiers from '../../components/CenterForms/AllSoldiers'
 import ReportForm from '../../components/CenterForms/ReportForm'
 import './OfficerPage.css'
+import { useAuth } from '../../hooks/useAuth'
 
 const OfficerPage: React.FC = () => {
 	const [activeTab, setActiveTab] = useState<'all' | 'report'>('all')
 	const navigate = useNavigate()
-
+	const { role } = useAuth()
 	const handleLogout = () => {
 		const confirmLogout = window.confirm('Вы действительно хотите выйти?')
 		if (confirmLogout) {
@@ -29,14 +30,17 @@ const OfficerPage: React.FC = () => {
 				>
 					Все солдаты
 				</button>
-				<button
-					className={
-						activeTab === 'report' ? 'nav-button active' : 'nav-button'
-					}
-					onClick={() => setActiveTab('report')}
-				>
-					Создать рапорт
-				</button>
+				{role === 'officer' && (
+					<button
+						className={
+							activeTab === 'report' ? 'nav-button active' : 'nav-button'
+						}
+						onClick={() => setActiveTab('report')}
+					>
+						Создать рапорт
+					</button>
+				)}
+
 				<button className='nav-button' onClick={handleLogout}>
 					Выход
 				</button>

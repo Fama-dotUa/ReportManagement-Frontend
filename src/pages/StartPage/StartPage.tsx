@@ -9,14 +9,12 @@ function StartPages() {
 	const toggleAuthForm = () => {
 		setShowAuth(prev => !prev)
 	}
-	console.log('StartPages rendered')
 	return (
 		<div className='start-pages'>
 			<div className='section transparent first' />
 			<div className='section second'>
 				<div className='buttons'>
-					<button>Войти как гость</button>
-					<button onClick={toggleAuthForm}>Войти как офицер</button>
+					<button onClick={toggleAuthForm}>Войти</button>
 				</div>
 			</div>
 			<div className='section transparent third' />

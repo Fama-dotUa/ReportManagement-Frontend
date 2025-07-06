@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 
 import StartPages from './pages/StartPage/StartPage'
-import OfficerPage from './pages/OfficerPage/Officerpage.tsx'
+import OfficerPage from './pages/OfficerPage/OfficerPage.tsx'
 
 function App() {
 	return (
