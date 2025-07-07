@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './CreateSoldier.css'
 import { FaPencilAlt } from 'react-icons/fa'
 import AvatarUploadModal from '../AvatarUploadModal'
@@ -20,6 +20,22 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 	})
 	const [tempIcon, setTempIcon] = useState('')
 	const [showAvatarModal, setShowAvatarModal] = useState(false)
+	const [ranks, setRanks] = useState<string[]>([])
+	useEffect(() => {
+		const fetchRanks = async () => {
+			try {
+				const res = await fetch(
+					`${import.meta.env.VITE_API_URL}/api/ranks?populate=*`
+				)
+				const data = await res.json()
+				const rankNames = data.data.map((item: any) => item.name)
+				setRanks(rankNames)
+			} catch (err) {
+				console.error('Ошибка при загрузке званий:', err)
+			}
+		}
+		fetchRanks()
+	}, [])
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -96,10 +112,11 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 							onChange={handleChange}
 							required
 						>
-							<option value=''>Выбрать...</option>
-							<option value='рядовой'>Рядовой</option>
-							<option value='сержант'>Сержант</option>
-							<option value='лейтенант'>Лейтенант</option>
+							{ranks.map(r => (
+								<option key={r} value={r}>
+									{r}
+								</option>
+							))}
 						</select>
 
 						<label>Роль</label>
@@ -109,8 +126,8 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 							onChange={handleChange}
 							required
 						>
-							<option value='authenticated'>Обычный</option>
-							<option value='officer'>Офицер</option>
+							<option value='authenticated'>Мясо</option>
+							<option value='officer'>Дисциплиннарный офицер</option>
 						</select>
 					</div>
 				</div>
