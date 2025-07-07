@@ -53,22 +53,21 @@ const UserProfileForm: React.FC<Props> = ({
 			<div className='form-grid'>
 				<div className='avatar-block'>
 					<div className='avatar-block'>
-						<div style={{ position: 'relative' }}>
-							<img
-								src={tempIcon || formData.icon}
-								alt='avatar'
-								className='avatar-img'
-							/>
-							{editable && (
-								<button
-									type='button'
-									id='edit-avatar-button'
-									onClick={() => setShowAvatarModal(true)}
-								>
-									<FaPencilAlt />
-								</button>
-							)}
-						</div>
+						<img
+							src={tempIcon || formData.icon || '/default-avatar.png'}
+							alt='avatar'
+							className='avatar-img'
+						/>
+
+						{editable && (
+							<button
+								type='button'
+								id='edit-avatar-button'
+								onClick={() => setShowAvatarModal(true)}
+							>
+								<FaPencilAlt />
+							</button>
+						)}
 					</div>
 				</div>
 				<div className='info-block'>

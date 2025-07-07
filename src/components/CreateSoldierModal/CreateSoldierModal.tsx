@@ -15,12 +15,13 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 		password: '',
 		discord: '',
 		rank: '',
-		role: 'authenticated',
+		role: 'Authenticated',
 		icon: '',
 	})
 	const [tempIcon, setTempIcon] = useState('')
 	const [showAvatarModal, setShowAvatarModal] = useState(false)
-	const [ranks, setRanks] = useState<string[]>([])
+	type Rank = { id: number; name: string }
+	const [ranks, setRanks] = useState<Rank[]>([])
 	useEffect(() => {
 		const fetchRanks = async () => {
 			try {
@@ -28,8 +29,7 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 					`${import.meta.env.VITE_API_URL}/api/ranks?populate=*`
 				)
 				const data = await res.json()
-				const rankNames = data.data.map((item: any) => item.name)
-				setRanks(rankNames)
+				setRanks(data.data)
 			} catch (err) {
 				console.error('Ошибка при загрузке званий:', err)
 			}
@@ -47,10 +47,37 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 		const { username, password, discord, rank, role } = form
-		if (!username || !password || !discord || !rank || !role) {
-			alert('Пожалуйста, заполните все поля.')
+		console.log('role:', role)
+		const errors: string[] = []
+
+		if (!username || username.length < 3) {
+			errors.push('Имя пользователя должно быть не короче 3 символов.')
+		}
+
+		if (!password || password.length < 6) {
+			errors.push('Пароль должен содержать минимум 6 символов.')
+		}
+
+		const discordRegex = /^([a-zA-Z0-9_.]{2,32}|[a-zA-Z0-9_]{2,32}#[0-9]{4})$/
+		if (!discord || !discordRegex.test(discord)) {
+			errors.push(
+				'Discord должен быть в формате "user" или "user#1234" (до 32 символов).'
+			)
+		}
+
+		if (!rank) {
+			errors.push('Звание обязательно.')
+		}
+
+		if (!role) {
+			errors.push('Роль обязательна.')
+		}
+
+		if (errors.length > 0) {
+			alert(errors.join('\n'))
 			return
 		}
+
 		onCreate({ ...form, icon: tempIcon, id: 0 })
 	}
 
@@ -108,13 +135,16 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 						<label>Звание</label>
 						<select
 							name='rank'
-							value={form.rank}
+							value={form.rank || ''}
 							onChange={handleChange}
 							required
 						>
+							<option value='' disabled>
+								Выбрать звание...
+							</option>
 							{ranks.map(r => (
-								<option key={r} value={r}>
-									{r}
+								<option key={r.id} value={r.id}>
+									{r.name}
 								</option>
 							))}
 						</select>
@@ -126,7 +156,7 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 							onChange={handleChange}
 							required
 						>
-							<option value='authenticated'>Мясо</option>
+							<option value='Authenticated'>Мясо</option>
 							<option value='officer'>Дисциплиннарный офицер</option>
 						</select>
 					</div>

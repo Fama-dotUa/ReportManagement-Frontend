@@ -94,7 +94,7 @@
 
 .create-soldier-fields input,
 .create-soldier-fields select {
-	width: 100%;
+	width: 95%;
 	font-size: 14px;
 	border-radius: 4px;
 	padding: 0.5rem 0.75rem;
@@ -102,7 +102,7 @@
 	background-color: rgba(92, 92, 92, 0.85);
 }
 .create-soldier-fields input {
-	width: 93%;
+	width: 100%;
 	padding: 0.5rem 0.75rem;
 }
 /* Кнопка */
