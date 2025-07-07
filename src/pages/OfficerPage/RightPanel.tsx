@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react'
 import { useUsers } from '../../hooks/useUsers'
 import { useSearch } from '../../hooks/useSearch'
 import UserProfileModal from '../../components/ProfileForm/UserProfileModal'
+import CreateSoldierModal from '../../components/CreateSoldierModal/CreateSoldierModal'
+import { useCreateUser } from '../../hooks/useCreateUser'
+
 import { useUpdateUser } from '../../hooks/useUpdateUser'
 import { useAuth } from '../../hooks/useAuth'
 import type { User } from '../../types/User'
@@ -14,7 +17,18 @@ const RightPanel: React.FC = () => {
 	const [isOfficer, setIsOfficer] = useState<boolean>(true)
 	const { updateUser } = useUpdateUser(currentUserId)
 	const { role } = useAuth()
+	const [creating, setCreating] = useState(false)
+	const { createUser } = useCreateUser()
 
+	const handleCreate = async (newUser: User & { password: string }) => {
+		const result = await createUser(newUser)
+		if (result.success) {
+			console.log('Солдат добавлен')
+			setCreating(false)
+		} else {
+			alert(result.message)
+		}
+	}
 	const handleClick = (user: any) => {
 		setSelectedUser(user)
 	}
@@ -59,7 +73,20 @@ const RightPanel: React.FC = () => {
 					</li>
 				))}
 			</ul>
-			<button className='add-soldier'>Добавить солдата</button>
+
+			{isOfficer && (
+				<button className='add-soldier' onClick={() => setCreating(true)}>
+					Добавить солдата
+				</button>
+			)}
+
+			{creating && (
+				<CreateSoldierModal
+					onClose={() => setCreating(false)}
+					onCreate={handleCreate}
+				/>
+			)}
+
 			{selectedUser && (
 				<UserProfileModal
 					user={selectedUser}

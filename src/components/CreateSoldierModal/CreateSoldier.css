@@ -1,0 +1,123 @@
+/* Общее модальное окно */
+.create-soldier-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.45);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 9999;
+}
+
+.create-soldier-form {
+	background: rgba(255, 255, 255, 0.5);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	padding: 1.5rem;
+	border-radius: 2px;
+	width: 540px;
+	max-width: 95vw;
+	position: relative;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+/* Закрытие */
+.create-soldier-form .close-button {
+	position: absolute;
+	top: -8px;
+	right: 0px;
+	z-index: 10;
+	font-size: 32px;
+	background: none;
+	border: none;
+	padding: 0;
+	cursor: pointer;
+	color: rgba(149, 63, 54, 0.7);
+}
+
+/* Сетка */
+.create-soldier-grid {
+	display: flex;
+	gap: 1rem;
+}
+
+/* Левая колонка (аватар) */
+.create-soldier-avatar {
+	display: flex;
+	position: relative;
+	flex-direction: column;
+	align-items: center;
+	width: 140px;
+	height: 140px;
+}
+
+.create-soldier-avatar img {
+	width: 120px;
+	height: 120px;
+	object-fit: cover;
+	border-radius: 2px;
+	margin-bottom: 0.5rem;
+	border: 1px solid #ccc;
+}
+
+#create-soldier-avatar-button {
+	position: absolute;
+	top: 0;
+	right: 12px;
+	padding: 0;
+	font-size: 1rem;
+	background: none;
+	color: rgba(193, 137, 18, 0.83);
+	cursor: pointer;
+}
+
+/* Правая колонка (поля) */
+.create-soldier-fields {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+}
+
+.create-soldier-fields label {
+	font-weight: bold;
+	font-size: 14px;
+	margin-bottom: 0.2rem;
+	color: #222;
+}
+
+.create-soldier-fields input,
+.create-soldier-fields select {
+	width: 100%;
+	font-size: 14px;
+	border-radius: 4px;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid #ccc;
+	background-color: rgba(92, 92, 92, 0.85);
+}
+.create-soldier-fields input {
+	width: 93%;
+	padding: 0.5rem 0.75rem;
+}
+/* Кнопка */
+.create-soldier-form button[type='submit'] {
+	align-self: flex-end;
+	padding: 0.5rem 1.2rem;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 4px;
+	font-size: 15px;
+	cursor: pointer;
+	transition: background 0.3s ease;
+}
+
+.create-soldier-form button[type='submit']:hover {
+	background-color: #0056b3;
+}

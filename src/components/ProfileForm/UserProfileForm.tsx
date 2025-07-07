@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { FaPencilAlt } from 'react-icons/fa'
 import './UserProfileForm.css'
-import AvatarUploadModal from './AvatarUploadModal'
+import AvatarUploadModal from '../AvatarUploadModal'
 import { useUserProfileForm } from './useUserProfileForm'
 import { useUsers } from '../../hooks/useUsers'
 import type { User } from '../../types/User'
