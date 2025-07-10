@@ -154,3 +154,16 @@
 	font-style: italic;
 	font-size: 16px;
 }
+
+.reports-list {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.reports-list li button {
+	background: rgba(183, 129, 129, 0.618);
+	border: none;
+	cursor: pointer;
+	font-size: 13px;
+}

@@ -151,13 +151,16 @@
 
 .report-item .title {
 	flex: 1;
+	position: relative;
+	padding-top: 0.5rem;
 }
 
 .report-item .actions button {
 	background: none;
 	border: none;
-	padding: 12px;
+	padding: 10px;
 	font-size: 24px;
+	box-shadow: none;
 }
 .report-item .actions .eye {
 	color: rgba(82, 163, 197, 0.9);
@@ -166,6 +169,44 @@
 	margin-left: 8px;
 	color: rgba(138, 183, 107, 0.877);
 }
+
+.report-permanent {
+	background-color: rgba(136, 136, 47, 0.4);
+}
+
+.report-active {
+	background-color: rgba(20, 120, 20, 0.25);
+}
+
+.report-expired {
+	background-color: rgba(120, 20, 20, 0.2);
+}
+.report-item .cipher {
+	font-weight: bold;
+	color: rgba(120, 20, 20, 0.8);
+}
+.report-item .number {
+	font-style: italic;
+	color: rgba(120, 20, 20, 0.8);
+}
+.report-item .status-text {
+	font-weight: bold;
+	color: rgba(20, 120, 20, 0.8);
+}
+.report-item .description {
+	color: rgba(106, 0, 255, 0.8);
+}
+.report-item .creator {
+	color: #b27504dd;
+}
+.report-item .timestamp {
+	position: absolute;
+	right: 0;
+	top: 0;
+	opacity: 0.75;
+	font-size: 0.7em;
+}
+
 /* Общий контейнер редактора */
 .w-md-editor {
 	background-color: #1e1e2f !important;
@@ -212,38 +253,4 @@
 	margin-top: -8px;
 	text-align: right;
 	color: #333333e4;
-}
-
-.report-permanent {
-	background-color: rgba(136, 136, 47, 0.4);
-}
-
-.report-active {
-	background-color: rgba(20, 120, 20, 0.25);
-}
-
-.report-expired {
-	background-color: rgba(120, 20, 20, 0.2);
-}
-.report-item .cipher {
-	font-weight: bold;
-	color: rgba(120, 20, 20, 0.8);
-}
-.report-item .number {
-	font-style: italic;
-	color: rgba(120, 20, 20, 0.8);
-}
-.report-item .status-text {
-	font-weight: bold;
-	color: rgba(20, 120, 20, 0.8);
-}
-.report-item .description {
-	color: rgba(106, 0, 255, 0.8);
-}
-.report-item .creator {
-	color: #888;
-}
-.report-item .timestamp {
-	opacity: 0.75;
-	font-size: 0.9em;
 }

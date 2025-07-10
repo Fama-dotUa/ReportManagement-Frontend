@@ -54,15 +54,15 @@ const AllSoldiers: React.FC = () => {
 											<span className='status-text'>{statusText}</span>&nbsp;
 											<span className='timestamp'>
 												{created.format('DD.MM.YY HH:mm:ss')}
+												{r.creatorName && (
+													<>
+														&nbsp;|&nbsp;
+														<span className='creator'>
+															<strong>{r.creatorName}</strong>
+														</span>
+													</>
+												)}
 											</span>
-											{r.creatorName && (
-												<>
-													&nbsp;|&nbsp;
-													<span className='creator'>
-														Создан: <strong>{r.creatorName}</strong>
-													</span>
-												</>
-											)}
 										</span>
 										<div className='actions'>
 											<button title='Предпросмотр' disabled>
