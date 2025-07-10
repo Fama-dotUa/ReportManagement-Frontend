@@ -179,8 +179,9 @@
 }
 
 .report-expired {
-	background-color: rgba(120, 20, 20, 0.2);
+	background-color: rgba(92, 92, 92, 0.45);
 }
+
 .report-item .cipher {
 	font-weight: bold;
 	color: rgba(120, 20, 20, 0.8);

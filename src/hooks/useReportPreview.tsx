@@ -2,11 +2,18 @@ import { useCallback } from 'react'
 import { useAuth } from './useAuth'
 import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
+import type { TDocumentDefinitions } from 'pdfmake/interfaces'
+import { marked } from 'marked'
 ;(pdfMake as any).vfs = (pdfFonts as any).vfs
 
 export const useReportPreview = () => {
 	const { token } = useAuth()
-
+	const markdownToText = async (markdown: string) => {
+		const html = await marked.parseInline(markdown)
+		const temp = document.createElement('div')
+		temp.innerHTML = html
+		return temp.innerText
+	}
 	const previewReport = useCallback(async (reportId: string) => {
 		try {
 			const res = await fetch(
@@ -23,26 +30,76 @@ export const useReportPreview = () => {
 
 			const report = await res.json()
 			const data = report.data[0]
+			console.log('data:', data)
 
-			const docDefinition = {
+			const docDefinition: TDocumentDefinitions = {
 				content: [
-					{ text: `Рапорт: ${data.reason.description}`, style: 'header' },
-					{ text: `Шифр: ${data.reason.cipher}` },
-					{ text: `Номер: ${data.reason.number}` },
 					{
-						text: `Дата создания: ${new Date(data.createdAt).toLocaleString()}`,
+						text: 'Командующему Главного штаба STV_sqúad, генералу dyeness',
+						alignment: 'right',
+						margin: [0, 0, 0, 40],
 					},
-					{ text: `Создатель: ${data.creator.username || 'неизвестен'}` },
+					{
+						text: `РАПОРТ №${data.id}`,
+						style: 'header',
+						alignment: 'center',
+						margin: [0, 0, 0, 30],
+					},
+					{
+						text: `В соответствии с п. 1.1 Закона STV_sqúad о дисциплинарных обязанностях`,
+						margin: [10, 0, 0, 0],
+						alignment: 'right',
+					},
+					{
+						text: `прошу вашего решения насчет ${data.reason.cipher}-${data.reason.number} ${data.reason.description} продолжительностью ${data.duration} || c ${data.startDate} по ${data.endDate}.`,
+						margin: [0, 0, 0, 20],
+						alignment: 'justify',
+					},
+					{
+						text: `Кому выдается: ${data.targetRank} ${data.targetUsername}`,
+						margin: [0, 0, 0, 10],
+					},
+					{
+						text: 'Обоснование:',
+						bold: true,
+						margin: [0, 10, 0, 5],
+					},
+					{
+						text: await markdownToText(data.description || ''),
+						margin: [0, 0, 0, 30],
+					},
+					{
+						text: `${data.issuerRank || 'Звание'}`,
+						alignment: 'left',
+						margin: [0, 10, 0, 0],
+					},
+					{
+						columns: [
+							{ text: `${data.issuerPosition || 'Должность'}`, width: '50%' },
+							{
+								stack: [
+									{ text: `${data.creator.username}`, alignment: 'right' },
+								],
+								width: '50%',
+							},
+						],
+						columnGap: 10,
+						margin: [0, 10, 0, 0],
+					},
+					{
+						text: `${data.startDate}`,
+						alignment: 'left',
+						margin: [0, 10, 0, 0],
+					},
 				],
 				defaultStyle: {
 					font: 'Roboto',
-					fontSize: 12,
+					fontSize: 14,
 				},
 				styles: {
 					header: {
-						fontSize: 16,
+						fontSize: 18,
 						bold: true,
-						margin: [0, 0, 0, 10] as [number, number, number, number],
 					},
 				},
 			}

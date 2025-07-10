@@ -27,6 +27,7 @@
     "dayjs": "^1.11.13",
     "jspdf": "^3.0.1",
     "jspdf-autotable": "^5.0.2",
+    "marked": "^16.0.0",
     "pdfmake": "^0.2.20",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
