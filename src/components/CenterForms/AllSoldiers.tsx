@@ -9,18 +9,6 @@ const AllSoldiers: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
 	const { reports, loading, error } = useReportsBySoldier(selectedId)
 
-	const formatTitle = (r: any) => {
-		const created = dayjs(r.createdAt).format('DD.MM.YY HH:mm:ss')
-		const time =
-			r.time_to_free === 0
-				? 'Бессрочно'
-				: `Активно еще ${
-						r.time_to_free - dayjs().diff(dayjs(r.createdAt), 'day')
-				  } дн.`
-
-		return `${r.reason.cipher}-${r.reason.number} | ${r.reason.description} | ${time} ${created} | ${r.creatorName}`
-	}
-
 	return (
 		<div className='center'>
 			<SoldierList selectedId={selectedId} onSelect={setSelectedId} />
@@ -34,11 +22,20 @@ const AllSoldiers: React.FC = () => {
 					) : (
 						<ul className='report-list'>
 							{reports.map((r, idx) => {
+								const created = dayjs(r.createdAt)
+								const daysPassed = dayjs().diff(created, 'day')
 								const isPermanent = r.time_to_free === 0
-								const daysLeft =
-									r.time_to_free - dayjs().diff(dayjs(r.createdAt), 'day')
-								const isExpired = !isPermanent && daysLeft <= 0
-								const isActive = !isPermanent && daysLeft > 0
+								const isExpired = !isPermanent && daysPassed >= r.time_to_free
+								const isActive = !isPermanent && !isExpired
+
+								let statusText = 'Бессрочно'
+								if (isActive) {
+									const daysLeft = r.time_to_free - daysPassed
+									statusText = `Активно еще ${daysLeft} дн.`
+								} else if (isExpired) {
+									statusText = 'Закрыт'
+								}
+
 								let statusClass = 'report-expired'
 								if (isPermanent) statusClass = 'report-permanent'
 								else if (isActive) statusClass = 'report-active'
@@ -46,7 +43,27 @@ const AllSoldiers: React.FC = () => {
 								return (
 									<li key={r.id} className={`report-item ${statusClass}`}>
 										<span className='index'>#{idx + 1}</span>
-										<span className='title'>{formatTitle(r)}</span>
+										<span className='title'>
+											<span className='cipher'>{r.reason.cipher}</span>-
+											<span className='number'>{r.reason.number}</span>
+											&nbsp;|&nbsp;
+											<span className='description'>
+												{r.reason.description}
+											</span>
+											&nbsp;|&nbsp;
+											<span className='status-text'>{statusText}</span>&nbsp;
+											<span className='timestamp'>
+												{created.format('DD.MM.YY HH:mm:ss')}
+											</span>
+											{r.creatorName && (
+												<>
+													&nbsp;|&nbsp;
+													<span className='creator'>
+														Создан: <strong>{r.creatorName}</strong>
+													</span>
+												</>
+											)}
+										</span>
 										<div className='actions'>
 											<button title='Предпросмотр' disabled>
 												<FaEye className='eye' />

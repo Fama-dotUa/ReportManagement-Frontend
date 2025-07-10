@@ -1,7 +1,6 @@
 .center {
 	display: flex;
 	height: 100%;
-	gap: 20px;
 }
 
 .center-panel {
@@ -225,4 +224,26 @@
 
 .report-expired {
 	background-color: rgba(120, 20, 20, 0.2);
+}
+.report-item .cipher {
+	font-weight: bold;
+	color: rgba(120, 20, 20, 0.8);
+}
+.report-item .number {
+	font-style: italic;
+	color: rgba(120, 20, 20, 0.8);
+}
+.report-item .status-text {
+	font-weight: bold;
+	color: rgba(20, 120, 20, 0.8);
+}
+.report-item .description {
+	color: rgba(106, 0, 255, 0.8);
+}
+.report-item .creator {
+	color: #888;
+}
+.report-item .timestamp {
+	opacity: 0.75;
+	font-size: 0.9em;
 }
