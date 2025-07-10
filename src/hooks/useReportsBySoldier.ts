@@ -44,7 +44,6 @@ export const useReportsBySoldier = (soldierId: string | null) => {
 			)
 			.then(res => {
 				const raw = res.data?.data
-
 				if (!Array.isArray(raw)) {
 					console.error('Некорректный формат данных:', res.data)
 					setError('Неверный ответ от сервера')

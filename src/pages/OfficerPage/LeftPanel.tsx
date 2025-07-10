@@ -32,7 +32,6 @@ const LeftPanel: React.FC = () => {
 					},
 				}
 			)
-			console.log('Fetched reports:', res.data.data)
 			const reportsData = res.data.data.map((item: any) => ({
 				id: item.id,
 				createdAt: item.createdAt,

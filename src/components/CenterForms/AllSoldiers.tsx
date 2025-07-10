@@ -3,11 +3,14 @@ import SoldierList from './SoldierList'
 import './CenterPanel.css'
 import { FaEye, FaDownload } from 'react-icons/fa'
 import { useReportsBySoldier } from '../../hooks/useReportsBySoldier'
+import { useReportPreview } from '../../hooks/useReportPreview'
+
 import dayjs from 'dayjs'
 
 const AllSoldiers: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
 	const { reports, loading, error } = useReportsBySoldier(selectedId)
+	const { previewReport } = useReportPreview()
 
 	return (
 		<div className='center'>
@@ -65,9 +68,13 @@ const AllSoldiers: React.FC = () => {
 											</span>
 										</span>
 										<div className='actions'>
-											<button title='Предпросмотр' disabled>
+											<button
+												title='Предпросмотр'
+												onClick={() => previewReport(String(r.id))}
+											>
 												<FaEye className='eye' />
 											</button>
+
 											<button title='Скачать' disabled>
 												<FaDownload className='download' />
 											</button>
