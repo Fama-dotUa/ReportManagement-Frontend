@@ -4,6 +4,7 @@ import './CenterPanel.css'
 import MDEditor from '@uiw/react-md-editor'
 import { getReasons } from '../../api/getReasons'
 import { createReport } from '../../hooks/useCreateReport'
+import { useAuth } from '../../hooks/useAuth'
 
 const ReportForm: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -11,7 +12,7 @@ const ReportForm: React.FC = () => {
 	const [days, setDays] = useState('0')
 	const [value, setValue] = useState<string | undefined>('**Текст рапорта**')
 	const [reasons, setReasons] = useState<{ id: number; label: string }[]>([])
-
+	const { user } = useAuth()
 	useEffect(() => {
 		getReasons().then(setReasons).catch(console.error)
 	}, [])
@@ -35,6 +36,7 @@ const ReportForm: React.FC = () => {
 				reasonId: Number(reason),
 				days: Number(days),
 				description: value,
+				creatorId: user?.id || 'unknown',
 			})
 			alert('Рапорт успешно создан!')
 			setReason('')

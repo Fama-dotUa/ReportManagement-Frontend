@@ -5,11 +5,13 @@ export async function createReport({
 	reasonId,
 	days,
 	description,
+	creatorId,
 }: {
 	userId: string | number
 	reasonId: string | number
 	days: number
 	description: string
+	creatorId?: string | number
 }) {
 	const token = localStorage.getItem('jwt')
 	if (!token) throw new Error('JWT не найден в localStorage')
@@ -33,6 +35,7 @@ export async function createReport({
 				reason: String(reasonId),
 				time_to_free: Number(days),
 				description: description,
+				creator: Number(creatorId),
 			},
 		}),
 	})
