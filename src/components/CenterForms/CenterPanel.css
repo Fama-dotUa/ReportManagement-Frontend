@@ -138,8 +138,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background: rgba(92, 92, 92, 0.55);
-	color: rgba(255, 255, 255, 0.76);
+	background: rgba(153, 153, 44, 0.55);
+	color: #333;
 	font-size: 14px;
 	padding: 2px 10px;
 	border-radius: 3px;
@@ -215,6 +215,14 @@
 	color: #333333e4;
 }
 
-.report-item.active-report {
-	background-color: rgba(255, 77, 0, 0.705); /* или любой другой */
+.report-permanent {
+	background-color: rgba(136, 136, 47, 0.4);
+}
+
+.report-active {
+	background-color: rgba(20, 120, 20, 0.25);
+}
+
+.report-expired {
+	background-color: rgba(120, 20, 20, 0.2);
 }

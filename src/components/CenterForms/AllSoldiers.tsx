@@ -18,7 +18,7 @@ const AllSoldiers: React.FC = () => {
 						r.time_to_free - dayjs().diff(dayjs(r.createdAt), 'day')
 				  } дн.`
 
-		return `${r.reason.cipher}-${r.reason.number} | ${r.reason.description} | ${time} ${created}`
+		return `${r.reason.cipher}-${r.reason.number} | ${r.reason.description} | ${time} ${created} | ${r.creatorName}`
 	}
 
 	return (
@@ -34,12 +34,17 @@ const AllSoldiers: React.FC = () => {
 					) : (
 						<ul className='report-list'>
 							{reports.map((r, idx) => {
-								const isActive = r.time_to_free !== 0
+								const isPermanent = r.time_to_free === 0
+								const daysLeft =
+									r.time_to_free - dayjs().diff(dayjs(r.createdAt), 'day')
+								const isExpired = !isPermanent && daysLeft <= 0
+								const isActive = !isPermanent && daysLeft > 0
+								let statusClass = 'report-expired'
+								if (isPermanent) statusClass = 'report-permanent'
+								else if (isActive) statusClass = 'report-active'
+
 								return (
-									<li
-										key={r.id}
-										className={`report-item ${isActive ? 'active-report' : ''}`}
-									>
+									<li key={r.id} className={`report-item ${statusClass}`}>
 										<span className='index'>#{idx + 1}</span>
 										<span className='title'>{formatTitle(r)}</span>
 										<div className='actions'>

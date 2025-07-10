@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import dayjs from 'dayjs'
 
 type ReportView = {
 	id: number
 	time_to_free: number
 	createdAt: string
 	description: string
+	creatorName: string
 	reason: {
 		cipher: string
 		number: number
@@ -35,7 +35,7 @@ export const useReportsBySoldier = (soldierId: string | null) => {
 
 		axios
 			.get(
-				`${API_URL}/api/reports?filters[user][id][$eq]=${soldierId}&populate=reason`,
+				`${API_URL}/api/reports?filters[user][id][$eq]=${soldierId}&populate=*`,
 				{
 					headers: {
 						Authorization: `Bearer ${token}`,
@@ -50,12 +50,12 @@ export const useReportsBySoldier = (soldierId: string | null) => {
 					setError('Неверный ответ от сервера')
 					return
 				}
-
 				const result: ReportView[] = raw.map((r: any) => ({
 					id: r.id,
 					time_to_free: r.time_to_free,
 					createdAt: r.createdAt,
 					description: r.description,
+					creatorName: r.creator?.username || '',
 					reason: {
 						cipher: r.reason?.cipher || '',
 						number: r.reason?.number || 0,
