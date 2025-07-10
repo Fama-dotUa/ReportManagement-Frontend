@@ -13,6 +13,8 @@ const ReportForm: React.FC = () => {
 	const [value, setValue] = useState<string | undefined>('**Текст рапорта**')
 	const [reasons, setReasons] = useState<{ id: number; label: string }[]>([])
 	const { user } = useAuth()
+	const [excludeSelf, setExcludeSelf] = useState(true)
+
 	useEffect(() => {
 		getReasons().then(setReasons).catch(console.error)
 	}, [])
@@ -49,7 +51,11 @@ const ReportForm: React.FC = () => {
 
 	return (
 		<div className='center'>
-			<SoldierList selectedId={selectedId} onSelect={setSelectedId} />
+			<SoldierList
+				selectedId={selectedId}
+				onSelect={setSelectedId}
+				excludeId={excludeSelf ? user?.id : undefined}
+			/>
 			<div className='center-panel report-form'>
 				<h3>Создание рапорта</h3>
 

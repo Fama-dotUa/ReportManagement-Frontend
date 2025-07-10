@@ -7,13 +7,16 @@ import type { User } from '../../types/User'
 interface Props {
 	selectedId: string | null
 	onSelect: (id: string) => void
+	excludeId?: number | string
 }
 
-const SoldierList: React.FC<Props> = ({ selectedId, onSelect }) => {
+const SoldierList: React.FC<Props> = ({ selectedId, onSelect, excludeId }) => {
 	const { users } = useUsers()
 	const [searchQuery, setSearchQuery] = useState('')
 	const filteredUsers = useSearch(users, searchQuery)
-
+	const visibleUsers = filteredUsers.filter(
+		u => String(u.id) !== String(excludeId)
+	)
 	return (
 		<div className='soldier-list'>
 			<input
@@ -24,7 +27,7 @@ const SoldierList: React.FC<Props> = ({ selectedId, onSelect }) => {
 				onChange={e => setSearchQuery(e.target.value)}
 			/>
 			<ul>
-				{filteredUsers.map((user: User) => (
+				{visibleUsers.map((user: User) => (
 					<li key={user.id}>
 						<button
 							className={selectedId === String(user.id) ? 'active' : ''}
