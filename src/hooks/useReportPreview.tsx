@@ -4,16 +4,20 @@ import pdfMake from 'pdfmake/build/pdfmake'
 import pdfFonts from 'pdfmake/build/vfs_fonts'
 import type { TDocumentDefinitions } from 'pdfmake/interfaces'
 import { marked } from 'marked'
+import { getUser } from '../api/getUser'
+
+import dayjs from 'dayjs'
 ;(pdfMake as any).vfs = (pdfFonts as any).vfs
 
 export const useReportPreview = () => {
-	const { token } = useAuth()
+	const { token, user } = useAuth()
 	const markdownToText = async (markdown: string) => {
 		const html = await marked.parseInline(markdown)
 		const temp = document.createElement('div')
 		temp.innerHTML = html
 		return temp.innerText
 	}
+
 	const previewReport = useCallback(async (reportId: string) => {
 		try {
 			const res = await fetch(
@@ -31,12 +35,24 @@ export const useReportPreview = () => {
 			const report = await res.json()
 			const data = report.data[0]
 
+			const recipient = await getUser(data.user.id)
+			const creator = await getUser(data.creator.id)
+			const role =
+				creator.role.name == 'officer' ? 'Дисциплинарный офицер' : 'хуйня'
+			const startDate = dayjs(data.createdAt)
+			const endDate = startDate.add(data.time_to_free, 'day')
+
 			const docDefinition: TDocumentDefinitions = {
 				content: [
 					{
-						text: 'Командующему Главного штаба STV_sqúad, генералу dyeness',
+						text: 'Командующему Главного штаба STV_sqúad,',
 						alignment: 'right',
-						margin: [0, 0, 0, 40],
+						margin: [0, 0, 0, 0],
+					},
+					{
+						text: 'генералу dyeness',
+						alignment: 'right',
+						margin: [0, 0, 0, 60],
 					},
 					{
 						text: `РАПОРТ №${data.id}`,
@@ -50,35 +66,44 @@ export const useReportPreview = () => {
 						alignment: 'right',
 					},
 					{
-						text: `прошу вашего решения насчет ${data.reason.cipher}-${data.reason.number} ${data.reason.description} продолжительностью ${data.duration} || c ${data.startDate} по ${data.endDate}.`,
+						text: `прошу вашего решения насчет ${data.reason.cipher}-${
+							data.reason.number
+						} ${
+							data.reason.description
+						} продолжительностью c ${startDate.format(
+							'DD.MM.YY'
+						)} по ${endDate.format('DD.MM.YY')}.`,
 						margin: [0, 0, 0, 20],
 						alignment: 'justify',
 					},
 					{
-						text: `Кому выдается: ${data.targetRank} ${data.targetUsername}`,
-						margin: [0, 0, 0, 10],
+						text: `Кому выдается: ${cleanRankName(recipient.rank?.name)} ${
+							recipient.username
+						}`,
+						margin: [16, 0, 0, 10],
 					},
 					{
 						text: 'Обоснование:',
 						bold: true,
-						margin: [0, 10, 0, 5],
+						margin: [16, 10, 0, 5],
 					},
 					{
 						text: await markdownToText(data.description || ''),
 						margin: [0, 0, 0, 30],
 					},
 					{
-						text: `${data.issuerRank || 'Звание'}`,
+						text: `${role || 'Должность'}`,
 						alignment: 'left',
 						margin: [0, 10, 0, 0],
 					},
 					{
 						columns: [
-							{ text: `${data.issuerPosition || 'Должность'}`, width: '50%' },
 							{
-								stack: [
-									{ text: `${data.creator.username}`, alignment: 'right' },
-								],
+								text: `${cleanRankName(creator.rank?.name) || 'Звание'}`,
+								width: '50%',
+							},
+							{
+								stack: [{ text: `${creator.username}`, alignment: 'right' }],
 								width: '50%',
 							},
 						],
@@ -86,7 +111,7 @@ export const useReportPreview = () => {
 						margin: [0, 10, 0, 0],
 					},
 					{
-						text: `${data.startDate}`,
+						text: `${startDate.format('DD.MM.YY')}`,
 						alignment: 'left',
 						margin: [0, 10, 0, 0],
 					},
@@ -111,4 +136,13 @@ export const useReportPreview = () => {
 	}, [])
 
 	return { previewReport }
+}
+
+const cleanRankName = (name?: string): string => {
+	if (!name) return ''
+
+	const symbolsToRemove = ['∙', '▰', '◁', '◆', '★']
+	const regex = new RegExp(`[${symbolsToRemove.join('')}]`, 'g')
+
+	return name.replace(regex, '').trim()
 }
