@@ -7,7 +7,11 @@ const API_URL = import.meta.env.VITE_API_URL
 
 const ROLE_OPTIONS = [
 	{ value: 'authenticated', label: 'Солдат' },
+	{ value: 'universal_soldier', label: 'Универсальный солдат' },
+	{ value: 'teacher', label: 'Инструктор' },
 	{ value: 'officer', label: 'Дисциплинарный офицер' },
+	{ value: 'comander_officer', label: 'Командир' },
+	{ value: 'general', label: 'Генерал' },
 ]
 
 export const useUserProfileForm = (
@@ -31,6 +35,9 @@ export const useUserProfileForm = (
 
 	const [tempIcon, setTempIcon] = useState<string | null>(null)
 	const [iconFile, setIconFile] = useState<File | null>(null)
+	const isSelfGeneral =
+		formData.id === currentUserId &&
+		(formData.role === 'general' || (formData.role as any)?.type === 'general')
 
 	useEffect(() => {
 		const baseChanged =
@@ -219,7 +226,7 @@ export const useUserProfileForm = (
 			) : (
 				<div className='readonly-row'>
 					<h2>{formData[field] || '—'}</h2>
-					{editable && (
+					{editable && !isSelfGeneral && (
 						<button type='button' onClick={() => toggleEdit(field)}>
 							<FaPencilAlt />
 						</button>
@@ -236,7 +243,6 @@ export const useUserProfileForm = (
 				: formData.role || 'authenticated'
 		const currentLabel =
 			ROLE_OPTIONS.find(r => r.value === currentValue)?.label || currentValue
-
 		return (
 			<div className='field-row'>
 				<label>Должность:</label>
@@ -246,7 +252,7 @@ export const useUserProfileForm = (
 							defaultValue={currentValue}
 							onChange={e => handleFieldChange('role', e.target.value)}
 						>
-							{ROLE_OPTIONS.map(opt => (
+							{ROLE_OPTIONS.filter(opt => opt.value !== 'general').map(opt => (
 								<option key={opt.value} value={opt.value}>
 									{opt.label}
 								</option>
@@ -264,7 +270,7 @@ export const useUserProfileForm = (
 				) : (
 					<div className='readonly-row'>
 						<h2>{currentLabel}</h2>
-						{editable && (
+						{editable && !isSelfGeneral && (
 							<button type='button' onClick={() => toggleEdit('role')}>
 								<FaPencilAlt />
 							</button>

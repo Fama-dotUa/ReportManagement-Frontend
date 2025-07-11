@@ -30,7 +30,7 @@ const OfficerPage: React.FC = () => {
 				>
 					Все солдаты
 				</button>
-				{role === 'officer' && (
+				{role && ['officer', 'general', 'comander-officer'].includes(role) && (
 					<button
 						className={
 							activeTab === 'report' ? 'nav-button active' : 'nav-button'

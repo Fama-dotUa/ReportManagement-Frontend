@@ -11,7 +11,9 @@ const getRoleIdByType = async (type: string): Promise<number | null> => {
 			headers: { Authorization: `Bearer ${token}` },
 		})
 		const data = await res.json()
+
 		const role = data.roles.find((r: any) => r.type === type)
+
 		return role?.id || null
 	} catch (err) {
 		console.error('Ошибка при получении ID роли:', err)

@@ -42,6 +42,12 @@ export const generatePdfBlob = async (
 	const temp = document.createElement('div')
 	temp.innerHTML = await marked.parseInline(data.description || '')
 	const plainDescription = temp.innerText
+	const durationText =
+		data.time_to_free > 0
+			? `продолжительностью c ${startDate.format(
+					'DD.MM.YY'
+			  )} по ${endDate.format('DD.MM.YY')}.`
+			: `бессрочной продолжительностью.`
 
 	const docDefinition: import('pdfmake/interfaces').TDocumentDefinitions = {
 		content: [
@@ -58,11 +64,7 @@ export const generatePdfBlob = async (
 				alignment: 'right',
 			},
 			{
-				text: `прошу вашего решения насчет ${data.reason.cipher}-${
-					data.reason.number
-				} ${data.reason.description} продолжительностью c ${startDate.format(
-					'DD.MM.YY'
-				)} по ${endDate.format('DD.MM.YY')}.`,
+				text: `прошу вашего решения насчет «${data.reason.cipher}-${data.reason.number} ${data.reason.description}» ${durationText}`,
 				alignment: 'justify',
 				margin: [0, 0, 0, 20],
 			},

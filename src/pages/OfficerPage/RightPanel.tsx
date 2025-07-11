@@ -42,7 +42,7 @@ const RightPanel: React.FC = () => {
 		}
 	}
 	useEffect(() => {
-		if (role === 'officer') {
+		if (role === 'general') {
 			setIsOfficer(true)
 		} else {
 			setIsOfficer(false)
