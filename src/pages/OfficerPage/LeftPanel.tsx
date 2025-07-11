@@ -17,7 +17,8 @@ const handlePreview = async (reportId: number) => {
 interface Report {
 	id: number
 	createdAt: string
-	reasonNamber: number
+	reasonNumber: number
+	reasonCipher: string
 	username: string
 }
 
@@ -45,7 +46,8 @@ const LeftPanel: React.FC = () => {
 			const reportsData = res.data.data.map((item: any) => ({
 				id: item.id,
 				createdAt: item.createdAt,
-				reasonNamber: item.reason?.number || 0,
+				reasonCipher: item.reason?.cipher || ' ',
+				reasonNumber: item.reason?.number || 0,
 				username: item.user.username,
 			}))
 			setReports(reportsData)
@@ -61,7 +63,7 @@ const LeftPanel: React.FC = () => {
 				{reports.map(report => (
 					<li key={report.id}>
 						<button onClick={() => handlePreview(report.id)}>
-							{report.username} — {report.reasonNamber}
+							{report.username} — {report.reasonCipher}-{report.reasonNumber}
 							<br />
 							{dayjs(report.createdAt).format('DD.MM.YYYY HH:mm')}
 						</button>
