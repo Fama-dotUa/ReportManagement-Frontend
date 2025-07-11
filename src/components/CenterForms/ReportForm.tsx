@@ -5,6 +5,7 @@ import MDEditor from '@uiw/react-md-editor'
 import { getReasons } from '../../api/getReasons'
 import { createReport } from '../../hooks/useCreateReport'
 import { useAuth } from '../../hooks/useAuth'
+import { generatePdfBlob } from '../../hooks/generatePdfBlob'
 
 const ReportForm: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -12,7 +13,7 @@ const ReportForm: React.FC = () => {
 	const [days, setDays] = useState('0')
 	const [value, setValue] = useState<string | undefined>('**Текст рапорта**')
 	const [reasons, setReasons] = useState<{ id: number; label: string }[]>([])
-	const { user } = useAuth()
+	const { user, token } = useAuth()
 	const [excludeSelf, setExcludeSelf] = useState(true)
 
 	useEffect(() => {
@@ -33,18 +34,41 @@ const ReportForm: React.FC = () => {
 		if (!confirm) return
 
 		try {
-			await createReport({
+			const report = await createReport({
 				userId: selectedId,
 				reasonId: Number(reason),
 				days: Number(days),
 				description: value,
 				creatorId: user?.id || 'unknown',
 			})
-			alert('Рапорт успешно создан!')
+			const reportId = report.id
+			const pdfBlob = await generatePdfBlob(reportId, token || '')
+
+			const formData = new FormData()
+			formData.append('files', pdfBlob, `report-${reportId}.pdf`)
+			formData.append('ref', 'api::report.report')
+			formData.append('refId', reportId)
+			formData.append('field', 'file')
+			formData.append('source', 'upload')
+
+			for (const pair of formData.entries()) {
+				console.log(pair[0], pair[1])
+			}
+
+			await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				body: formData,
+			})
+
+			alert('Рапорт успешно создан и прикреплён как PDF!')
 			setReason('')
 			setDays('0')
 			setValue('**Текст рапорта**')
 		} catch (err: any) {
+			console.error(err)
 			alert(`Ошибка: ${err.message}`)
 		}
 	}

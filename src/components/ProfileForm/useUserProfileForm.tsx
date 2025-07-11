@@ -6,7 +6,7 @@ import { useUpdateUser } from '../../hooks/useUpdateUser'
 const API_URL = import.meta.env.VITE_API_URL
 
 const ROLE_OPTIONS = [
-	{ value: 'authenticated', label: 'Мясо' },
+	{ value: 'authenticated', label: 'Солдат' },
 	{ value: 'officer', label: 'Дисциплинарный офицер' },
 ]
 
@@ -239,7 +239,7 @@ export const useUserProfileForm = (
 
 		return (
 			<div className='field-row'>
-				<label>Роль:</label>
+				<label>Должность:</label>
 				{editFields['role'] ? (
 					<div className='editable-row'>
 						<select

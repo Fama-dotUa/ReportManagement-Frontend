@@ -9,8 +9,8 @@ import { getUser } from '../api/getUser'
 import dayjs from 'dayjs'
 ;(pdfMake as any).vfs = (pdfFonts as any).vfs
 
-export const useReportPreview = () => {
-	const { token, user } = useAuth()
+export const generatePdfBlob = async (reportId: string): Promise<Blob> => {
+	const { token } = useAuth()
 	const markdownToText = async (markdown: string) => {
 		const html = await marked.parseInline(markdown)
 		const temp = document.createElement('div')
@@ -89,6 +89,7 @@ export const useReportPreview = () => {
 					},
 					{
 						text: await markdownToText(data.description || ''),
+						alignment: 'justify',
 						margin: [0, 0, 0, 30],
 					},
 					{
@@ -128,14 +129,19 @@ export const useReportPreview = () => {
 				},
 			}
 
-			pdfMake.createPdf(docDefinition).open()
+			return new Promise((resolve, reject) => {
+				pdfMake.createPdf(docDefinition).getBlob(blob => {
+					resolve(blob)
+				})
+			})
 		} catch (err) {
 			console.error(err)
 			alert('Не удалось сформировать PDF')
 		}
 	}, [])
 
-	return { previewReport }
+	const blob = await previewReport(reportId)
+	return blob as Blob
 }
 
 const cleanRankName = (name?: string): string => {

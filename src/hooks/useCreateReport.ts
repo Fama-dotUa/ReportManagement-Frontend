@@ -16,13 +16,6 @@ export async function createReport({
 	const token = localStorage.getItem('jwt')
 	if (!token) throw new Error('JWT не найден в localStorage')
 
-	console.log('Creating report with data:', {
-		userId,
-		reasonId,
-		days,
-		description,
-	})
-
 	const res = await fetch(`${API_URL}/api/reports`, {
 		method: 'POST',
 		headers: {
@@ -40,10 +33,8 @@ export async function createReport({
 		}),
 	})
 
-	if (!res.ok) {
-		const err = await res.json()
-		throw new Error(err?.message || 'Ошибка создания рапорта')
-	}
+	if (!res.ok) throw new Error('Ошибка при создании рапорта')
 
-	return await res.json()
+	const json = await res.json()
+	return json.data
 }
