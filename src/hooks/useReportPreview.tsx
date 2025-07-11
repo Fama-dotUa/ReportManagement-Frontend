@@ -1,16 +1,10 @@
 import { useCallback } from 'react'
 import { useAuth } from './useAuth'
 import pdfMake from 'pdfmake/build/pdfmake'
-
+import pdfFonts from 'pdfmake/build/vfs_fonts'
 import type { TDocumentDefinitions } from 'pdfmake/interfaces'
 import { marked } from 'marked'
-
-import { vfs, fonts } from '../fonts/times.js'
-
-pdfMake.vfs = vfs
-pdfMake.fonts = {
-	Times: fonts.Times,
-}
+;(pdfMake as any).vfs = (pdfFonts as any).vfs
 
 export const useReportPreview = () => {
 	const { token } = useAuth()
@@ -36,7 +30,6 @@ export const useReportPreview = () => {
 
 			const report = await res.json()
 			const data = report.data[0]
-			console.log('data:', data)
 
 			const docDefinition: TDocumentDefinitions = {
 				content: [
@@ -99,7 +92,7 @@ export const useReportPreview = () => {
 					},
 				],
 				defaultStyle: {
-					font: 'Times',
+					font: 'Roboto',
 					fontSize: 14,
 				},
 				styles: {
