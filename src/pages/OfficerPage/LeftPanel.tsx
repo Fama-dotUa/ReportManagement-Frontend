@@ -3,6 +3,16 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import { useAuth } from '../../hooks/useAuth'
 import './OfficerPage.css'
+import { getReportFileUrl } from '../../hooks/getReportFileUrl'
+
+const handlePreview = async (reportId: number) => {
+	const url = await getReportFileUrl(reportId)
+	if (url) {
+		window.open(url, '_blank')
+	} else {
+		alert('PDF не найден')
+	}
+}
 
 interface Report {
 	id: number
@@ -50,7 +60,7 @@ const LeftPanel: React.FC = () => {
 			<ul className='reports-list'>
 				{reports.map(report => (
 					<li key={report.id}>
-						<button>
+						<button onClick={() => handlePreview(report.id)}>
 							{report.username} — {report.reasonNamber}
 							<br />
 							{dayjs(report.createdAt).format('DD.MM.YYYY HH:mm')}

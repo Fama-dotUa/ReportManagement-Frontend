@@ -51,10 +51,6 @@ const ReportForm: React.FC = () => {
 			formData.append('field', 'file')
 			formData.append('source', 'upload')
 
-			for (const pair of formData.entries()) {
-				console.log(pair[0], pair[1])
-			}
-
 			await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
 				method: 'POST',
 				headers: {

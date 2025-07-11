@@ -3,8 +3,44 @@ import SoldierList from './SoldierList'
 import './CenterPanel.css'
 import { FaEye, FaDownload } from 'react-icons/fa'
 import { useReportsBySoldier } from '../../hooks/useReportsBySoldier'
+import { getReportFileUrl } from '../../hooks/getReportFileUrl'
 
 import dayjs from 'dayjs'
+const handlePreview = async (reportId: number) => {
+	const url = await getReportFileUrl(reportId)
+	if (url) {
+		window.open(url, '_blank')
+	} else {
+		alert('PDF не найден')
+	}
+}
+
+const handleDownload = async (reportId: number) => {
+	const url = await getReportFileUrl(reportId)
+	if (!url) return alert('Файл не найден')
+
+	try {
+		const res = await fetch(url)
+		const blob = await res.blob()
+
+		const blobUrl = window.URL.createObjectURL(
+			new Blob([blob], { type: 'application/octet-stream' }) // 👈 ключ
+		)
+
+		const link = document.createElement('a')
+		link.href = blobUrl
+		link.download = `report-${reportId}.pdf`
+		link.style.display = 'none'
+
+		document.body.appendChild(link)
+		link.click()
+		document.body.removeChild(link)
+		window.URL.revokeObjectURL(blobUrl)
+	} catch (err) {
+		alert('Ошибка при скачивании PDF')
+		console.error(err)
+	}
+}
 
 const AllSoldiers: React.FC = () => {
 	const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -66,11 +102,17 @@ const AllSoldiers: React.FC = () => {
 											</span>
 										</span>
 										<div className='actions'>
-											<button title='Предпросмотр'>
+											<button
+												onClick={() => handlePreview(r.id)}
+												title='Предпросмотр'
+											>
 												<FaEye className='eye' />
 											</button>
 
-											<button title='Скачать' disabled>
+											<button
+												onClick={() => handleDownload(r.id)}
+												title='Скачать PDF'
+											>
 												<FaDownload className='download' />
 											</button>
 										</div>
