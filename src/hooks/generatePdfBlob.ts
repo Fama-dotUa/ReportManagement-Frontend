@@ -34,8 +34,14 @@ export const generatePdfBlob = async (
 
 	const recipient = await getUser(data.user.id)
 	const creator = await getUser(data.creator.id)
-	const role =
-		creator.role.name === 'officer' ? 'Дисциплинарный офицер' : 'Сотрудник'
+	const roleMap: Record<string, string> = {
+		officer: 'Дисциплинарный офицер',
+		'comander-officer': 'Командир',
+		general: 'Начальник Генерального штаба',
+	}
+
+	const role = roleMap[creator.role?.name] || 'Сотрудник'
+
 	const startDate = dayjs(data.createdAt)
 	const endDate = startDate.add(data.time_to_free, 'day')
 

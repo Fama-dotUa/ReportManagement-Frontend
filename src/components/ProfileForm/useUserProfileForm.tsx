@@ -11,7 +11,7 @@ const ROLE_OPTIONS = [
 	{ value: 'teacher', label: 'Инструктор' },
 	{ value: 'officer', label: 'Дисциплинарный офицер' },
 	{ value: 'comander_officer', label: 'Командир' },
-	{ value: 'general', label: 'Генерал' },
+	{ value: 'general', label: 'Начальник Генерального штаба' },
 ]
 
 export const useUserProfileForm = (

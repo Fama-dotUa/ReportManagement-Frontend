@@ -156,7 +156,10 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 							onChange={handleChange}
 							required
 						>
-							<option value='Authenticated'>Мясо</option>
+							<option value='Authenticated'>Солдат</option>
+							<option value='universal-soldier'>Универсальный солдат</option>
+							<option value='comander-officer'>Командир</option>
+							<option value='teacher'>Инструктор</option>
 							<option value='officer'>Дисциплиннарный офицер</option>
 						</select>
 					</div>
