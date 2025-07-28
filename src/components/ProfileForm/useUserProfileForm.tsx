@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { FaCheck, FaTimes, FaPencilAlt } from 'react-icons/fa'
+import { FaCheck, FaTimes } from 'react-icons/fa'
 import type { User } from '../../types/User'
 import { useUpdateUser } from '../../hooks/useUpdateUser'
 
@@ -35,9 +35,8 @@ export const useUserProfileForm = (
 
 	const [tempIcon, setTempIcon] = useState<string | null>(null)
 	const [iconFile, setIconFile] = useState<File | null>(null)
-	const isSelfGeneral =
-		formData.id === currentUserId &&
-		(formData.role === 'general' || (formData.role as any)?.type === 'general')
+
+	const isSelf = formData.id === currentUserId
 
 	useEffect(() => {
 		const baseChanged =
@@ -60,12 +59,33 @@ export const useUserProfileForm = (
 		fetchRanks()
 	}, [])
 
-	const handleFieldChange = (field: keyof User, value: string) => {
-		setFormData(prev => ({ ...prev, [field]: value }))
+	const resetForm = () => {
+		setFormData({ ...originalData })
+		setEditFields({})
+		setTempIcon(null)
+		setIconFile(null)
+		setChanged(false)
 	}
 
-	const toggleEdit = (field: keyof User) => {
-		setEditFields(prev => ({ ...prev, [field]: true }))
+	const enableAllEdits = () => {
+		const newEditFields: { [key in keyof User]?: boolean } = {}
+
+		Object.keys(formData).forEach(key => {
+			const typedKey = key as keyof User
+
+			if (
+				formData[typedKey] !== undefined &&
+				!(isSelf && (typedKey === 'role' || typedKey === 'rank'))
+			) {
+				newEditFields[typedKey] = true
+			}
+		})
+
+		setEditFields(newEditFields)
+	}
+
+	const handleFieldChange = (field: keyof User, value: string) => {
+		setFormData(prev => ({ ...prev, [field]: value }))
 	}
 
 	const cancelEdit = (field: keyof User) => {
@@ -182,11 +202,6 @@ export const useUserProfileForm = (
 			) : (
 				<div className='readonly-row'>
 					<h2 className={customClass}>{formData[field] || '—'}</h2>
-					{editable && (
-						<button type='button' onClick={() => toggleEdit(field)}>
-							<FaPencilAlt />
-						</button>
-					)}
 				</div>
 			)}
 		</div>
@@ -226,11 +241,6 @@ export const useUserProfileForm = (
 			) : (
 				<div className='readonly-row'>
 					<h2>{formData[field] || '—'}</h2>
-					{editable && !isSelfGeneral && (
-						<button type='button' onClick={() => toggleEdit(field)}>
-							<FaPencilAlt />
-						</button>
-					)}
 				</div>
 			)}
 		</div>
@@ -270,11 +280,6 @@ export const useUserProfileForm = (
 				) : (
 					<div className='readonly-row'>
 						<h2>{currentLabel}</h2>
-						{editable && !isSelfGeneral && (
-							<button type='button' onClick={() => toggleEdit('role')}>
-								<FaPencilAlt />
-							</button>
-						)}
 					</div>
 				)}
 			</div>
@@ -290,9 +295,12 @@ export const useUserProfileForm = (
 		formData,
 		handleClose,
 		handleSubmit,
+		enableAllEdits,
 		changed,
+		isSelf,
 		ranks,
 		renderTextField,
+		resetForm,
 		renderSelectField,
 		renderRoleField,
 		editable,

@@ -14,7 +14,7 @@ const RightPanel: React.FC = () => {
 	const [searchQuery, setSearchQuery] = useState('')
 	const filteredUsers = useSearch(users, searchQuery)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
-	const [isOfficer, setIsOfficer] = useState<boolean>(true)
+	const [isGeneral, setIsGeneral] = useState<boolean>(true)
 	const { updateUser } = useUpdateUser(currentUserId)
 	const { role } = useAuth()
 	const [creating, setCreating] = useState(false)
@@ -43,9 +43,9 @@ const RightPanel: React.FC = () => {
 	}
 	useEffect(() => {
 		if (role === 'general') {
-			setIsOfficer(true)
+			setIsGeneral(true)
 		} else {
-			setIsOfficer(false)
+			setIsGeneral(false)
 		}
 	}, [role])
 
@@ -74,7 +74,7 @@ const RightPanel: React.FC = () => {
 				))}
 			</ul>
 
-			{isOfficer && (
+			{isGeneral && (
 				<button className='add-soldier' onClick={() => setCreating(true)}>
 					Добавить солдата
 				</button>
@@ -90,7 +90,7 @@ const RightPanel: React.FC = () => {
 			{selectedUser && (
 				<UserProfileModal
 					user={selectedUser}
-					editable={isOfficer}
+					editable={isGeneral || selectedUser.id === currentUserId}
 					onSubmit={handleUpdate}
 					onClose={() => setSelectedUser(null)}
 				/>

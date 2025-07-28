@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { FaPencilAlt } from 'react-icons/fa'
+import { IoCloseSharp } from 'react-icons/io5'
 import './UserProfileForm.css'
 import AvatarUploadModal from '../AvatarUploadModal'
 import { useUserProfileForm } from './useUserProfileForm'
+import { RiLockPasswordFill } from 'react-icons/ri'
 import { useUsers } from '../../hooks/useUsers'
 import type { User } from '../../types/User'
 
@@ -20,6 +22,7 @@ const UserProfileForm: React.FC<Props> = ({
 	onClose,
 }) => {
 	const { currentUserId } = useUsers()
+	const [editOk, setEditOk] = useState(false)
 	const [showAvatarModal, setShowAvatarModal] = useState(false)
 
 	const {
@@ -31,8 +34,11 @@ const UserProfileForm: React.FC<Props> = ({
 		renderSelectField,
 		renderRoleField,
 		ranks,
+		isSelf,
 		tempIcon,
 		applyTempIcon,
+		resetForm,
+		enableAllEdits,
 	} = useUserProfileForm(
 		user,
 		editable,
@@ -43,12 +49,48 @@ const UserProfileForm: React.FC<Props> = ({
 
 	return (
 		<form onSubmit={handleSubmit} className='user-profile-form'>
+			{(editable || isSelf) && (
+				<button
+					type='button'
+					className='edit-button fixed'
+					onClick={async () => {
+						if (!editOk) {
+							setEditOk(true)
+							enableAllEdits()
+						} else {
+							if (changed) {
+								const confirm = window.confirm(
+									'Вы внесли изменения. Они будут потеряны. Продолжить?'
+								)
+								if (!confirm) return
+							}
+							setEditOk(false)
+							resetForm()
+						}
+					}}
+				>
+					<FaPencilAlt />
+				</button>
+			)}
+			{isSelf && (
+				<button
+					type='button'
+					className='edit-password-button fixed'
+					onClick={() => {
+						// Замени на открытие модалки или переход
+						alert('Открытие окна смены пароля')
+					}}
+				>
+					<RiLockPasswordFill />
+				</button>
+			)}
+
 			<button
 				type='button'
 				className='close-button fixed'
 				onClick={handleClose}
 			>
-				×
+				<IoCloseSharp />
 			</button>
 			<div className='form-grid'>
 				<div className='avatar-block'>
@@ -57,9 +99,10 @@ const UserProfileForm: React.FC<Props> = ({
 							src={tempIcon || formData.icon || '/default-avatar.png'}
 							alt='avatar'
 							className='avatar-img'
+							loading='lazy'
 						/>
 
-						{editable && (
+						{editOk && (
 							<button
 								type='button'
 								id='edit-avatar-button'
@@ -77,12 +120,11 @@ const UserProfileForm: React.FC<Props> = ({
 					{renderRoleField()}
 				</div>
 			</div>
-			{editable && (
+			{editOk && (
 				<button type='submit' disabled={!changed}>
 					Сохранить
 				</button>
 			)}
-
 			{showAvatarModal && (
 				<AvatarUploadModal
 					initialImage={tempIcon || formData.icon}
