@@ -190,11 +190,13 @@
 	font-size: 16px;
 	color: #333;
 	padding: 2px;
-	transition: color 0.2s ease-in-out;
+	box-shadow: none;
+	transition: color 0.3s ease-in-out, transform 0.25s ease-in-out;
 }
 
 .edit-actions button:hover {
 	color: #007bff;
+	transform: scale(1.2);
 }
 
 /* Кнопка сохранения */
@@ -207,7 +209,7 @@
 	border-radius: 4px;
 	font-size: 15px;
 	cursor: pointer;
-	transition: background 0.3s ease;
+	transition: background 0.3s ease, transform 0.25s ease;
 	margin-top: 1rem;
 }
 

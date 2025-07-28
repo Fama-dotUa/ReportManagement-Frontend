@@ -3,6 +3,7 @@ import './CreateSoldier.css'
 import { FaPencilAlt } from 'react-icons/fa'
 import AvatarUploadModal from '../AvatarUploadModal'
 import type { User } from '../../types/User'
+import { IoCloseSharp } from 'react-icons/io5'
 
 type Props = {
 	onClose: () => void
@@ -85,7 +86,7 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 		<div className='create-soldier-overlay'>
 			<form onSubmit={handleSubmit} className='create-soldier-form'>
 				<button className='close-button' type='button' onClick={onClose}>
-					×
+					<IoCloseSharp />
 				</button>
 
 				<div className='create-soldier-grid'>

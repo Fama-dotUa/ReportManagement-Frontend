@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
+import { IoCloseSharp } from 'react-icons/io5'
 import './AvatarUploadModal.css'
 
 type Props = {
@@ -39,7 +40,7 @@ const AvatarUploadModal: React.FC<Props> = ({
 		<div className='avatar-upload-modal__overlay'>
 			<div className='avatar-upload-modal__content'>
 				<button className='avatar-upload-modal__close' onClick={onClose}>
-					×
+					<IoCloseSharp />
 				</button>
 				<h3 className='avatar-upload-modal__title'>Загрузка аватарки</h3>
 				<div
