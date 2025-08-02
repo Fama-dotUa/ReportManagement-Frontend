@@ -5,4 +5,5 @@ export type User = {
 	icon?: string
 	rank?: string
 	role?: string
+	Description?: string
 }

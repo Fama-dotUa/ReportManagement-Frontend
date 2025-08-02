@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { use, useState } from 'react'
 import { FaPencilAlt } from 'react-icons/fa'
 import { IoCloseSharp } from 'react-icons/io5'
 import './UserProfileForm.css'
@@ -8,7 +8,9 @@ import { RiLockPasswordFill } from 'react-icons/ri'
 import { useUsers } from '../../hooks/useUsers'
 import type { User } from '../../types/User'
 import ChangePasswordModal from '../ChangePassword/ChangePasswordModal'
-
+import { IoIosInformationCircleOutline } from 'react-icons/io'
+import ProfileInfoPanel from '../ProfileInfoPanel/ProfileInfoPanel'
+import { useAuth } from '../../hooks/useAuth'
 type Props = {
 	user: User
 	editable?: boolean
@@ -23,9 +25,11 @@ const UserProfileForm: React.FC<Props> = ({
 	onClose,
 }) => {
 	const { currentUserId } = useUsers()
+	const { token } = useAuth()
 	const [editOk, setEditOk] = useState(false)
 	const [showAvatarModal, setShowAvatarModal] = useState(false)
 	const [showPasswordModal, setShowPasswordModal] = useState(false)
+	const [showInfoPanel, setShowInfoPanel] = useState(false)
 	const {
 		formData,
 		changed,
@@ -74,7 +78,38 @@ const UserProfileForm: React.FC<Props> = ({
 			return false
 		}
 	}
+	const handleEditDescription = async (newDescription: any) => {
+		if (!token || !user?.id) {
+			alert('Ошибка: Пользователь не авторизован или ID не найден.')
+			return
+		}
 
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_API_URL}/api/users/${user.id}`,
+				{
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${token}`,
+					},
+					body: JSON.stringify({
+						Description: newDescription,
+					}),
+				}
+			)
+
+			if (!response.ok) {
+				throw new Error('Ошибка при сохранении описания.')
+			}
+			alert('Описание успешно сохранено!')
+		} catch (error) {
+			console.error('Ошибка сохранения:', error)
+			alert('Не удалось сохранить описание. Попробуйте еще раз.')
+		}
+	}
+
+	console.log('UserProfileForm rendered with user:', user)
 	return (
 		<>
 			<form onSubmit={handleSubmit} className='user-profile-form'>
@@ -140,6 +175,13 @@ const UserProfileForm: React.FC<Props> = ({
 								</button>
 							)}
 						</div>
+						<button
+							type='button'
+							id='info-button'
+							onClick={() => setShowInfoPanel(!showInfoPanel)}
+						>
+							<IoIosInformationCircleOutline />
+						</button>
 					</div>
 					<div className='info-block'>
 						{renderTextField('', 'username', 'username')}
@@ -170,6 +212,24 @@ const UserProfileForm: React.FC<Props> = ({
 					onClose={() => setShowPasswordModal(false)}
 					onSubmit={handlePasswordChange}
 				/>
+			)}
+
+			{showInfoPanel && (
+				<div
+					className='info-panel-overlay'
+					onClick={() => setShowInfoPanel(false)}
+				>
+					<div
+						className='info-panel-container'
+						onClick={e => e.stopPropagation()}
+					>
+						<ProfileInfoPanel
+							soldierDescription={user.Description || ''}
+							onEdit={handleEditDescription}
+							onClose={() => setShowInfoPanel(false)}
+						/>
+					</div>
+				</div>
 			)}
 		</>
 	)

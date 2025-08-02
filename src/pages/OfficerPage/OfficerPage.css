@@ -61,7 +61,7 @@
 	gap: 20px;
 	width: 100%;
 	max-width: 1400px;
-	height: 600px; /* ограниченная высота */
+	height: 650px; /* ограниченная высота */
 	position: relative;
 	z-index: 1;
 }

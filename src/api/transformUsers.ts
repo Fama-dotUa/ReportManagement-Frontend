@@ -1,3 +1,5 @@
+import { MdDescription } from 'react-icons/md'
+
 // utils/transformUsers.ts
 type RawUser = {
 	id: number
@@ -22,5 +24,6 @@ export const transformUsers = (data: any[]) => {
 		rank: user.rank?.name ?? '',
 		icon: user.Icon?.url ? API_URL + user.Icon.url : '',
 		role: user.role?.type || 'authenticated',
+		Description: user.Description || '',
 	}))
 }

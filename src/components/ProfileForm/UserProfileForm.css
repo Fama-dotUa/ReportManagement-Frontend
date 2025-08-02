@@ -245,3 +245,18 @@
 	color: rgba(193, 137, 18, 0.83);
 	cursor: 'pointer';
 }
+
+#info-button {
+	padding: 0;
+	font-size: 1.5rem;
+	background: none;
+	color: rgba(0, 0, 0, 0.83);
+	cursor: pointer;
+	transition: color 0.3s ease-in-out, transform 0.25s ease-in-out;
+	box-shadow: none;
+}
+
+#info-button:hover {
+	color: rgba(0, 0, 0, 0.9);
+	transform: scale(1.3);
+}
