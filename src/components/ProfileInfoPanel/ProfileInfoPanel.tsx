@@ -40,7 +40,7 @@ const ProfileInfoPanel: React.FC<InfoPanelProps> = ({
 	return (
 		<div className='info-panel'>
 			<div className='info-panel-header'>
-				<h2>Описание солдата</h2>
+				<h2>Профиль</h2>
 				<div className='header-buttons'>
 					{isGeneral && !isEditing && (
 						<button className='info-button' onClick={handleEditClick}>
