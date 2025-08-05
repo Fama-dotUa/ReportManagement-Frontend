@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 export function useAuth() {
 	const token = localStorage.getItem('jwt')
 	const rawUser = localStorage.getItem('user')
-
+	const [CR, setCR] = useState<number>(0)
 	const user = useMemo(() => {
 		try {
 			return rawUser ? JSON.parse(rawUser) : null
@@ -31,6 +31,7 @@ export function useAuth() {
 				if (!res.ok) throw new Error('Не удалось получить роль')
 
 				const data = await res.json()
+				setCR(data.CR || 0)
 				const roleName = data.role?.name || null
 
 				if (roleName) {
@@ -50,5 +51,6 @@ export function useAuth() {
 		token,
 		user,
 		role,
+		CR,
 	}
 }

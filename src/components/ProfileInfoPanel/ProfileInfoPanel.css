@@ -91,7 +91,8 @@
 	color: #fff;
 	font-size: 1em;
 	resize: vertical;
-	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: auto;
 	transition: border-color 0.3s ease;
 }
 

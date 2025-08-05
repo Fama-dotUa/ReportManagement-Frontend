@@ -1,0 +1,196 @@
+/* src/components/SpecialistsPage/SpecialistsPage.css */
+
+/* Главный контейнер магазина должностей */
+.shop-container {
+	max-width: 1280px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #2d3748;
+	border-radius: 0.75rem;
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+		0 8px 10px -6px rgba(0, 0, 0, 0.1);
+	padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+	.shop-container {
+		padding: 2rem;
+	}
+}
+
+@media (min-width: 1024px) {
+	.shop-container {
+		padding: 2.5rem;
+	}
+}
+
+/* Заголовок страницы и кнопка "Назад" */
+.page-header {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 2rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid #4a5568;
+}
+
+@media (min-width: 640px) {
+	.page-header {
+		flex-direction: row;
+	}
+	.page-header h1 {
+		margin-bottom: 0;
+	}
+}
+
+.page-header h1 {
+	font-size: 2.25rem;
+	font-weight: 700;
+	color: #63b3ed;
+	margin-bottom: 1rem;
+}
+
+.back-button {
+	background-color: #4a5568;
+	color: white;
+	font-weight: 700;
+	padding: 0.5rem 1.5rem;
+	border-radius: 9999px;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -2px rgba(0, 0, 0, 0.1);
+	transition: background-color 300ms;
+	text-decoration: none;
+	cursor: pointer;
+	border: none;
+}
+
+.back-button:hover {
+	background-color: #424e64;
+}
+
+/* Основное содержимое */
+.main-content {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 2rem;
+}
+
+/* Секция */
+.section {
+	background-color: #4a5568;
+	padding: 1.5rem;
+	border-radius: 0.75rem;
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+		0 4px 6px -4px rgba(0, 0, 0, 0.1);
+}
+
+.section h2 {
+	font-size: 1.875rem;
+	font-weight: 700;
+	margin-bottom: 1.5rem;
+	padding-bottom: 0.75rem;
+	border-bottom: 1px solid #6b7280;
+}
+
+/* Стилизация заголовков секций */
+.section-sky h2 {
+	color: #7dd3fc;
+}
+.section-orange h2 {
+	color: #fbbf24;
+}
+.section-emerald h2 {
+	color: #34d399;
+}
+
+/* Контейнер для карточек */
+.cards-grid {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+	.cards-grid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+@media (min-width: 1024px) {
+	.cards-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+
+/* Карточка должности */
+.purchasable-card {
+	background-color: #2d3748;
+	padding: 1.25rem;
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -2px rgba(0, 0, 0, 0.1);
+	border: 1px solid #4a5568;
+	transition: border-color 300ms;
+	display: flex;
+	flex-direction: column;
+}
+
+/* Hover эффекты для карточек */
+.purchasable-card.hover-sky:hover {
+	border-color: #0ea5e9;
+}
+.purchasable-card.hover-orange:hover {
+	border-color: #f97316;
+}
+.purchasable-card.hover-emerald:hover {
+	border-color: #10b981;
+}
+/* Старый цвет для обратной совместимости */
+.purchasable-card.hover-blue:hover {
+	border-color: #4299e1;
+}
+
+.purchasable-card h3 {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: white;
+	margin-bottom: 0.5rem;
+}
+
+.purchasable-card p {
+	color: #a0aec0;
+	font-size: 0.875rem;
+	margin-bottom: 1rem;
+	flex-grow: 1;
+}
+
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: auto;
+}
+
+.card-footer span {
+	font-size: 1.125rem;
+	font-weight: 700;
+	color: #f6e05e;
+}
+
+.buy-button {
+	background-color: #2563eb;
+	color: white;
+	font-weight: 700;
+	padding: 0.5rem 1rem;
+	border-radius: 9999px;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -2px rgba(0, 0, 0, 0.1);
+	transition: background-color 300ms;
+	cursor: pointer;
+	border: none;
+}
+
+.buy-button:hover {
+	background-color: #1d4ed8;
+}

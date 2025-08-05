@@ -1,0 +1,215 @@
+/* src/components/CosmeticsPage/CosmeticsPage.css */
+
+/* Стили для .shop-container и .header можно переиспользовать из других файлов, 
+   но для изоляции компонента добавим их сюда. В реальном проекте их 
+   можно вынести в общие классы. */
+.shop-container {
+	max-width: 1280px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #2d3748;
+	border-radius: 0.75rem;
+	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+		0 8px 10px -6px rgba(0, 0, 0, 0.1);
+	padding: 1.5rem;
+}
+
+@media (min-width: 640px) {
+	.shop-container {
+		padding: 2rem;
+	}
+}
+@media (min-width: 1024px) {
+	.shop-container {
+		padding: 2.5rem;
+	}
+}
+
+.page-header h1 {
+	color: #a78bfa; /* text-purple-400 */
+}
+
+/* Основное содержимое: Разделы косметики */
+.main-content {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 2rem;
+}
+
+/* Секция */
+.section-green h2 {
+	color: #48bb78;
+}
+.section-blue h2 {
+	color: #63b3ed;
+}
+.section-red h2 {
+	color: #ef4444;
+}
+
+/* Контейнер для карточек косметики */
+.cards-grid.frames-grid {
+	grid-template-columns: repeat(2, 1fr);
+}
+.cards-grid.profile-backgrounds-grid {
+	grid-template-columns: repeat(2, 1fr);
+}
+.cards-grid.chevron-backgrounds-grid {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 768px) {
+	.cards-grid.frames-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.cards-grid.profile-backgrounds-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.cards-grid.chevron-backgrounds-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+}
+@media (min-width: 1024px) {
+	.cards-grid.profile-backgrounds-grid {
+		grid-template-columns: repeat(3, 1fr);
+	}
+	.cards-grid.frames-grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
+	.cards-grid.chevron-backgrounds-grid {
+		grid-template-columns: repeat(4, 1fr);
+	}
+}
+
+/* Карточка косметики */
+.cosmetic-card {
+	background-color: #2d3748;
+	padding: 1.25rem;
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -2px rgba(0, 0, 0, 0.1);
+	border: 1px solid #4a5568;
+	transition: border-color 300ms;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+}
+
+.cosmetic-card.hover-green:hover {
+	border-color: #48bb78;
+}
+.cosmetic-card.hover-blue:hover {
+	border-color: #4299e1;
+}
+.cosmetic-card.hover-red:hover {
+	border-color: #ef4444;
+}
+
+.cosmetic-card h3 {
+	font-size: 1.25rem;
+	font-weight: 600;
+	color: white;
+	margin-bottom: 0.5rem;
+}
+
+/* Превью рамки */
+.cosmetic-card .frame-preview {
+	width: 6rem;
+	height: 6rem;
+	border-radius: 9999px;
+	margin: 0 auto 0.75rem;
+	border-width: 4px;
+	border-style: solid;
+	object-fit: cover;
+	border-color: #48bb78; /* default */
+}
+.cosmetic-card .frame-preview.metal {
+	border-color: #a0aec0;
+}
+.cosmetic-card .frame-preview.gold {
+	border-color: #f6e05e;
+}
+
+/* Превью фона профиля */
+.cosmetic-card .profile-bg-preview {
+	width: 100%;
+	height: 6rem;
+	object-fit: cover;
+	border-radius: 0.375rem;
+	margin-bottom: 0.75rem;
+	border: 2px solid #a0aec0;
+}
+
+/* Превью фона шеврона */
+.cosmetic-card .chevron-bg-preview {
+	width: 8rem;
+	height: 4rem;
+	border-radius: 0.375rem;
+	margin: 0 auto 0.75rem;
+	border: 2px solid #a0aec0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 0.75rem;
+	font-weight: 700;
+}
+.cosmetic-card .chevron-bg-preview.tricolor {
+	background-image: linear-gradient(to right, #ef4444, white, #3b82f6);
+	color: black;
+}
+.cosmetic-card .chevron-bg-preview.khaki {
+	background-color: #38a169;
+	color: white;
+}
+.cosmetic-card .chevron-bg-preview.digital {
+	background-color: rgba(17, 24, 39, 0.7);
+	background-image: linear-gradient(
+		45deg,
+		#2a2a2a 25%,
+		transparent 25%,
+		transparent 50%,
+		#2a2a2a 50%,
+		#2a2a2a 75%,
+		transparent 75%,
+		transparent
+	);
+	background-size: 10px 10px;
+	color: white;
+}
+
+.cosmetic-card p {
+	color: #a0aec0;
+	font-size: 0.875rem;
+	margin-bottom: 1rem;
+	flex-grow: 1;
+}
+
+.cosmetic-card-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: auto;
+}
+
+.cosmetic-card-footer span {
+	font-size: 1.125rem;
+	font-weight: 700;
+	color: #f6e05e;
+}
+
+/* Кнопка покупки специфична для этой страницы */
+.cosmetic-card .buy-button {
+	background-color: #9f7aea;
+	color: white;
+	font-weight: 700;
+	padding: 0.5rem 1rem;
+	border-radius: 9999px;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -2px rgba(0, 0, 0, 0.1);
+	transition: background-color 300ms;
+	cursor: pointer;
+	border: none;
+}
+.cosmetic-card .buy-button:hover {
+	background-color: #805ad5;
+}

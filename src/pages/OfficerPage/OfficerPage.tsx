@@ -6,11 +6,13 @@ import AllSoldiers from '../../components/CenterForms/AllSoldiers'
 import ReportForm from '../../components/CenterForms/ReportForm'
 import './OfficerPage.css'
 import { useAuth } from '../../hooks/useAuth'
+import { IoCloseSharp } from 'react-icons/io5'
+import { IoNotifications } from 'react-icons/io5'
 
 const OfficerPage: React.FC = () => {
 	const [activeTab, setActiveTab] = useState<'all' | 'report'>('all')
 	const navigate = useNavigate()
-	const { role } = useAuth()
+	const { role, CR } = useAuth()
 	const handleLogout = () => {
 		const confirmLogout = window.confirm('Вы действительно хотите выйти?')
 		if (confirmLogout) {
@@ -24,26 +26,42 @@ const OfficerPage: React.FC = () => {
 			<div className='blur-background'></div>
 
 			<div className='officer-nav'>
-				<button
-					className={activeTab === 'all' ? 'nav-button active' : 'nav-button'}
-					onClick={() => setActiveTab('all')}
-				>
-					Все солдаты
-				</button>
-				{role && ['officer', 'general', 'comander-officer'].includes(role) && (
-					<button
-						className={
-							activeTab === 'report' ? 'nav-button active' : 'nav-button'
-						}
-						onClick={() => setActiveTab('report')}
-					>
-						Создать рапорт
-					</button>
-				)}
+				<div className='left-nav'>
+					<div className='menu'>STV_sqúad</div>
+				</div>
 
-				<button className='nav-button' onClick={handleLogout}>
-					Выход
-				</button>
+				<div className='center-nav'>
+					<button
+						className={activeTab === 'all' ? 'nav-button active' : 'nav-button'}
+						onClick={() => setActiveTab('all')}
+					>
+						Все солдаты
+					</button>
+					{role &&
+						['officer', 'general', 'comander-officer'].includes(role) && (
+							<button
+								className={
+									activeTab === 'report' ? 'nav-button active' : 'nav-button'
+								}
+								onClick={() => setActiveTab('report')}
+							>
+								Создать рапорт
+							</button>
+						)}
+					<button className='nav-button' onClick={() => navigate('/store')}>
+						Магазин
+					</button>
+				</div>
+
+				<div className='right-nav'>
+					<label className='label-CR'>CR: {CR}</label>
+					<button className='nav-button Notifications-nav-button'>
+						<IoNotifications />
+					</button>
+					<button className='nav-button exit-nav-button' onClick={handleLogout}>
+						<IoCloseSharp />
+					</button>
+				</div>
 			</div>
 
 			<div className='officer-layout'>
