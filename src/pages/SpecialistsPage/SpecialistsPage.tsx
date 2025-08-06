@@ -97,12 +97,6 @@ const sectionsData: {
 ]
 
 export const SpecialistsPage: React.FC = () => {
-	const handleGoBack = () => {
-		alert('Возвращаемся в главный магазин...')
-		// В реальном приложении здесь будет логика роутинга, например:
-		// history.push('/shop');
-	}
-
 	const handleBuy = (id: Item['id']) => {
 		// Находим товар во всех секциях для получения информации о нем
 		const allItems = sectionsData.flatMap(s => s.items)
@@ -114,7 +108,7 @@ export const SpecialistsPage: React.FC = () => {
 
 	return (
 		<div className='shop-container'>
-			<PageHeader title='Должности и Обучение' onBack={handleGoBack} />
+			<PageHeader title='Должности и Обучение' />
 
 			<main className='main-content'>
 				{sectionsData.map(section => (

@@ -14,7 +14,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
 	theme,
 	children,
 }) => {
-	const sectionClassName = `section section-${theme}`
+	const sectionClassName = `Contentsection section-${theme}`
 
 	return (
 		<section className={sectionClassName}>
