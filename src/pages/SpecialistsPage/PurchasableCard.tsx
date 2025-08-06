@@ -9,7 +9,7 @@ export interface Item {
 	price: number
 }
 
-type HoverColor = 'sky' | 'orange' | 'emerald' | 'blue' | 'purple'
+export type HoverColor = 'sky' | 'orange' | 'emerald' | 'blue' | 'purple'
 
 interface PurchasableCardProps {
 	item: Item

@@ -79,7 +79,8 @@
 /* Секция */
 .Contentsection {
 	background-color: #4a5568;
-	padding: 1.5rem;
+	position: relative;
+	padding: 1.5rem 3.8rem;
 	border-radius: 0.75rem;
 	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
 		0 4px 6px -4px rgba(0, 0, 0, 0.1);
@@ -193,4 +194,97 @@
 
 .buy-button:hover {
 	background-color: #1d4ed8;
+}
+
+/* CSS для компонента ContentSection */
+
+.section-wrapper {
+	position: relative; /* Необходимо для позиционирования кнопок */
+}
+
+.scroll-buttons {
+	display: flex;
+	justify-content: flex-end; /* Располагаем кнопки справа */
+	gap: 0.5rem;
+	margin-bottom: 1rem; /* Отступ от карточек */
+}
+
+.scroll-button {
+	position: absolute;
+	background-color: #e2e8f07f;
+	color: #131313;
+	border: 1px solid #4a5568;
+	border-radius: 0.375rem;
+	width: 40px;
+	height: 80px;
+	font-size: 2.5rem;
+	font-weight: bold;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out,
+		transform 0.2s;
+}
+
+.scroll-button:hover {
+	background-color: #cbd5e1;
+	color: #1a202c;
+}
+
+.scroll-button:active {
+	transform: scale(0.95);
+}
+
+.scroll-button.left {
+	left: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 0 !important;
+}
+.scroll-button.right {
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+	padding: 0 !important;
+}
+.scroll-button-icon.left {
+	margin-left: 10px;
+}
+
+.scrollable-content {
+	display: flex; /* Используем flexbox для расположения элементов в ряд */
+	gap: 1.5rem; /* Расстояние между карточками */
+	overflow-x: auto; /* Включаем горизонтальный скролл */
+	scroll-behavior: smooth; /* Плавная прокрутка */
+	padding-bottom: 1rem; /* Добавляем отступ снизу, чтобы скроллбар не прилипал */
+}
+
+/* Скрываем стандартный скроллбар */
+.scrollable-content::-webkit-scrollbar {
+	display: none;
+}
+
+.scrollable-content {
+	-ms-overflow-style: none; /* IE и Edge */
+	scrollbar-width: none; /* Firefox */
+}
+
+/* Важно: заменяем grid на flex в cards-grid, когда он внутри scrollable-content */
+/* Этот класс у нас уже есть, но теперь он будет внутри .scrollable-content */
+.cards-grid {
+	display: flex;
+	flex-wrap: nowrap; /* Запрещаем перенос на новую строку */
+}
+
+/* Чтобы карточки не сжимались */
+.cards-grid > * {
+	flex-shrink: 0;
+	width: 300px; /* Задаем фиксированную ширину карточкам, можно настроить */
+}
+
+@media (max-width: 640px) {
+	.cards-grid > * {
+		width: 250px;
+	}
 }

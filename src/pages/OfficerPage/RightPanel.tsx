@@ -63,10 +63,22 @@ const RightPanel: React.FC = () => {
 					<li key={user.id}>
 						<button
 							onClick={() => handleClick(user)}
-							style={{
-								backgroundColor:
-									user.id === currentUserId ? '#d0f0c0' : 'transparent',
-							}}
+							style={
+								// 1. Сначала проверяем на совпадение с особым ID для фото
+								user.id === 20
+									? {
+											// Если ДА - ставим фото как фон
+											backgroundImage: `url('/SanyaChist.png')`,
+											backgroundSize: 'cover',
+											backgroundPosition: 'center',
+											color: 'white', // Для читаемости текста на фоне фото
+									  }
+									: // 2. Если НЕТ - проверяем, совпадает ли user.id с ID залогиненного пользователя
+									user.id === currentUserId
+									? { backgroundColor: '#d0f0c0' } // Если ДА - ставим зелёный фон
+									: // 3. Если НИ ОДНО из условий не выполнено - оставляем стандартный прозрачный фон
+									  { backgroundColor: 'transparent' }
+							}
 						>
 							{user.username} | @{user.discord}
 						</button>

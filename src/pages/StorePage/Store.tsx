@@ -76,7 +76,7 @@ export const Store: React.FC = () => {
 			<main className='main-content'>
 				<section className='sectionstore section-positions'>
 					<h2>Должности и Обучение</h2>
-					<div className='cards-grid positions-grid'>
+					<div className='cards-grid-shop positions-grid'>
 						{featuredPositions.map((item: PositionItem) => {
 							const cardItem: ShopItem = {
 								id: item.id,
