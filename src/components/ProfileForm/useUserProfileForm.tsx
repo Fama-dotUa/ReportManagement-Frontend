@@ -37,6 +37,8 @@ export const useUserProfileForm = (
 	const [iconFile, setIconFile] = useState<File | null>(null)
 
 	const isSelf = formData.id === currentUserId
+	const [isLoading, setIsLoading] = useState(false)
+	const [error, setError] = useState<string | null>(null)
 
 	useEffect(() => {
 		const baseChanged =
@@ -96,14 +98,15 @@ export const useUserProfileForm = (
 	const confirmEdit = (field: keyof User) => {
 		setEditFields(prev => ({ ...prev, [field]: false }))
 	}
-	const deleteOldIcon = async (iconId: number) => {
+	const deleteOldIcon = async (iconId: number): Promise<boolean> => {
 		const token = localStorage.getItem('jwt')
-		await fetch(`${API_URL}/api/upload/files/${iconId}`, {
+		const response = await fetch(`${API_URL}/api/upload/files/${iconId}`, {
 			method: 'DELETE',
 			headers: {
 				Authorization: `Bearer ${token}`,
 			},
 		})
+		return response.ok
 	}
 	const getCurrentUserIconId = async (
 		userId: number
@@ -120,42 +123,69 @@ export const useUserProfileForm = (
 	}
 
 	const saveChanges = async () => {
-		if (iconFile && formData.id) {
-			const token = localStorage.getItem('jwt')
+		setError(null)
+		setIsLoading(true)
 
-			const oldIconId = await getCurrentUserIconId(formData.id)
-			if (oldIconId) {
-				await deleteOldIcon(oldIconId)
+		try {
+			let newIconId: number | null = null
+
+			if (iconFile && formData.id) {
+				const MAX_SIZE_MB = 10
+				if (iconFile.size > MAX_SIZE_MB * 1024 * 1024) {
+					alert(`Файл слишком большой! Максимум ${MAX_SIZE_MB} МБ.`)
+					setIsLoading(false)
+					return
+				}
+
+				const token = localStorage.getItem('jwt')
+				const form = new FormData()
+				form.append('files', iconFile)
+				form.append('ref', 'plugin::users-permissions.user')
+				form.append('refId', formData.id.toString())
+				form.append('field', 'icon')
+
+				const uploadResponse = await fetch(`${API_URL}/api/upload`, {
+					method: 'POST',
+					headers: { Authorization: `Bearer ${token}` },
+					body: form,
+				})
+
+				if (!uploadResponse.ok) {
+					throw new Error('Не удалось загрузить новую иконку.')
+				}
+
+				const uploadedFiles = await uploadResponse.json()
+				newIconId = uploadedFiles[0]?.id
 			}
 
-			const form = new FormData()
-			form.append('files', iconFile)
-			form.append('ref', 'plugin::users-permissions.user')
-			form.append('refId', formData.id.toString())
-			form.append('field', 'icon')
-			form.append('source', 'plugin::users-permissions')
+			if (newIconId) {
+				const oldIconId = await getCurrentUserIconId(formData.id)
+				if (oldIconId) {
+					await deleteOldIcon(oldIconId)
+				}
+			}
 
-			await fetch(`${API_URL}/api/upload`, {
-				method: 'POST',
-				headers: { Authorization: `Bearer ${token}` },
-				body: form,
-			})
-		}
+			const cleanedData = { ...formData }
+			delete cleanedData.icon
 
-		// 3. Сохраняем пользователя (без icon)
-		const cleanedData = { ...formData }
-		delete cleanedData.icon
+			const result = await updateUser(cleanedData)
 
-		const result = await updateUser(cleanedData)
-
-		if (result.success) {
-			setOriginalData({ ...formData })
-			setTempIcon(null)
-			setIconFile(null)
-			setChanged(false)
-			onSubmitCallback?.({ ...formData })
-		} else {
-			alert(result.message || 'Не удалось сохранить изменения')
+			if (result.success) {
+				setOriginalData({ ...formData })
+				setTempIcon(null)
+				setIconFile(null)
+				setChanged(false)
+				onSubmitCallback?.({ ...formData })
+			} else {
+				throw new Error(
+					result.message || 'Не удалось сохранить изменения пользователя'
+				)
+			}
+		} catch (e: any) {
+			setError(e.message)
+			alert(e.message)
+		} finally {
+			setIsLoading(false)
 		}
 	}
 

@@ -202,35 +202,103 @@
 	background-color: #1d4ed8; /* hover:bg-blue-700 */
 }
 
-/* Секция для перехода к Косметике */
+/* Добавьте или измените эти стили в файле Store.css */
+
+/* Изменяем существующий стиль, чтобы он подходил под новый макет */
 .section-cosmetics-link {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
 	align-items: center;
 	text-align: center;
+	gap: 0.5rem; /* Добавляем отступ между элементами */
+}
+.section-cosmetics-link h2 {
+	font-size: 1.875rem; /* text-3xl */
+	font-weight: 700; /* font-bold */
+	color: #a78bfa; /* text-purple-400 */
+	margin-bottom: 0; /* mb-2 */
+}
+/* Новый контейнер для карточек-превью */
+.cosmetic-previews-container {
+	display: flex;
+	justify-content: space-around;
+	width: 100%;
+	gap: 1.5rem; /* Отступ между карточками */
+	margin-top: 1rem;
 }
 
-.section-cosmetics-link p {
-	margin-bottom: 1.5rem; /* mb-6 */
+/* Стили для каждой карточки-превью */
+.cosmetic-preview-item {
+	background-color: #2d3748; /* bg-gray-800 */
+	padding: 1rem;
+	border-radius: 0.75rem; /* rounded-xl */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 1; /* Чтобы карточки занимали равное пространство */
+	border: 1px solid #4a5568;
+	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.section-cosmetics-link button {
+.cosmetic-preview-item:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 10px 15px -3px rgba(167, 139, 250, 0.1),
+		0 4px 6px -4px rgba(167, 139, 250, 0.1);
+}
+
+.cosmetic-preview-item img {
+	width: 140px;
+	height: 140px;
+	object-fit: cover;
+	border: 3px solid #a78bfa; /* border-purple-400 */
+	margin-bottom: 1rem;
+}
+
+.cosmetic-preview-item h3 {
+	font-size: 1.25rem; /* text-xl */
+	font-weight: 600;
+	color: white;
+	margin: 0 0 0.5rem 0;
+}
+
+.cosmetic-preview-item p {
+	font-size: 0.875rem; /* text-sm */
+	color: #a0aec0; /* text-gray-400 */
+	flex-grow: 1; /* Чтобы текст занимал место и футер был внизу */
+	margin-bottom: 1rem;
+}
+
+.preview-price {
+	font-size: 1rem;
+	font-weight: 700;
+	color: #f6e05e; /* text-yellow-300 */
+}
+
+/* Новая кнопка "Увидеть больше" */
+.see-more-button {
 	background-color: #9f7aea; /* bg-purple-600 */
 	color: white;
 	font-weight: 700; /* font-bold */
-	padding: 0.75rem 2rem; /* py-3 px-8 */
+	padding: 0.6rem 1.8rem;
 	border-radius: 9999px; /* rounded-full */
 	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
 		0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-lg */
-	transition: background-color 300ms;
-	font-size: 1.25rem; /* text-xl */
+	transition: background-color 300ms ease-in-out, transform 300ms ease-in-out;
+	font-size: 1.5rem;
 	cursor: pointer;
 	border: none;
+	margin-top: 1rem; /* Отступ сверху */
 }
 
-.section-cosmetics-link button:hover {
+.see-more-button:hover {
 	background-color: #805ad5; /* hover:bg-purple-700 */
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+	.cosmetic-previews-container {
+		flex-direction: column;
+	}
 }
 
 /* Правая панель для профиля */

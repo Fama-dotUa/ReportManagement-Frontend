@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { ShopHeader } from './ShopHeader'
 import { ShopItemCard, type ShopItem } from './ShopItemCard'
-import { CosmeticsLinkSection } from './CosmeticsLinkSection'
+import { FeaturedCosmeticsSection } from './FeaturedCosmeticsSection'
 import { ProfilePreview } from './ProfilePreview'
 
 import { useAuth } from '../../hooks/useAuth'
@@ -101,7 +101,7 @@ export const Store: React.FC = () => {
 					</div>
 				</section>
 
-				<CosmeticsLinkSection />
+				<FeaturedCosmeticsSection />
 			</main>
 
 			<ProfilePreview user={profileDataForPreview} />
