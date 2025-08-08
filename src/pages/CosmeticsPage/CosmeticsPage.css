@@ -109,19 +109,16 @@
 	font-size: 1.25rem;
 	font-weight: 600;
 	color: white;
+	height: 4rem;
 	margin-bottom: 0.5rem;
 }
 
 /* Превью рамки */
 .cosmetic-card .frame-preview {
-	width: 6rem;
-	height: 6rem;
-	border-radius: 9999px;
+	width: 140px;
+	height: 140px;
 	margin: 0 auto 0.75rem;
-	border-width: 4px;
-	border-style: solid;
 	object-fit: cover;
-	border-color: #48bb78; /* default */
 }
 .cosmetic-card .frame-preview.metal {
 	border-color: #a0aec0;
@@ -133,7 +130,7 @@
 /* Превью фона профиля */
 .cosmetic-card .profile-bg-preview {
 	width: 100%;
-	height: 6rem;
+	height: 140px;
 	object-fit: cover;
 	border-radius: 0.375rem;
 	margin-bottom: 0.75rem;
@@ -142,7 +139,7 @@
 
 /* Превью фона шеврона */
 .cosmetic-card .chevron-bg-preview {
-	width: 8rem;
+	width: 100%;
 	height: 4rem;
 	border-radius: 0.375rem;
 	margin: 0 auto 0.75rem;
@@ -212,4 +209,15 @@
 }
 .cosmetic-card .buy-button:hover {
 	background-color: #805ad5;
+}
+
+.eye-button {
+	background-color: #4299e1 !important;
+}
+
+.button-icon-cosmeticCard {
+	color: white;
+	font-size: 2rem;
+	padding: 0 !important;
+	margin-top: 0.5rem;
 }

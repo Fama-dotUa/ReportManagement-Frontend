@@ -1,8 +1,6 @@
-// src/components/CosmeticCard/CosmeticCard.tsx
 import React from 'react'
-
-// --- Определяем типы данных для разных видов косметики ---
-
+import { RiShoppingBasketFill } from 'react-icons/ri'
+import { FaEye } from 'react-icons/fa6'
 export type HoverColor = 'green' | 'blue' | 'red'
 
 // Базовый тип
@@ -14,7 +12,7 @@ interface BaseCosmeticItem {
 }
 
 // Типы для каждого вида превью
-interface FrameItem extends BaseCosmeticItem {
+export interface FrameItem extends BaseCosmeticItem {
 	type: 'frame'
 	preview: {
 		imageUrl: string
@@ -22,18 +20,17 @@ interface FrameItem extends BaseCosmeticItem {
 	}
 }
 
-interface ProfileBgItem extends BaseCosmeticItem {
+export interface ProfileBgItem extends BaseCosmeticItem {
 	type: 'profile-bg'
 	preview: {
 		imageUrl: string
 	}
 }
 
-interface ChevronBgItem extends BaseCosmeticItem {
+export interface ChevronBgItem extends BaseCosmeticItem {
 	type: 'chevron-bg'
 	preview: {
-		style: 'tricolor' | 'khaki' | 'digital'
-		text: string
+		imageUrl: string
 	}
 }
 
@@ -75,9 +72,11 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 				)
 			case 'chevron-bg':
 				return (
-					<div className={`chevron-bg-preview ${item.preview.style}`}>
-						{item.preview.text}
-					</div>
+					<img
+						src={item.preview.imageUrl}
+						alt={item.title}
+						className='chevron-bg-preview'
+					/>
 				)
 			default:
 				return null
@@ -91,9 +90,17 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 			<p>{item.description}</p>
 			<div className='cosmetic-card-footer'>
 				<span>{item.price} CR</span>
-				<button className='buy-button' onClick={() => onBuy(item.id)}>
-					Купить
-				</button>
+				<div style={{ display: 'flex', gap: '0.5rem' }}>
+					<button
+						className='buy-button eye-button'
+						onClick={() => onBuy(item.id)}
+					>
+						<FaEye className='button-icon-cosmeticCard' />
+					</button>
+					<button className='buy-button' onClick={() => onBuy(item.id)}>
+						<RiShoppingBasketFill className='button-icon-cosmeticCard' />
+					</button>
+				</div>
 			</div>
 		</div>
 	)

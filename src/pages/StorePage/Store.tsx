@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { ShopHeader } from './ShopHeader'
 import { ShopItemCard, type ShopItem } from './ShopItemCard'
 import { FeaturedCosmeticsSection } from './FeaturedCosmeticsSection'
-import { ProfilePreview } from './ProfilePreview'
 
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -16,7 +15,7 @@ import './Store.css'
 
 export const Store: React.FC = () => {
 	const { groupedData, loading, error } = useGroupedPositions()
-	const { user, CR } = useAuth()
+	const { CR } = useAuth()
 	const navigate = useNavigate()
 
 	const allPositions = useMemo(() => {
@@ -25,32 +24,6 @@ export const Store: React.FC = () => {
 	}, [groupedData])
 
 	const featuredPositions = allPositions.slice(0, 5)
-
-	const profileDataForPreview = useMemo(() => {
-		if (!user) {
-			return {
-				name: 'Гость',
-				rank: 'Неизвестно',
-				avatarUrl: 'https://placehold.co/120x120/cccccc/ffffff?text=?',
-				frameUrl: undefined,
-				backgroundUrl:
-					'https://placehold.co/400x100/4a5568/ffffff?text=Фон+Профиля',
-				chevronText: 'Ваш Шеврон',
-			}
-		}
-
-		return {
-			name: user.username,
-			rank: 'Майор', // Это значение можно будет в будущем получать из данных пользователя
-			// Генерируем аватарку на лету, если она не приходит с бэкенда
-			avatarUrl: `https://ui-avatars.com/api/?name=${user.username}&background=38a169&color=fff&bold=true`,
-			// Эти данные должны приходить из другой коллекции (например, инвентаря пользователя)
-			frameUrl: 'https://placehold.co/128x128/2f4f4f/ffffff?text=Рамка',
-			backgroundUrl:
-				'https://placehold.co/400x100/4a5568/ffffff?text=Ваш+Фон+Профиля',
-			chevronText: 'Ваш Шеврон',
-		}
-	}, [user])
 
 	const handleBuyItem = (id: number) => {
 		const item = allPositions.find(p => p.id === id)
@@ -103,8 +76,6 @@ export const Store: React.FC = () => {
 
 				<FeaturedCosmeticsSection />
 			</main>
-
-			<ProfilePreview user={profileDataForPreview} />
 		</div>
 	)
 }
