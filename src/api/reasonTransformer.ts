@@ -1,10 +1,4 @@
-interface Reason {
-	id: number
-	cipher: string
-	number: number
-	description: string
-}
-
+import type { Reason } from '../intefaces/Reason'
 export function transformReason(item: Reason): { id: number; label: string } {
 	const label = `${item.cipher}-${item.number} | ${item.description}
 	`

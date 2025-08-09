@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { IoCloseSharp } from 'react-icons/io5'
+import { IoNotifications } from 'react-icons/io5'
+import './OfficerPage.css'
+
+import { useAuth } from '../../hooks/useAuth'
+
 import LeftPanel from './LeftPanel'
 import RightPanel from './RightPanel'
 import AllSoldiers from '../../components/CenterForms/AllSoldiers'
 import ReportForm from '../../components/CenterForms/ReportForm'
-import './OfficerPage.css'
-import { useAuth } from '../../hooks/useAuth'
-import { IoCloseSharp } from 'react-icons/io5'
-import { IoNotifications } from 'react-icons/io5'
 
 const OfficerPage: React.FC = () => {
 	const [activeTab, setActiveTab] = useState<'all' | 'report'>('all')

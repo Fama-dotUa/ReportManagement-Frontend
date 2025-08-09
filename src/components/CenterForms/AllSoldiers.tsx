@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
-import SoldierList from './SoldierList'
-import './CenterPanel.css'
 import { FaEye, FaDownload } from 'react-icons/fa'
+import './CenterPanel.css'
+
+import SoldierList from './SoldierList'
+
 import { useReportsBySoldier } from '../../hooks/useReportsBySoldier'
 import { getReportFileUrl } from '../../hooks/getReportFileUrl'
 
 import dayjs from 'dayjs'
+
 const handlePreview = async (reportId: number) => {
 	const url = await getReportFileUrl(reportId)
 	if (url) {
@@ -24,7 +27,7 @@ const handleDownload = async (reportId: number) => {
 		const blob = await res.blob()
 
 		const blobUrl = window.URL.createObjectURL(
-			new Blob([blob], { type: 'application/octet-stream' }) // 👈 ключ
+			new Blob([blob], { type: 'application/octet-stream' })
 		)
 
 		const link = document.createElement('a')

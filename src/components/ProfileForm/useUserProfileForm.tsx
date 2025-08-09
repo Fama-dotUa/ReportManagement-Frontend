@@ -243,7 +243,6 @@ export const useUserProfileForm = (
 		options: string[]
 	) => (
 		<div className='field-row'>
-			<label>{label}</label>
 			{editFields[field] ? (
 				<div className='editable-row'>
 					<select
@@ -255,7 +254,7 @@ export const useUserProfileForm = (
 						</option>
 						{options.map(opt => (
 							<option key={opt} value={opt}>
-								{opt}
+								<label>{label}</label> {opt}
 							</option>
 						))}
 					</select>
@@ -270,7 +269,9 @@ export const useUserProfileForm = (
 				</div>
 			) : (
 				<div className='readonly-row'>
-					<h2>{formData[field] || '—'}</h2>
+					<h2>
+						<label>{label}</label> {formData[field] || '—'}
+					</h2>
 				</div>
 			)}
 		</div>
@@ -285,7 +286,6 @@ export const useUserProfileForm = (
 			ROLE_OPTIONS.find(r => r.value === currentValue)?.label || currentValue
 		return (
 			<div className='field-row'>
-				<label>Должность:</label>
 				{editFields['role'] ? (
 					<div className='editable-row'>
 						<select
@@ -294,7 +294,7 @@ export const useUserProfileForm = (
 						>
 							{ROLE_OPTIONS.filter(opt => opt.value !== 'general').map(opt => (
 								<option key={opt.value} value={opt.value}>
-									{opt.label}
+									<label>Должность:</label> {opt.label}
 								</option>
 							))}
 						</select>
@@ -309,7 +309,9 @@ export const useUserProfileForm = (
 					</div>
 				) : (
 					<div className='readonly-row'>
-						<h2>{currentLabel}</h2>
+						<h2>
+							<label>Должность:</label> {currentLabel}
+						</h2>
 					</div>
 				)}
 			</div>

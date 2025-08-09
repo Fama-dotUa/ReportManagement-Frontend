@@ -113,51 +113,53 @@ const UserProfileForm: React.FC<Props> = ({
 	return (
 		<>
 			<form onSubmit={handleSubmit} className='user-profile-form'>
-				{(editable || isSelf) && (
-					<button
-						type='button'
-						className='edit-button fixed'
-						title='Редактировать профиль'
-						onClick={async () => {
-							if (!editOk) {
-								setEditOk(true)
-								enableAllEdits()
-							} else {
-								if (changed) {
-									const confirm = window.confirm(
-										'Вы внесли изменения. Они будут потеряны. Продолжить?'
-									)
-									if (!confirm) return
+				<div className='profile-top-panel'>
+					{(editable || isSelf) && (
+						<button
+							type='button'
+							className='edit-button fixed'
+							title='Редактировать профиль'
+							onClick={async () => {
+								if (!editOk) {
+									setEditOk(true)
+									enableAllEdits()
+								} else {
+									if (changed) {
+										const confirm = window.confirm(
+											'Вы внесли изменения. Они будут потеряны. Продолжить?'
+										)
+										if (!confirm) return
+									}
+									setEditOk(false)
+									resetForm()
 								}
-								setEditOk(false)
-								resetForm()
-							}
-						}}
-					>
-						<FaPencilAlt />
-					</button>
-				)}
-				{isSelf && (
+							}}
+						>
+							<FaPencilAlt />
+						</button>
+					)}
+					{isSelf && (
+						<button
+							type='button'
+							className='edit-password-button fixed'
+							title='Изменить пароль'
+							onClick={() => setShowPasswordModal(true)}
+						>
+							<RiLockPasswordFill />
+						</button>
+					)}
+
 					<button
 						type='button'
-						className='edit-password-button fixed'
-						title='Изменить пароль'
-						onClick={() => setShowPasswordModal(true)}
+						className='close-button fixed'
+						onClick={handleClose}
 					>
-						<RiLockPasswordFill />
+						<IoCloseSharp />
 					</button>
-				)}
-
-				<button
-					type='button'
-					className='close-button fixed'
-					onClick={handleClose}
-				>
-					<IoCloseSharp />
-				</button>
+				</div>
 				<div className='form-grid'>
-					<div className='avatar-block'>
-						<div className='avatar-block'>
+					<div className='profile-container'>
+						<div className='avatar-wrapper'>
 							<img
 								src={tempIcon || formData.icon || '/default-avatar.png'}
 								alt='avatar'
@@ -165,23 +167,38 @@ const UserProfileForm: React.FC<Props> = ({
 								loading='lazy'
 							/>
 
+							<img
+								src='/UaA.png'
+								alt='Profile frame'
+								className='profile-frame'
+							/>
+
 							{editOk && (
 								<button
 									type='button'
-									id='edit-avatar-button'
+									className='edit-avatar-button'
 									onClick={() => setShowAvatarModal(true)}
 								>
 									<FaPencilAlt />
 								</button>
 							)}
 						</div>
-						<button
-							type='button'
-							id='info-button'
-							onClick={() => setShowInfoPanel(!showInfoPanel)}
-						>
-							<IoIosInformationCircleOutline />
-						</button>
+
+						<div className='info-button-wrapper'>
+							<button
+								type='button'
+								className='info-button'
+								onClick={() => setShowInfoPanel(!showInfoPanel)}
+							>
+								<IoIosInformationCircleOutline />
+							</button>
+
+							<img
+								src='/UaA.png'
+								alt='Info button frame'
+								className='profile-frame'
+							/>
+						</div>
 					</div>
 					<div className='info-block'>
 						{renderTextField('', 'username', 'username')}
@@ -190,23 +207,24 @@ const UserProfileForm: React.FC<Props> = ({
 						{renderRoleField()}
 					</div>
 				</div>
+				<div className='profile-bottom-medal-panel'></div>
 				{editOk && (
 					<button type='submit' disabled={!changed}>
 						Сохранить
 					</button>
 				)}
-				{showAvatarModal && (
-					<AvatarUploadModal
-						initialImage={tempIcon || formData.icon}
-						onClose={() => setShowAvatarModal(false)}
-						onApply={(file, preview) => {
-							applyTempIcon(file, preview)
-							setShowAvatarModal(false)
-						}}
-					/>
-				)}
 			</form>
 
+			{showAvatarModal && (
+				<AvatarUploadModal
+					initialImage={tempIcon || formData.icon}
+					onClose={() => setShowAvatarModal(false)}
+					onApply={(file, preview) => {
+						applyTempIcon(file, preview)
+						setShowAvatarModal(false)
+					}}
+				/>
+			)}
 			{showPasswordModal && (
 				<ChangePasswordModal
 					onClose={() => setShowPasswordModal(false)}

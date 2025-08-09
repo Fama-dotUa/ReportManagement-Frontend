@@ -131,7 +131,7 @@
 	}
 }
 
-.info-button {
+.infopanel-button {
 	background: none;
 	border: none;
 	font-size: 24px;
@@ -141,7 +141,7 @@
 	margin-left: 10px;
 	transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
-.info-button:hover {
+.infopanel-button:hover {
 	color: #ff0000;
 	transform: scale(1.3);
 	box-shadow: none;

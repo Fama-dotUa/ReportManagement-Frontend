@@ -43,11 +43,11 @@ const ProfileInfoPanel: React.FC<InfoPanelProps> = ({
 				<h2>Профиль</h2>
 				<div className='header-buttons'>
 					{isGeneral && !isEditing && (
-						<button className='info-button' onClick={handleEditClick}>
+						<button className='infopanel-button' onClick={handleEditClick}>
 							<FaPencilAlt />
 						</button>
 					)}
-					<button className='info-button' onClick={onClose}>
+					<button className='infopanel-button' onClick={onClose}>
 						<IoCloseSharp />
 					</button>
 				</div>

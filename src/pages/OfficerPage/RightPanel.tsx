@@ -71,7 +71,9 @@ const RightPanel: React.FC = () => {
 											backgroundImage: `url('/SanyaChist.png')`,
 											backgroundSize: 'cover',
 											backgroundPosition: 'center',
-											color: 'white', // Для читаемости текста на фоне фото
+											color: 'white',
+											textShadow:
+												'-1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black',
 									  }
 									: // 2. Если НЕТ - проверяем, совпадает ли user.id с ID залогиненного пользователя
 									user.id === currentUserId

@@ -15,18 +15,27 @@
 .modal-content {
 	background: rgba(255, 255, 255, 0.5);
 	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	padding: 12px;
-	border-radius: 2px;
-	width: 540px;
-	max-width: 95vw;
+	border-radius: 10px;
+	width: 800px;
+	height: 500px;
 	position: relative;
+
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
 }
+
+.profile-top-panel {
+	position: relative;
+	border-bottom: #555 solid 1px;
+	background: rgba(192, 115, 115, 0.5);
+	height: 50px;
+	border-radius: 8px 8px 0 0;
+	backdrop-filter: blur(25px);
+}
+
 .edit-button.fixed {
 	position: absolute;
-	top: 0px;
-	left: 0px;
+	top: 10px;
+	left: 20px;
 	z-index: 10;
 	font-size: 20px;
 	background: none;
@@ -43,10 +52,10 @@
 
 .edit-password-button.fixed {
 	position: absolute;
-	top: 0px;
-	left: 40px;
+	top: 8px;
+	left: 60px;
 	z-index: 10;
-	font-size: 20px;
+	font-size: 22px;
 	background: none;
 	border: none;
 	padding: 0;
@@ -61,8 +70,8 @@
 
 .close-button.fixed {
 	position: absolute;
-	top: 0px;
-	right: 0px;
+	top: 10px;
+	right: 20px;
 	z-index: 10;
 	font-size: 28px;
 	background: none;
@@ -78,10 +87,11 @@
 }
 /* Форма */
 .user-profile-form {
-	padding: 2rem 0 0;
-	display: flex;
-	flex-direction: column;
-	gap: 2rem;
+	display: grid; /* Используем Grid */
+	/* Определяем строки: первая - авто, вторая - 1 доля пространства, третья - авто */
+	grid-template-rows: auto 1fr auto;
+	height: 100%;
+	gap: 0.7rem;
 	background: initial;
 	position: relative;
 }
@@ -92,22 +102,117 @@
 	gap: 1.6rem;
 }
 
-.avatar-block {
+/* Главный контейнер для позиционирования аватара и кнопки */
+.profile-container {
+	width: 240px; /* Основной размер компонента */
 	display: flex;
-	position: relative;
 	flex-direction: column;
 	align-items: center;
-	width: 140px;
-	height: 140px;
 }
 
+/* 1. Стили для блока аватара */
+/* ============================ */
+
+/* Обертка для аватара и его рамки. Служит системой координат. */
+.avatar-wrapper {
+	position: relative;
+	width: 100%; /* 240px */
+	/* Делает блок квадратным, сохраняя пропорции при изменении ширины */
+	aspect-ratio: 1 / 1;
+	/* Сдвигаем кнопку "i" немного наверх, чтобы она заходила на аватар */
+	margin-bottom: -25px;
+}
+
+/* Изображение аватара */
 .avatar-img {
-	width: 120px;
-	height: 120px;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	/* Делаем аватар чуть меньше обертки, чтобы края рамки были видны */
+	width: 85%;
+	height: 85%;
+	border-radius: 50%;
+	/* Гарантирует, что изображение покроет всю область без искажений */
 	object-fit: cover;
-	border-radius: 2px;
-	margin-bottom: 0.5rem;
-	border: 1px solid #ccc;
+	background-color: #1a1a1a; /* Фон на случай, если фото не загрузилось */
+}
+
+/* Изображение рамки (для аватара и кнопки) */
+.profile-frame {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 5;
+	/* ❗️ Ключевое свойство: делает рамку "прозрачной" для кликов мыши */
+	pointer-events: none;
+}
+
+/* Кнопка редактирования аватара */
+.edit-avatar-button {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 88%;
+	height: 88%;
+	padding: 0;
+	border-radius: 50%;
+	border: none;
+	background: rgba(26, 26, 26, 0.15);
+	color: white;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	box-shadow: none;
+	transition: background-color 0.2s ease;
+}
+
+.edit-avatar-button:hover {
+	background: rgba(0, 0, 0, 0.3);
+	transform: translate(-50%, -50%);
+	box-shadow: none;
+}
+
+/* 2. Стили для блока кнопки информации */
+/* ==================================== */
+
+/* Обертка для кнопки "i" и ее рамки */
+.info-button-wrapper {
+	position: relative; /* Новая система координат для маленькой рамки */
+	width: 44px; /* Размер немного больше кнопки */
+	height: 44px;
+	margin-top: -12px;
+	z-index: 10;
+}
+
+/* Сама кнопка "i" */
+.info-button {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	background: #333;
+	color: rgba(255, 255, 255, 0.83);
+	border: none;
+	font-size: 32px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+}
+
+.info-button:hover {
+	color: #fff;
+	background-color: #555;
+	transform: translate(-50%, -50%);
 }
 
 .info-block {
@@ -116,7 +221,9 @@
 	flex-direction: column;
 	gap: 0.75rem;
 }
-
+.info-block input {
+	width: 70%;
+}
 /* Поля */
 .field-row {
 	display: flex;
@@ -136,7 +243,6 @@
 .field-row label {
 	font-weight: bold;
 	margin-bottom: 0.3rem;
-	font-size: 14px;
 }
 .field-row.username .username {
 	font-size: 30px;
@@ -246,17 +352,11 @@
 	cursor: 'pointer';
 }
 
-#info-button {
-	padding: 0;
-	font-size: 1.5rem;
-	background: none;
-	color: rgba(0, 0, 0, 0.83);
-	cursor: pointer;
-	transition: color 0.3s ease-in-out, transform 0.25s ease-in-out;
-	box-shadow: none;
-}
-
-#info-button:hover {
-	color: rgba(0, 0, 0, 0.9);
-	transform: scale(1.3);
+.profile-bottom-medal-panel {
+	position: relative;
+	border-top: #555 solid 1px;
+	background: rgba(192, 115, 115, 0.5);
+	height: 100px;
+	border-radius: 0 0 8px 8px;
+	backdrop-filter: blur(25px);
 }

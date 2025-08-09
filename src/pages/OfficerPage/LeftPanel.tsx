@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import { useAuth } from '../../hooks/useAuth'
 import './OfficerPage.css'
+
+import { useAuth } from '../../hooks/useAuth'
 import { getReportFileUrl } from '../../hooks/getReportFileUrl'
+
+import type { Report } from '../../intefaces/Report'
 
 const handlePreview = async (reportId: number) => {
 	const url = await getReportFileUrl(reportId)
@@ -12,14 +15,6 @@ const handlePreview = async (reportId: number) => {
 	} else {
 		alert('PDF не найден')
 	}
-}
-
-interface Report {
-	id: number
-	createdAt: string
-	reasonNumber: number
-	reasonCipher: string
-	username: string
 }
 
 const LeftPanel: React.FC = () => {

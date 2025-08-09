@@ -7,7 +7,6 @@ type AuthFormProps = {
 }
 
 const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
-	const API_URL = import.meta.env.VITE_API_URL
 	const [form, setForm] = useState({ username: '', password: '' })
 	const [error, setError] = useState<string | null>(null)
 	const navigate = useNavigate()
@@ -20,14 +19,17 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 		setError(null)
 
 		try {
-			const res = await fetch(`${API_URL}/api/auth/local`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					identifier: form.username,
-					password: form.password,
-				}),
-			})
+			const res = await fetch(
+				`${import.meta.env.VITE_API_URL}/api/auth/local`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						identifier: form.username,
+						password: form.password,
+					}),
+				}
+			)
 
 			const data = await res.json()
 
