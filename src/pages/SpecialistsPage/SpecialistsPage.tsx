@@ -47,32 +47,39 @@ export const SpecialistsPage: React.FC = () => {
 	}
 
 	return (
-		<div className='shop-container'>
-			<PageHeader title='Должности и Обучение' />
-			{Object.entries(groupedData).map(([sectionTitle, items]) => {
-				const theme = themeMap[sectionTitle] || 'sky'
+		<>
+			<div className='blur-background'></div>
+			<div className='shop-container'>
+				<PageHeader title='Должности и Обучение' />
+				{Object.entries(groupedData).map(([sectionTitle, items]) => {
+					const theme = themeMap[sectionTitle] || 'sky'
 
-				return (
-					<ContentSection key={sectionTitle} title={sectionTitle} theme={theme}>
-						{items.map((item: PositionItem) => {
-							const cardItem: Item = {
-								id: item.id,
-								title: item.name,
-								description: item.description,
-								price: item.CR,
-							}
-							return (
-								<PurchasableCard
-									key={item.id}
-									item={cardItem}
-									onBuy={handleBuy}
-									hoverColor={theme}
-								/>
-							)
-						})}
-					</ContentSection>
-				)
-			})}
-		</div>
+					return (
+						<ContentSection
+							key={sectionTitle}
+							title={sectionTitle}
+							theme={theme}
+						>
+							{items.map((item: PositionItem) => {
+								const cardItem: Item = {
+									id: item.id,
+									title: item.name,
+									description: item.description,
+									price: item.CR,
+								}
+								return (
+									<PurchasableCard
+										key={item.id}
+										item={cardItem}
+										onBuy={handleBuy}
+										hoverColor={theme}
+									/>
+								)
+							})}
+						</ContentSection>
+					)
+				})}
+			</div>
+		</>
 	)
 }

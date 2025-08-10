@@ -6,13 +6,42 @@
 	font-style: normal;
 	line-height: 1.5;
 	font-weight: 400;
-	color-scheme: light dark;
 	font-synthesis: none;
+
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	--background-color: #ffffff;
+	--text-color: #222222;
+	--primary-color: #007bff;
+	--panel-background: rgba(255, 255, 255, 0.65);
+	--border-color: #444444;
+	--report-background: rgba(92, 92, 92, 0.45);
+	--border-bottom-left-right-panel: rgba(0, 0, 0, 0.4);
+	--report-permanent: rgba(136, 136, 47, 0.4);
+	--report-active: rgba(20, 120, 20, 0.25);
+	--report-expired: rgba(92, 92, 92, 0.45);
+	--profile-background: rgba(255, 255, 255, 0.5);
+	--description-color: rgba(106, 0, 255, 0.8);
+	--chiher-color: rgba(120, 20, 20, 0.8);
+	--status-text-color: rgba(20, 120, 20, 0.8);
 }
-
+[data-theme='dark'] {
+	--background-color: rgba(92, 92, 92, 0.45);
+	--text-color: #e0e0e0;
+	--primary-color: #64b5f6;
+	--panel-background: rgba(18, 18, 18, 0.65);
+	--border-color: #dee2e6;
+	--report-background: rgba(180, 176, 176, 0.5);
+	--border-bottom-left-right-panel: rgba(255, 255, 255, 0.4);
+	--report-permanent: rgba(136, 136, 47, 0.8);
+	--report-active: rgba(20, 120, 20, 0.5);
+	--report-expired: rgba(180, 176, 176, 0.5);
+	--profile-background: rgba(79, 77, 77, 0.5);
+	--description-color: rgba(38, 255, 0, 0.8);
+	--chiher-color: rgba(255, 0, 0, 0.8);
+	--status-text-color: rgba(48, 115, 223, 0.8);
+}
 a {
 	font-weight: 500;
 	color: #646cff;
@@ -26,10 +55,13 @@ body {
 	margin: 0;
 	place-items: center;
 	min-width: 320px;
-	min-height: 100vh;
+	min-height: 100%;
 	background-image: url('./assets/background.png');
 	background-size: cover;
 	background-position: center;
+	background-color: var(--background-color);
+	color: var(--text-color);
+	transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
@@ -44,27 +76,14 @@ button {
 	font-size: 1.5em;
 	font-weight: 400;
 	font-family: inherit;
-	color: #131313;
-	background-color: #f9f9f9;
+	color: var(--text-color);
+	background-color: var(--background-color);
+	border: 1px solid var(--border-color);
 	cursor: pointer;
-
 	transition: transform 0.3s ease, box-shadow 0.2s ease;
 }
 
 button:hover {
 	transform: scale(1.05);
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-@media (prefers-color-scheme: light) {
-	:root {
-		color: #213547;
-		background-color: #ffffff;
-	}
-	a:hover {
-		color: #747bff;
-	}
-	button {
-		background-color: #f9f9f9;
-	}
 }

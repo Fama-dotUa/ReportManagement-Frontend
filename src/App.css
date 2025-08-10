@@ -1,11 +1,8 @@
 #root {
 	margin: 0;
 	padding: 0;
-
 	position: absolute;
 	left: 0;
 	top: 0;
-
-	height: 100%;
 	width: 100%;
 }

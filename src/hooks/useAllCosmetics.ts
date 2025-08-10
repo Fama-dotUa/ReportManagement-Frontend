@@ -93,14 +93,14 @@ export const useAllCosmetics = () => {
 				setLoading(true)
 
 				const fetchCollection = (collectionName: string) => {
-					return fetch(`${API_URL}/api/${collectionName}?populate=*`).then(
-						res => {
-							if (!res.ok) {
-								throw new Error(`Failed to fetch ${collectionName}`)
-							}
-							return res.json()
+					return fetch(
+						`${API_URL}/api/${collectionName}?populate=*&filters[buy]=true`
+					).then(res => {
+						if (!res.ok) {
+							throw new Error(`Failed to fetch ${collectionName}`)
 						}
-					)
+						return res.json()
+					})
 				}
 
 				const [framesRes, backgroundsRes, schildiksRes] = await Promise.all([

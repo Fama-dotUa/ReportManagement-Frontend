@@ -1,4 +1,4 @@
-import React, { use, useState } from 'react'
+import React, { useState } from 'react'
 import { FaPencilAlt } from 'react-icons/fa'
 import { IoCloseSharp } from 'react-icons/io5'
 import './UserProfileForm.css'
@@ -12,14 +12,14 @@ import { IoIosInformationCircleOutline } from 'react-icons/io'
 import ProfileInfoPanel from '../ProfileInfoPanel/ProfileInfoPanel'
 import { useAuth } from '../../hooks/useAuth'
 type Props = {
-	user: User
+	user_to: User
 	editable?: boolean
 	onSubmit?: (u: User) => void
 	onClose: () => void
 }
 
 const UserProfileForm: React.FC<Props> = ({
-	user,
+	user_to,
 	editable,
 	onSubmit,
 	onClose,
@@ -38,6 +38,7 @@ const UserProfileForm: React.FC<Props> = ({
 		renderTextField,
 		renderSelectField,
 		renderRoleField,
+		renderPositionsField,
 		ranks,
 		isSelf,
 		tempIcon,
@@ -45,7 +46,7 @@ const UserProfileForm: React.FC<Props> = ({
 		resetForm,
 		enableAllEdits,
 	} = useUserProfileForm(
-		user,
+		user_to,
 		editable,
 		onSubmit,
 		onClose,
@@ -79,14 +80,14 @@ const UserProfileForm: React.FC<Props> = ({
 		}
 	}
 	const handleEditDescription = async (newDescription: any) => {
-		if (!token || !user?.id) {
+		if (!token || !user_to.id) {
 			alert('Ошибка: Пользователь не авторизован или ID не найден.')
 			return
 		}
 
 		try {
 			const response = await fetch(
-				`${import.meta.env.VITE_API_URL}/api/users/${user.id}`,
+				`${import.meta.env.VITE_API_URL}/api/users/${user_to.id}`,
 				{
 					method: 'PUT',
 					headers: {
@@ -109,10 +110,13 @@ const UserProfileForm: React.FC<Props> = ({
 		}
 	}
 
-	console.log('UserProfileForm rendered with user:', user)
 	return (
 		<>
 			<form onSubmit={handleSubmit} className='user-profile-form'>
+				<img
+					src={formData.profile_background_active_url}
+					className='background-img-profile'
+				></img>
 				<div className='profile-top-panel'>
 					{(editable || isSelf) && (
 						<button
@@ -168,8 +172,8 @@ const UserProfileForm: React.FC<Props> = ({
 							/>
 
 							<img
-								src='/UaA.png'
-								alt='Profile frame'
+								src={user_to.framesfor_avatar_active_url}
+								alt='avatar frame'
 								className='profile-frame'
 							/>
 
@@ -194,8 +198,8 @@ const UserProfileForm: React.FC<Props> = ({
 							</button>
 
 							<img
-								src='/UaA.png'
-								alt='Info button frame'
+								src={user_to.framesfor_avatar_active_url}
+								alt='хуй'
 								className='profile-frame'
 							/>
 						</div>
@@ -205,6 +209,7 @@ const UserProfileForm: React.FC<Props> = ({
 						{renderTextField('', 'discord', 'discord')}
 						{renderSelectField('Звание:', 'rank', ranks)}
 						{renderRoleField()}
+						{renderPositionsField('Специализация:')}
 					</div>
 				</div>
 				<div className='profile-bottom-medal-panel'></div>
@@ -231,7 +236,6 @@ const UserProfileForm: React.FC<Props> = ({
 					onSubmit={handlePasswordChange}
 				/>
 			)}
-
 			{showInfoPanel && (
 				<div
 					className='info-panel-overlay'
@@ -242,7 +246,7 @@ const UserProfileForm: React.FC<Props> = ({
 						onClick={e => e.stopPropagation()}
 					>
 						<ProfileInfoPanel
-							soldierDescription={user.Description || ''}
+							soldierDescription={user_to.Description || ''}
 							onEdit={handleEditDescription}
 							onClose={() => setShowInfoPanel(false)}
 						/>

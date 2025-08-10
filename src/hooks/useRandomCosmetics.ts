@@ -55,7 +55,7 @@ export const useRandomCosmetics = () => {
 			type: CosmeticItem['type']
 		) => {
 			const countResponse = await fetch(
-				`${API_URL}/api/${collectionName}?pagination[pageSize]=1`
+				`${API_URL}/api/${collectionName}?pagination[pageSize]=1&filters[buy]=true&filters[buy]=true`
 			)
 			if (!countResponse.ok)
 				throw new Error(`Failed to fetch count for ${collectionName}`)
@@ -65,7 +65,7 @@ export const useRandomCosmetics = () => {
 
 			const randomIndex = Math.floor(Math.random() * total)
 			const itemResponse = await fetch(
-				`${API_URL}/api/${collectionName}?populate=*&pagination[start]=${randomIndex}&pagination[limit]=1`
+				`${API_URL}/api/${collectionName}?populate=*&pagination[start]=${randomIndex}&pagination[limit]=1&filters[buy]=true`
 			)
 			if (!itemResponse.ok)
 				throw new Error(`Failed to fetch random item from ${collectionName}`)

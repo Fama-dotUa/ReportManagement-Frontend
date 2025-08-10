@@ -43,39 +43,42 @@ export const Store: React.FC = () => {
 	}
 
 	return (
-		<div className='shop-container'>
-			<ShopHeader title='Военный Магазин' balance={CR} />
+		<>
+			<div className='blur-background'></div>
+			<div className='shop-container'>
+				<ShopHeader title='Военный Магазин' balance={CR} />
 
-			<main className='main-content'>
-				<section className='sectionstore section-positions'>
-					<h2>Должности и Обучение</h2>
-					<div className='cards-grid-shop positions-grid'>
-						{featuredPositions.map((item: PositionItem) => {
-							const cardItem: ShopItem = {
-								id: item.id,
-								title: item.name,
-								description: item.description,
-								price: item.CR,
-							}
-							return (
-								<ShopItemCard
-									key={item.id}
-									item={cardItem}
-									onBuy={handleBuyItem}
-								/>
-							)
-						})}
-						<button
-							className='button card hover-blue'
-							onClick={() => navigate('/specialists')}
-						>
-							<h3>Больше...</h3>
-						</button>
-					</div>
-				</section>
+				<main className='main-content'>
+					<section className='sectionstore section-positions'>
+						<h2>Должности и Обучение</h2>
+						<div className='cards-grid-shop positions-grid'>
+							{featuredPositions.map((item: PositionItem) => {
+								const cardItem: ShopItem = {
+									id: item.id,
+									title: item.name,
+									description: item.description,
+									price: item.CR,
+								}
+								return (
+									<ShopItemCard
+										key={item.id}
+										item={cardItem}
+										onBuy={handleBuyItem}
+									/>
+								)
+							})}
+							<button
+								className='button card hover-blue'
+								onClick={() => navigate('/specialists')}
+							>
+								<h3>Больше...</h3>
+							</button>
+						</div>
+					</section>
 
-				<FeaturedCosmeticsSection />
-			</main>
-		</div>
+					<FeaturedCosmeticsSection />
+				</main>
+			</div>
+		</>
 	)
 }

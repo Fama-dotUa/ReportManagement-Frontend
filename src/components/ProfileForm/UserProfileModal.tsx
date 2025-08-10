@@ -19,7 +19,7 @@ const UserProfileModal: React.FC<Props> = ({
 		<div className='modal-overlay'>
 			<div className='modal-content'>
 				<UserProfileForm
-					user={user}
+					user_to={user}
 					editable={editable}
 					onSubmit={updatedUser => {
 						if (updatedUser) {

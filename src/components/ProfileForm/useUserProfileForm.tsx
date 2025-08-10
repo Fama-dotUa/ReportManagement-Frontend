@@ -217,7 +217,11 @@ export const useUserProfileForm = (
 				<div className='editable-row'>
 					<input
 						type='text'
-						defaultValue={formData[field] || ''}
+						defaultValue={
+							Array.isArray(formData[field])
+								? (formData[field] as any[]).map(item => item.name).join(', ')
+								: formData[field] || ''
+						}
 						onChange={e => handleFieldChange(field, e.target.value)}
 					/>
 					<div className='edit-actions'>
@@ -231,7 +235,13 @@ export const useUserProfileForm = (
 				</div>
 			) : (
 				<div className='readonly-row'>
-					<h2 className={customClass}>{formData[field] || '—'}</h2>
+					<h2 className={customClass}>
+						{Array.isArray(formData[field])
+							? (formData[field] as { id: number; name: string }[])
+									.map(item => item.name)
+									.join(', ')
+							: formData[field] || '—'}
+					</h2>
 				</div>
 			)}
 		</div>
@@ -246,7 +256,13 @@ export const useUserProfileForm = (
 			{editFields[field] ? (
 				<div className='editable-row'>
 					<select
-						defaultValue={formData[field] || ''}
+						defaultValue={
+							Array.isArray(formData[field])
+								? (formData[field] as { id: number; name: string }[])
+										.map(item => item.name)
+										.join(', ')
+								: formData[field] || ''
+						}
 						onChange={e => handleFieldChange(field, e.target.value)}
 					>
 						<option value='' disabled>
@@ -270,7 +286,12 @@ export const useUserProfileForm = (
 			) : (
 				<div className='readonly-row'>
 					<h2>
-						<label>{label}</label> {formData[field] || '—'}
+						<label>{label}</label>{' '}
+						{Array.isArray(formData[field])
+							? (formData[field] as { id: number; name: string }[])
+									.map(item => item.name)
+									.join(', ')
+							: formData[field] ?? '—'}
 					</h2>
 				</div>
 			)}
@@ -318,6 +339,29 @@ export const useUserProfileForm = (
 		)
 	}
 
+	const renderPositionsField = (label: string) => {
+		if (!formData.positions || formData.positions.length === 0) {
+			return null
+		}
+
+		const positionCounts = formData.positions.reduce((acc, position) => {
+			acc[position.name] = (acc[position.name] || 0) + 1
+			return acc
+		}, {} as Record<string, number>)
+
+		return (
+			<div className='field-row'>
+				<label id='field-row-label'>{label}</label>
+				<div className='readonly-row positions-container'>
+					{Object.entries(positionCounts).map(([name, count]) => (
+						<span key={name} className='position-tag'>
+							{name} {count > 1 ? `(x${count})` : ''}
+						</span>
+					))}
+				</div>
+			</div>
+		)
+	}
 	const applyTempIcon = (file: File, previewUrl: string) => {
 		setTempIcon(previewUrl)
 		setIconFile(file)
@@ -335,6 +379,7 @@ export const useUserProfileForm = (
 		resetForm,
 		renderSelectField,
 		renderRoleField,
+		renderPositionsField,
 		editable,
 		tempIcon,
 		applyTempIcon,

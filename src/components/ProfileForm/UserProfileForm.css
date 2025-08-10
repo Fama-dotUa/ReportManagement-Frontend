@@ -13,23 +13,22 @@
 }
 
 .modal-content {
-	background: rgba(255, 255, 255, 0.5);
+	background: var(--profile-background);
 	backdrop-filter: blur(10px);
 	border-radius: 10px;
 	width: 800px;
-	height: 500px;
+	height: 600px;
 	position: relative;
-
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .profile-top-panel {
 	position: relative;
 	border-bottom: #555 solid 1px;
-	background: rgba(192, 115, 115, 0.5);
 	height: 50px;
 	border-radius: 8px 8px 0 0;
-	backdrop-filter: blur(25px);
+	backdrop-filter: blur(10px);
 }
 
 .edit-button.fixed {
@@ -43,11 +42,10 @@
 	padding: 0;
 	cursor: pointer;
 	box-shadow: none;
-	color: rgba(31, 31, 31, 0.7);
+	color: var(--text-color);
 }
 .edit-button.fixed:hover {
 	transform: scale(1.3);
-	color: rgba(31, 31, 31, 0.9);
 }
 
 .edit-password-button.fixed {
@@ -61,11 +59,10 @@
 	padding: 0;
 	cursor: pointer;
 	box-shadow: none;
-	color: rgba(31, 31, 31, 0.7);
+	color: var(--text-color);
 }
 .edit-password-button.fixed:hover {
 	transform: scale(1.3);
-	color: rgba(31, 31, 31, 0.9);
 }
 
 .close-button.fixed {
@@ -79,66 +76,66 @@
 	padding: 0;
 	cursor: pointer;
 	box-shadow: none;
-	color: rgba(149, 63, 54, 0.7);
+	color: rgba(219, 58, 41, 0.9);
 }
 .close-button.fixed:hover {
 	transform: scale(1.3);
-	color: rgba(149, 63, 54, 0.9);
+	color: rgba(219, 58, 41, 1);
 }
 /* Форма */
 .user-profile-form {
-	display: grid; /* Используем Grid */
-	/* Определяем строки: первая - авто, вторая - 1 доля пространства, третья - авто */
+	display: grid;
 	grid-template-rows: auto 1fr auto;
 	height: 100%;
 	gap: 0.7rem;
 	background: initial;
 	position: relative;
 }
+.background-img-profile {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	z-index: -1;
+	border-radius: 8px;
+}
 
-/* Аватар и блоки */
 .form-grid {
 	display: flex;
 	gap: 1.6rem;
 }
 
-/* Главный контейнер для позиционирования аватара и кнопки */
 .profile-container {
-	width: 240px; /* Основной размер компонента */
+	width: 240px;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 }
 
-/* 1. Стили для блока аватара */
-/* ============================ */
-
-/* Обертка для аватара и его рамки. Служит системой координат. */
 .avatar-wrapper {
 	position: relative;
-	width: 100%; /* 240px */
-	/* Делает блок квадратным, сохраняя пропорции при изменении ширины */
+	width: 100%;
 	aspect-ratio: 1 / 1;
-	/* Сдвигаем кнопку "i" немного наверх, чтобы она заходила на аватар */
 	margin-bottom: -25px;
+	margin-left: 20px;
+	border: none;
 }
 
-/* Изображение аватара */
 .avatar-img {
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	/* Делаем аватар чуть меньше обертки, чтобы края рамки были видны */
 	width: 85%;
 	height: 85%;
 	border-radius: 50%;
-	/* Гарантирует, что изображение покроет всю область без искажений */
+	border: none;
 	object-fit: cover;
-	background-color: #1a1a1a; /* Фон на случай, если фото не загрузилось */
+	background-color: #1a1a1a;
 }
 
-/* Изображение рамки (для аватара и кнопки) */
 .profile-frame {
 	position: absolute;
 	top: 0;
@@ -146,7 +143,7 @@
 	width: 100%;
 	height: 100%;
 	z-index: 5;
-	/* ❗️ Ключевое свойство: делает рамку "прозрачной" для кликов мыши */
+	border: none;
 	pointer-events: none;
 }
 
@@ -177,19 +174,16 @@
 	box-shadow: none;
 }
 
-/* 2. Стили для блока кнопки информации */
-/* ==================================== */
-
-/* Обертка для кнопки "i" и ее рамки */
 .info-button-wrapper {
-	position: relative; /* Новая система координат для маленькой рамки */
-	width: 44px; /* Размер немного больше кнопки */
+	position: relative;
+	width: 44px;
 	height: 44px;
 	margin-top: -12px;
+	margin-left: 20px;
 	z-index: 10;
+	border: none;
 }
 
-/* Сама кнопка "i" */
 .info-button {
 	position: absolute;
 	top: 50%;
@@ -224,18 +218,28 @@
 .info-block input {
 	width: 70%;
 }
-/* Поля */
+
 .field-row {
 	display: flex;
 	flex-direction: column;
 	position: relative;
 }
+.readonly-row h2 {
+	margin: 0;
+	font-size: 18px;
+	font-weight: 400;
+	background-color: var(--profile-background);
+	border-radius: 8px;
+	padding: 4px 8px;
+}
 .field-row.discord {
-	margin-top: -1.3rem;
-	color: rgba(102, 56, 162, 0.867);
+	display: flex;
+	margin-top: -1rem;
+	color: rgba(176, 121, 249, 0.903);
 }
 .field-row.discord h2 {
 	font-size: 14px;
+	background: none !important;
 }
 .field-row.discord input {
 	font-size: 14px !important;
@@ -247,18 +251,11 @@
 .field-row.username .username {
 	font-size: 30px;
 }
-/* Просмотр значения */
 .readonly-row {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	gap: 10px;
-}
-
-.readonly-row h2 {
-	margin: 0;
-	font-size: 18px;
-	font-weight: 400;
 }
 
 .readonly-row button {
@@ -270,7 +267,6 @@
 	padding: 2px;
 }
 
-/* Редактируемое поле */
 .editable-row {
 	display: flex;
 	align-items: center;
@@ -279,11 +275,12 @@
 
 .editable-row select {
 	flex: 1;
+	max-width: 74%;
 	padding: 0.5rem;
 	font-size: 14px;
-	color: #ffffff;
+	color: var(--text-color);
+	background: var(--background-color);
 }
-
 .edit-actions {
 	display: flex;
 	gap: 5px;
@@ -294,7 +291,6 @@
 	border: none;
 	cursor: pointer;
 	font-size: 16px;
-	color: #333;
 	padding: 2px;
 	box-shadow: none;
 	transition: color 0.3s ease-in-out, transform 0.25s ease-in-out;
@@ -305,8 +301,10 @@
 	transform: scale(1.2);
 }
 
-/* Кнопка сохранения */
 .user-profile-form button[type='submit'] {
+	position: absolute;
+	right: 20px;
+	bottom: 20px;
 	align-self: flex-end;
 	padding: 0.5rem 1.2rem;
 	background-color: #007bff;
@@ -355,8 +353,34 @@
 .profile-bottom-medal-panel {
 	position: relative;
 	border-top: #555 solid 1px;
-	background: rgba(192, 115, 115, 0.5);
-	height: 100px;
+	height: 120px;
 	border-radius: 0 0 8px 8px;
-	backdrop-filter: blur(25px);
+	backdrop-filter: blur(10px);
+}
+
+.positions-container {
+	flex-wrap: wrap;
+	width: 60%;
+	gap: 6px;
+}
+
+#field-row-label {
+	font-size: 24px;
+	font-weight: bold;
+	width: max-content;
+	padding: 2px 8px;
+	border-radius: 8px;
+	color: var(--text-color);
+	background-color: var(--profile-background);
+}
+
+.position-tag {
+	background-color: var(--profile-background);
+	color: var(--text-color);
+	text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+	padding: 4px 10px;
+	border-radius: 12px;
+	font-size: 14px;
+	font-weight: 500;
+	white-space: nowrap;
 }

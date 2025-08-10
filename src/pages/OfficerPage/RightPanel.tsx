@@ -9,6 +9,30 @@ import { useUpdateUser } from '../../hooks/useUpdateUser'
 import { useAuth } from '../../hooks/useAuth'
 import type { User } from '../../types/User'
 
+// ✅ Вспомогательная функция для определения стилей кнопки
+// Размещена вне компонента для чистоты кода
+const getButtonStyle = (user: User, currentUserId: string | null) => {
+	// 1. Если есть активный фон - ставим его
+	if (user.fon_schildik_active_url) {
+		return {
+			backgroundImage: `url(${user.fon_schildik_active_url})`,
+			backgroundSize: 'cover',
+			backgroundPosition: 'center',
+			color: 'white',
+			textShadow:
+				'-1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black',
+		}
+	}
+
+	// 2. Если нет фона, но это текущий пользователь - делаем фон зеленым
+	if (String(user.id) === currentUserId) {
+		return { backgroundColor: '#d0f0c0' }
+	}
+
+	// 3. Во всех остальных случаях - фон прозрачный
+	return { backgroundColor: 'transparent' }
+}
+
 const RightPanel: React.FC = () => {
 	const { users, currentUserId } = useUsers()
 	const [searchQuery, setSearchQuery] = useState('')
@@ -29,6 +53,7 @@ const RightPanel: React.FC = () => {
 			alert(result.message)
 		}
 	}
+
 	const handleClick = (user: any) => {
 		setSelectedUser(user)
 	}
@@ -41,6 +66,7 @@ const RightPanel: React.FC = () => {
 			console.error('Ошибка при обновлении:', result.message)
 		}
 	}
+
 	useEffect(() => {
 		if (role === 'general') {
 			setIsGeneral(true)
@@ -63,26 +89,14 @@ const RightPanel: React.FC = () => {
 					<li key={user.id}>
 						<button
 							onClick={() => handleClick(user)}
-							style={
-								// 1. Сначала проверяем на совпадение с особым ID для фото
-								user.id === 20
-									? {
-											// Если ДА - ставим фото как фон
-											backgroundImage: `url('/SanyaChist.png')`,
-											backgroundSize: 'cover',
-											backgroundPosition: 'center',
-											color: 'white',
-											textShadow:
-												'-1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black',
-									  }
-									: // 2. Если НЕТ - проверяем, совпадает ли user.id с ID залогиненного пользователя
-									user.id === currentUserId
-									? { backgroundColor: '#d0f0c0' } // Если ДА - ставим зелёный фон
-									: // 3. Если НИ ОДНО из условий не выполнено - оставляем стандартный прозрачный фон
-									  { backgroundColor: 'transparent' }
-							}
+							style={getButtonStyle(
+								user,
+								currentUserId !== null ? String(currentUserId) : null
+							)}
 						>
-							{user.username} | @{user.discord}
+							<span className='truncate-text' title={user.username}>
+								{user.username} | @{user.discord}
+							</span>
 						</button>
 					</li>
 				))}

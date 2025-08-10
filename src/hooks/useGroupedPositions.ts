@@ -28,7 +28,9 @@ export const useGroupedPositions = () => {
 				setLoading(true)
 
 				const response = await fetch(
-					`${import.meta.env.VITE_API_URL}/api/positions?populate=*`
+					`${
+						import.meta.env.VITE_API_URL
+					}/api/positions?populate=*&filters[buy]=true`
 				)
 
 				if (!response.ok) {

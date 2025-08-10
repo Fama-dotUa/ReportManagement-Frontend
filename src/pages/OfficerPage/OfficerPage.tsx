@@ -10,6 +10,7 @@ import LeftPanel from './LeftPanel'
 import RightPanel from './RightPanel'
 import AllSoldiers from '../../components/CenterForms/AllSoldiers'
 import ReportForm from '../../components/CenterForms/ReportForm'
+import ThemeToggleButton from '../../components/ThemeContext/ThemeToggleButton'
 
 const OfficerPage: React.FC = () => {
 	const [activeTab, setActiveTab] = useState<'all' | 'report'>('all')
@@ -29,6 +30,7 @@ const OfficerPage: React.FC = () => {
 
 			<div className='officer-nav'>
 				<div className='left-nav'>
+					<ThemeToggleButton />
 					<div className='menu'>STV_sqúad</div>
 				</div>
 
