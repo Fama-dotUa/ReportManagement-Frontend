@@ -11,6 +11,8 @@ import ChangePasswordModal from '../ChangePassword/ChangePasswordModal'
 import { IoIosInformationCircleOutline } from 'react-icons/io'
 import ProfileInfoPanel from '../ProfileInfoPanel/ProfileInfoPanel'
 import { useAuth } from '../../hooks/useAuth'
+import { LuView } from 'react-icons/lu'
+
 type Props = {
 	user_to: User
 	editable?: boolean
@@ -30,6 +32,7 @@ const UserProfileForm: React.FC<Props> = ({
 	const [showAvatarModal, setShowAvatarModal] = useState(false)
 	const [showPasswordModal, setShowPasswordModal] = useState(false)
 	const [showInfoPanel, setShowInfoPanel] = useState(false)
+	const [showAppearancePanel, setShowAppearancePanel] = useState(false)
 	const {
 		formData,
 		changed,
@@ -152,7 +155,16 @@ const UserProfileForm: React.FC<Props> = ({
 							<RiLockPasswordFill />
 						</button>
 					)}
-
+					{isSelf && (
+						<button
+							type='button'
+							className='Appearance-button fixed'
+							title='Внешний вид'
+							onClick={() => setShowAppearancePanel(true)}
+						>
+							<LuView />
+						</button>
+					)}
 					<button
 						type='button'
 						className='close-button fixed'
@@ -253,6 +265,7 @@ const UserProfileForm: React.FC<Props> = ({
 					</div>
 				</div>
 			)}
+			{showAppearancePanel && <></>}
 		</>
 	)
 }
