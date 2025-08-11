@@ -210,14 +210,35 @@
 .cosmetic-card .buy-button:hover {
 	background-color: #805ad5;
 }
+.cosmetic-card .buy-button:disabled {
+	background-color: #cbd5e0; /* Серый цвет для неактивной кнопки */
+	color: #a0aec0; /* Темно-серый цвет текста */
+	cursor: not-allowed; /* Показывает "запрещенный" курсор при наведении */
+}
 
 .eye-button {
 	background-color: #4299e1 !important;
 }
-
+.eye-button:disabled {
+	background-color: #cccccc !important; /* Серый цвет для неактивной кнопки */
+	color: #666666 !important; /* Темно-серый цвет текста */
+	cursor: not-allowed; /* Показывает "запрещенный" курсор при наведении */
+}
 .button-icon-cosmeticCard {
 	color: white;
 	font-size: 2rem;
 	padding: 0 !important;
 	margin-top: 0.5rem;
+}
+
+/* Cosmetic.css или другой файл стилей */
+
+.owned-badge {
+	font-size: 0.9rem;
+	font-weight: 700;
+	color: #48bb78; /* Зеленый цвет */
+	background-color: rgba(72, 187, 120, 0.1);
+	padding: 0.3rem 0.8rem;
+	border-radius: 9999px;
+	border: 1px solid #48bb78;
 }

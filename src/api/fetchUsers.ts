@@ -10,11 +10,11 @@ export const fetchUsers = async () => {
 		&populate[fon_schildik_active][populate]=image
 		&populate[framesfor_avatar_active][populate]=image
 		&populate[profile_background_active][populate]=image
-		&populate[fon_schildiks_all][filters][publishedAt][$notNull]=false
+		&populate[fon_schildiks_all][filters][publishedAt][$notNull]=null
 		&populate[fon_schildiks_all][populate]=image
-		&populate[framesfor_avatars_all][filters][publishedAt][$notNull]=false
+		&populate[framesfor_avatars_all][filters][publishedAt][$notNull]=null
 		&populate[framesfor_avatars_all][populate]=image
-		&populate[profile_backgrounds_all][filters][publishedAt][$notNull]=false
+		&populate[profile_backgrounds_all][filters][publishedAt][$notNull]=null
 		&populate[profile_backgrounds_all][populate]=image
 `,
 		{

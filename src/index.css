@@ -25,6 +25,7 @@
 	--description-color: rgba(106, 0, 255, 0.8);
 	--chiher-color: rgba(120, 20, 20, 0.8);
 	--status-text-color: rgba(20, 120, 20, 0.8);
+	--form-background: rgba(255, 255, 255, 0.8);
 }
 [data-theme='dark'] {
 	--background-color: rgba(92, 92, 92, 0.45);
@@ -41,6 +42,7 @@
 	--description-color: rgba(38, 255, 0, 0.8);
 	--chiher-color: rgba(255, 0, 0, 0.8);
 	--status-text-color: rgba(48, 115, 223, 0.8);
+	--form-background: rgba(70, 66, 66, 0.7);
 }
 a {
 	font-weight: 500;

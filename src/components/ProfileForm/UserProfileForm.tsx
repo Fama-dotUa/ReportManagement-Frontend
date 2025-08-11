@@ -140,7 +140,7 @@ const UserProfileForm: React.FC<Props> = ({
 			if (!response.ok) {
 				throw new Error('Ошибка при сохранении косметики.')
 			}
-			alert('Косметика успешно сохранена!')
+			location.reload()
 		} catch (error) {
 			console.error('Ошибка сохранения:', error)
 			alert('Не удалось сохранить косметику. Попробуйте еще раз.')

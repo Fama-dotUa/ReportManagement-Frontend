@@ -12,9 +12,9 @@
 }
 
 .modalCosmetic {
-	background: rgba(195, 193, 193, 0.7);
+	background: var(--form-background);
 	backdrop-filter: blur(10px);
-	color: rgba(0, 0, 0, 0.5);
+	color: var(--text-color);
 	padding: 20px;
 	border-radius: 8px;
 	position: relative;
@@ -42,7 +42,7 @@
 .cosmetic-row-header h3 {
 	font-size: 1.5rem;
 	font-weight: 600;
-	color: #e2e8f0;
+	color: var(--text-color);
 }
 
 .scroll-buttons {
@@ -187,4 +187,8 @@
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
+}
+
+.cosmetic-item-preview.schildik-item .item-name-overlay {
+	font-size: 9px;
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-// Импортируем наш основной тип из компонента, чтобы все было согласовано
+
 import type {
 	CosmeticItem,
 	FrameItem,
@@ -7,7 +7,7 @@ import type {
 	ChevronBgItem,
 } from '../pages/CosmeticsPage/CosmeticCard'
 
-// --- Типизация ---
+import type { User } from '../types/User'
 
 export interface AllCosmeticsData {
 	frames: FrameItem[]
@@ -15,18 +15,12 @@ export interface AllCosmeticsData {
 	schildiks: ChevronBgItem[]
 }
 
-// --- Вспомогательные функции ---
-
 const API_URL = import.meta.env.VITE_API_URL
 
-/**
- * ✅ ИСПРАВЛЕННАЯ ФУНКЦИЯ
- * Трансформирует коллекцию из Strapi в массив объектов,
- * соответствующих сложному типу CosmeticItem с вложенным объектом 'preview'.
- */
 const transformStrapiCollection = (
 	collection: any[],
-	type: 'frame' | 'profile-bg' | 'chevron-bg'
+	type: 'frame' | 'profile-bg' | 'chevron-bg',
+	ownedItemIds: Set<number>
 ): CosmeticItem[] => {
 	return collection.map(item => {
 		const imageUrl = item.image.url
@@ -38,9 +32,9 @@ const transformStrapiCollection = (
 			title: item.name,
 			description: item.description,
 			price: item.CR,
+			canBuy: !ownedItemIds.has(item.id),
 		}
 
-		// Создаем правильную структуру с вложенным объектом preview
 		switch (type) {
 			case 'frame':
 				return {
@@ -68,17 +62,13 @@ const transformStrapiCollection = (
 					},
 				}
 			default:
-				// Эта ветка никогда не должна выполниться при правильных типах,
-				// но она полезна для отладки и безопасности типов.
 				const exhaustiveCheck: never = type
 				throw new Error(`Unhandled cosmetic type: ${exhaustiveCheck}`)
 		}
 	})
 }
 
-// --- Основной хук ---
-
-export const useAllCosmetics = () => {
+export const useAllCosmetics = (user: User | null) => {
 	const [data, setData] = useState<AllCosmeticsData>({
 		frames: [],
 		backgrounds: [],
@@ -94,7 +84,7 @@ export const useAllCosmetics = () => {
 
 				const fetchCollection = (collectionName: string) => {
 					return fetch(
-						`${API_URL}/api/${collectionName}?populate=*&filters[buy]=true`
+						`${API_URL}/api/${collectionName}?populate=*&filters[buy]=true&filters[publishedAt][$notNull]=null`
 					).then(res => {
 						if (!res.ok) {
 							throw new Error(`Failed to fetch ${collectionName}`)
@@ -108,19 +98,32 @@ export const useAllCosmetics = () => {
 					fetchCollection('profile-backgrounds'),
 					fetchCollection('fon-schildiks'),
 				])
+				console.log(schildiksRes)
+				const ownedFrames = new Set(
+					user?.framesfor_avatars_all?.map(i => i.id) || []
+				)
+				const ownedBackgrounds = new Set(
+					user?.profile_backgrounds_all?.map(i => i.id) || []
+				)
+				const ownedSchildiks = new Set(
+					user?.fon_schildiks_all?.map(i => i.id) || []
+				)
 
 				setData({
 					frames: transformStrapiCollection(
 						framesRes.data,
-						'frame'
+						'frame',
+						ownedFrames
 					) as FrameItem[],
 					backgrounds: transformStrapiCollection(
 						backgroundsRes.data,
-						'profile-bg'
+						'profile-bg',
+						ownedBackgrounds
 					) as ProfileBgItem[],
 					schildiks: transformStrapiCollection(
 						schildiksRes.data,
-						'chevron-bg'
+						'chevron-bg',
+						ownedSchildiks
 					) as ChevronBgItem[],
 				})
 			} catch (e: any) {
@@ -131,7 +134,7 @@ export const useAllCosmetics = () => {
 		}
 
 		fetchAllCollections()
-	}, [])
+	}, [user])
 
 	return { allCosmetics: data, loading, error }
 }

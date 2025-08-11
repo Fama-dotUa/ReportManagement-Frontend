@@ -9,6 +9,7 @@ interface BaseCosmeticItem {
 	title: string
 	description: string
 	price: number
+	canBuy: boolean
 }
 
 // Типы для каждого вида превью
@@ -41,8 +42,9 @@ export type CosmeticItem = FrameItem | ProfileBgItem | ChevronBgItem
 
 interface CosmeticCardProps {
 	item: CosmeticItem
-	onBuy: (id: string) => void
+	onBuy: (id: CosmeticItem) => void
 	hoverColor: HoverColor
+	userCR: number
 }
 
 // --- Сам компонент ---
@@ -51,6 +53,7 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 	item,
 	onBuy,
 	hoverColor,
+	userCR,
 }) => {
 	const renderPreview = () => {
 		switch (item.type) {
@@ -90,17 +93,18 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 			<p>{item.description}</p>
 			<div className='cosmetic-card-footer'>
 				<span>{item.price} CR</span>
-				<div style={{ display: 'flex', gap: '0.5rem' }}>
+
+				{item.canBuy ? (
 					<button
-						className='buy-button eye-button'
-						onClick={() => onBuy(item.id)}
+						className='buy-button'
+						onClick={() => onBuy(item)}
+						disabled={item.price > Number(userCR)}
 					>
-						<FaEye className='button-icon-cosmeticCard' />
+						Купить
 					</button>
-					<button className='buy-button' onClick={() => onBuy(item.id)}>
-						<RiShoppingBasketFill className='button-icon-cosmeticCard' />
-					</button>
-				</div>
+				) : (
+					<span className='owned-badge'>В коллекции</span>
+				)}
 			</div>
 		</div>
 	)

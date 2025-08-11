@@ -2,22 +2,87 @@
 import React from 'react'
 import { PageHeader } from '../SpecialistsPage/PageHeader'
 import { ContentSection } from '../SpecialistsPage/ContentSection'
-import { CosmeticCard, type HoverColor } from './CosmeticCard'
+import {
+	CosmeticCard,
+	type CosmeticItem,
+	type HoverColor,
+} from './CosmeticCard'
 import { useAllCosmetics } from '../../hooks/useAllCosmetics'
 import './CosmeticsPage.css'
+import { useAuth } from '../../hooks/useAuth'
 
 export const CosmeticsPage: React.FC = () => {
-	const { allCosmetics, loading, error } = useAllCosmetics()
+	const { user, CR, token } = useAuth()
 
-	const handleBuy = (id: string) => {
-		const allItems = [
-			...allCosmetics.frames,
-			...allCosmetics.backgrounds,
-			...allCosmetics.schildiks,
-		]
-		const item = allItems.find(i => i.id.toString() === id)
-		if (item) {
-			alert(`Покупка: ${item.title} за ${item.price} CR`)
+	const { allCosmetics, loading, error } = useAllCosmetics(user)
+
+	const API_URL = import.meta.env.VITE_API_URL
+
+	const handleBuy = async (item: CosmeticItem) => {
+		if (!user) {
+			alert('Пользователь не найден!')
+			return
+		}
+
+		if ((user.CR || 0) < item.price) {
+			alert('Недостаточно средств для покупки!')
+			return
+		}
+
+		const isConfirmed = window.confirm(
+			`Купить "${item.title}" за ${item.price} CR?`
+		)
+
+		if (!isConfirmed) return
+
+		// --- Шаг 2: Подготовка данных для PUT-запроса ---
+		try {
+			let relationField = '' // Поле для обновления (напр., 'framesfor_avatars_all')
+			let currentOwnedIds: number[] = [] // ID предметов, которые уже есть у пользователя
+
+			// Определяем, с какой связью мы работаем, в зависимости от типа предмета
+			switch (item.type) {
+				case 'frame':
+					relationField = 'framesfor_avatars_all'
+					currentOwnedIds = user.framesfor_avatars_all?.map(i => i.id) || []
+					break
+				case 'profile-bg':
+					relationField = 'profile_backgrounds_all'
+					currentOwnedIds = user.profile_backgrounds_all?.map(i => i.id) || []
+					break
+				case 'chevron-bg':
+					relationField = 'fon_schildiks_all'
+					currentOwnedIds = user.fon_schildiks_all?.map(i => i.id) || []
+					break
+				default:
+					throw new Error('Неизвестный тип предмета')
+			}
+
+			// Создаем тело запроса
+			const payload = {
+				CR: (user.CR || 0) - item.price,
+				[relationField]: [...currentOwnedIds, parseInt(item.id, 10)],
+			}
+
+			// --- Шаг 3: Отправка запроса на сервер ---
+			const response = await fetch(`${API_URL}/api/users/${user.id}`, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${token}`,
+				},
+				body: JSON.stringify(payload),
+			})
+
+			const updatedUser = await response.json()
+
+			if (!response.ok) {
+				throw new Error(updatedUser.error?.message || 'Ошибка при покупке.')
+			}
+			alert('Покупка совершена успешно!')
+		} catch (err: any) {
+			console.error('Ошибка покупки:', err)
+			alert(`Ошибка: ${err.message}`)
 		}
 	}
 
@@ -52,6 +117,7 @@ export const CosmeticsPage: React.FC = () => {
 									item={item}
 									onBuy={handleBuy}
 									hoverColor={'green' as HoverColor}
+									userCR={CR}
 								/>
 							))}
 						</div>
@@ -65,6 +131,7 @@ export const CosmeticsPage: React.FC = () => {
 									item={item}
 									onBuy={handleBuy}
 									hoverColor={'blue' as HoverColor}
+									userCR={CR}
 								/>
 							))}
 						</div>
@@ -78,6 +145,7 @@ export const CosmeticsPage: React.FC = () => {
 									item={item}
 									onBuy={handleBuy}
 									hoverColor={'red' as HoverColor}
+									userCR={CR}
 								/>
 							))}
 						</div>
