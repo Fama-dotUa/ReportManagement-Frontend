@@ -24,8 +24,6 @@ const transformStrapiData = (
 	item: any,
 	type: CosmeticItem['type']
 ): CosmeticItem => {
-	console.log('Transforming item:', item)
-
 	return {
 		id: item.id,
 		name: item.name,

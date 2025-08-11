@@ -220,6 +220,9 @@ export const useUserProfileForm = (
 						defaultValue={
 							Array.isArray(formData[field])
 								? (formData[field] as any[]).map(item => item.name).join(', ')
+								: typeof formData[field] === 'object' &&
+								  formData[field] !== null
+								? (formData[field] as any).name
 								: formData[field] || ''
 						}
 						onChange={e => handleFieldChange(field, e.target.value)}
@@ -240,7 +243,11 @@ export const useUserProfileForm = (
 							? (formData[field] as { id: number; name: string }[])
 									.map(item => item.name)
 									.join(', ')
-							: formData[field] || '—'}
+							: typeof formData[field] === 'object' &&
+							  formData[field] !== null &&
+							  'name' in formData[field]
+							? (formData[field] as any).name
+							: formData[field] ?? '—'}
 					</h2>
 				</div>
 			)}
@@ -261,7 +268,14 @@ export const useUserProfileForm = (
 								? (formData[field] as { id: number; name: string }[])
 										.map(item => item.name)
 										.join(', ')
-								: formData[field] || ''
+								: typeof formData[field] === 'object' &&
+								  formData[field] !== null &&
+								  'name' in formData[field]
+								? String((formData[field] as { name: string }).name)
+								: typeof formData[field] === 'string' ||
+								  typeof formData[field] === 'number'
+								? String(formData[field])
+								: ''
 						}
 						onChange={e => handleFieldChange(field, e.target.value)}
 					>
@@ -288,10 +302,12 @@ export const useUserProfileForm = (
 					<h2>
 						<label>{label}</label>{' '}
 						{Array.isArray(formData[field])
-							? (formData[field] as { id: number; name: string }[])
+							? (formData[field] as { name: string }[])
 									.map(item => item.name)
 									.join(', ')
-							: formData[field] ?? '—'}
+							: typeof formData[field] === 'object' && formData[field] !== null
+							? (formData[field] as { name: string }).name
+							: formData[field] ?? ' - '}
 					</h2>
 				</div>
 			)}

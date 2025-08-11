@@ -1,14 +1,7 @@
 import { useEffect, useState } from 'react'
 import { fetchUsers } from '../api/fetchUsers'
 import { transformUsers } from '../api/transformUsers'
-
-type User = {
-	id: number
-	username: string
-	discord: string
-	icon?: string
-	rank?: string
-}
+import type { User } from '../types/User'
 
 export const useUsers = () => {
 	const [users, setUsers] = useState<User[]>([])

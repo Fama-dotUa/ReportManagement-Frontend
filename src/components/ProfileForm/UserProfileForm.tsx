@@ -12,6 +12,7 @@ import { IoIosInformationCircleOutline } from 'react-icons/io'
 import ProfileInfoPanel from '../ProfileInfoPanel/ProfileInfoPanel'
 import { useAuth } from '../../hooks/useAuth'
 import { LuView } from 'react-icons/lu'
+import { Cosmetics } from '../CosmeticForm/Cosmetic'
 
 type Props = {
 	user_to: User
@@ -110,6 +111,39 @@ const UserProfileForm: React.FC<Props> = ({
 		} catch (error) {
 			console.error('Ошибка сохранения:', error)
 			alert('Не удалось сохранить описание. Попробуйте еще раз.')
+		}
+	}
+
+	const handleCosmeticChange = async (cosmeticData: {
+		framesfor_avatar_active: number
+		profile_background_active: number
+		fon_schildik_active: number
+	}): Promise<void> => {
+		if (!token || !user_to.id) {
+			alert('Ошибка: Пользователь не авторизован или ID не найден.')
+			return
+		}
+
+		try {
+			const response = await fetch(
+				`${import.meta.env.VITE_API_URL}/api/users/${user_to.id}`,
+				{
+					method: 'PUT',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${token}`,
+					},
+					body: JSON.stringify(cosmeticData),
+				}
+			)
+
+			if (!response.ok) {
+				throw new Error('Ошибка при сохранении косметики.')
+			}
+			alert('Косметика успешно сохранена!')
+		} catch (error) {
+			console.error('Ошибка сохранения:', error)
+			alert('Не удалось сохранить косметику. Попробуйте еще раз.')
 		}
 	}
 
@@ -265,7 +299,13 @@ const UserProfileForm: React.FC<Props> = ({
 					</div>
 				</div>
 			)}
-			{showAppearancePanel && <></>}
+			{showAppearancePanel && (
+				<Cosmetics
+					user={user_to}
+					onClose={() => setShowAppearancePanel(false)}
+					onSubmit={handleCosmeticChange}
+				/>
+			)}
 		</>
 	)
 }
