@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IoCloseSharp } from 'react-icons/io5'
-import { IoNotifications } from 'react-icons/io5'
+import { MdOutlineMail } from 'react-icons/md'
 import './OfficerPage.css'
 
 import { useAuth } from '../../hooks/useAuth'
@@ -12,6 +12,7 @@ import AllSoldiers from '../../components/CenterForms/AllSoldiers'
 import ReportForm from '../../components/CenterForms/ReportForm'
 import ThemeToggleButton from '../../components/ThemeContext/ThemeToggleButton'
 import { handleDailyLoginReward } from '../../scripts/dailyReward'
+import { BurgerMenu } from '../../components/BurgerMenu/BurgerMenu'
 
 const OfficerPage: React.FC = () => {
 	const [activeTab, setActiveTab] = useState<'all' | 'report'>('all')
@@ -29,12 +30,14 @@ const OfficerPage: React.FC = () => {
 			handleDailyLoginReward(user)
 		}
 	}, [isAuth, user])
+
 	return (
 		<div className='officer-page'>
 			<div className='blur-background'></div>
 
 			<div className='officer-nav'>
 				<div className='left-nav'>
+					<BurgerMenu />
 					<ThemeToggleButton />
 					<div className='menu'>STV_sqúad</div>
 				</div>
@@ -47,7 +50,7 @@ const OfficerPage: React.FC = () => {
 						Все солдаты
 					</button>
 					{role &&
-						['officer', 'general', 'comander-officer'].includes(role) && (
+						['officer', 'general', 'comander_officer'].includes(role) && (
 							<button
 								className={
 									activeTab === 'report' ? 'nav-button active' : 'nav-button'
@@ -65,7 +68,7 @@ const OfficerPage: React.FC = () => {
 				<div className='right-nav'>
 					<label className='label-CR'>CR: {CR}</label>
 					<button className='nav-button Notifications-nav-button'>
-						<IoNotifications />
+						<MdOutlineMail />
 					</button>
 					<button className='nav-button exit-nav-button' onClick={handleLogout}>
 						<IoCloseSharp />

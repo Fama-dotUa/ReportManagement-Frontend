@@ -79,7 +79,12 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 			return
 		}
 
-		onCreate({ ...form, icon: tempIcon, id: 0 })
+		onCreate({
+			...form,
+			icon: tempIcon,
+			id: 0,
+			CR: 0,
+		})
 	}
 
 	return (

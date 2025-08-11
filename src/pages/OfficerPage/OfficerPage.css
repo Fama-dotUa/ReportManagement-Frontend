@@ -32,7 +32,7 @@
 	background: var(--panel-background);
 	border-radius: 4px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-	z-index: 1;
+
 	position: relative;
 	margin-bottom: 20px;
 }
@@ -59,7 +59,8 @@
 	width: 25%;
 	height: 100%;
 	align-items: center;
-	justify-content: center;
+	gap: 20px;
+	justify-content: flex-start;
 }
 
 .menu {

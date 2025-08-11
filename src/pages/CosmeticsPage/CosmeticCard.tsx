@@ -1,6 +1,5 @@
 import React from 'react'
-import { RiShoppingBasketFill } from 'react-icons/ri'
-import { FaEye } from 'react-icons/fa6'
+
 export type HoverColor = 'green' | 'blue' | 'red'
 
 // Базовый тип

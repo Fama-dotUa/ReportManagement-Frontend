@@ -98,7 +98,7 @@ export const useAllCosmetics = (user: User | null) => {
 					fetchCollection('profile-backgrounds'),
 					fetchCollection('fon-schildiks'),
 				])
-				console.log(schildiksRes)
+
 				const ownedFrames = new Set(
 					user?.framesfor_avatars_all?.map(i => i.id) || []
 				)

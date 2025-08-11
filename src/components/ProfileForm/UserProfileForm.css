@@ -376,8 +376,14 @@
 
 .positions-container {
 	flex-wrap: wrap;
-	width: 60%;
+	align-content: flex-start;
+	width: 90%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	height: 180px;
+	justify-content: flex-start;
 	gap: 6px;
+	border-top: var(--border-color) 1px solid;
 }
 
 #field-row-label {
