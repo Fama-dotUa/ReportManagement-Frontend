@@ -36,7 +36,6 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 			if (res.ok) {
 				const token = data.jwt
 				const user = data.user
-
 				localStorage.setItem('jwt', token)
 				localStorage.setItem('user', JSON.stringify(user))
 

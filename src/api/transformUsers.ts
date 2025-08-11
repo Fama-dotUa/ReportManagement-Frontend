@@ -4,7 +4,9 @@ export const transformUsers = (data: any[]) => {
 		id: user.id,
 		username: user.username,
 		discord: user.discord,
+		CR: user.CR || 0,
 		rank: user.rank?.name ?? '',
+		rank_daily_reward: user.rank?.daily_reward || 0,
 		icon: user.Icon?.url ? API_URL + user.Icon.url : '',
 		role: user.role?.type || 'authenticated',
 		Description: user.Description || '',
@@ -12,7 +14,9 @@ export const transformUsers = (data: any[]) => {
 			user.positions?.map((pos: any) => ({
 				id: pos.id,
 				name: pos.name,
+				position_daily_reward: pos.daily_reward || 0,
 			})) || [],
+		last_login: user.last_login || '',
 		fon_schildik_active_url: user.fon_schildik_active?.image?.url
 			? API_URL + user.fon_schildik_active.image.url
 			: false,

@@ -19,6 +19,6 @@ export const fetchUsers = async () => {
 	if (!Array.isArray(rawUsers)) {
 		throw new Error('Ответ Strapi не является массивом пользователей')
 	}
-	console.log('Fetched users:', rawUsers)
+
 	return await rawUsers
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { IoCloseSharp } from 'react-icons/io5'
 import { IoNotifications } from 'react-icons/io5'
@@ -11,11 +11,12 @@ import RightPanel from './RightPanel'
 import AllSoldiers from '../../components/CenterForms/AllSoldiers'
 import ReportForm from '../../components/CenterForms/ReportForm'
 import ThemeToggleButton from '../../components/ThemeContext/ThemeToggleButton'
+import { handleDailyLoginReward } from '../../scripts/dailyReward'
 
 const OfficerPage: React.FC = () => {
 	const [activeTab, setActiveTab] = useState<'all' | 'report'>('all')
 	const navigate = useNavigate()
-	const { role, CR } = useAuth()
+	const { user, isAuth, role, CR } = useAuth()
 	const handleLogout = () => {
 		const confirmLogout = window.confirm('Вы действительно хотите выйти?')
 		if (confirmLogout) {
@@ -23,7 +24,11 @@ const OfficerPage: React.FC = () => {
 			navigate('/')
 		}
 	}
-
+	useEffect(() => {
+		if (isAuth && user) {
+			handleDailyLoginReward(user)
+		}
+	}, [isAuth, user])
 	return (
 		<div className='officer-page'>
 			<div className='blur-background'></div>
