@@ -20,7 +20,7 @@ export const transformUsers = (data: any[]) => {
 				position_daily_reward: pos.daily_reward || 0,
 			})) || [],
 		last_login: user.last_login || '',
-
+		last_seen: user.last_seen || '',
 		fon_schildik_active_url: user.fon_schildik_active?.image?.url
 			? API_URL + user.fon_schildik_active.image.url
 			: undefined,

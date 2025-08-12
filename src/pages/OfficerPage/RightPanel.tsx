@@ -1,40 +1,51 @@
 import React, { useEffect, useState } from 'react'
+import dayjs from 'dayjs' // <-- Добавлен импорт
 import { useUsers } from '../../hooks/useUsers'
 import { useCurrentUser } from '../../hooks/useCurrentUser'
 import { useSearch } from '../../hooks/useSearch'
 import UserProfileModal from '../../components/ProfileForm/UserProfileModal'
 import CreateSoldierModal from '../../components/CreateSoldierModal/CreateSoldierModal'
 import { useCreateUser } from '../../hooks/useCreateUser'
-
 import { useUpdateUser } from '../../hooks/useUpdateUser'
 import { useAuth } from '../../hooks/useAuth'
 import type { User } from '../../types/User'
 
-const getButtonStyle = (user: User, currentUserId: string | null) => {
+// Обновлённая функция getButtonStyle
+const getButtonStyle = (
+	user: User,
+	currentUserId: string | null
+): React.CSSProperties => {
+	const style: React.CSSProperties = {
+		border: '2px solid transparent',
+		transition: 'border-color 0.3s ease',
+	}
+
+	const isOnline =
+		user.last_seen &&
+		dayjs(user.last_seen).isAfter(dayjs().subtract(5, 'minutes'))
+
+	if (isOnline) {
+		style.borderColor = '#28a745' // Зелёная рамка
+	}
+
 	if (user.fon_schildik_active_url) {
-		return {
-			backgroundImage: `url(${user.fon_schildik_active_url})`,
-			backgroundSize: 'cover',
-			backgroundPosition: 'center',
-			color: 'white',
-			textShadow:
-				'-1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black',
-		}
+		style.backgroundImage = `url(${user.fon_schildik_active_url})`
+		style.backgroundSize = 'cover'
+		style.backgroundPosition = 'center'
+		style.color = 'white'
+		style.textShadow = '1px 1px 1px black'
+	} else if (String(user.id) === currentUserId) {
+		style.backgroundColor = '#d0f0c0'
+	} else {
+		style.backgroundColor = 'transparent'
 	}
 
-	if (String(user.id) === currentUserId) {
-		return { backgroundColor: '#d0f0c0' }
-	}
-
-	return { backgroundColor: 'transparent' }
+	return style
 }
 
 const RightPanel: React.FC = () => {
 	const { data: allUsers, isLoading: isLoadingUsers } = useUsers()
-
-	// Мгновенно получаем данные текущего юзера из кэша
 	const { data: currentUser } = useCurrentUser()
-
 	const [searchQuery, setSearchQuery] = useState('')
 	const filteredUsers = useSearch(allUsers || [], searchQuery)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -68,11 +79,7 @@ const RightPanel: React.FC = () => {
 	}
 
 	useEffect(() => {
-		if (role === 'general') {
-			setIsGeneral(true)
-		} else {
-			setIsGeneral(false)
-		}
+		setIsGeneral(role === 'general')
 	}, [role])
 
 	if (isLoadingUsers) {

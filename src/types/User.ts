@@ -29,8 +29,7 @@ export type User = {
 	framesfor_avatar_active_url?: string
 	profile_background_active_url?: string
 	CR_for_all_time?: number
-
-	// --- Новые добавленные поля ---
+	last_seen?: string
 	fon_schildiks_all?: CosmeticItem[]
 	fon_schildik_active?: CosmeticItem
 	framesfor_avatars_all?: CosmeticItem[]

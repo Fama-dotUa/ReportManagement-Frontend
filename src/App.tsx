@@ -10,24 +10,38 @@ import { AnimatePresence } from 'framer-motion'
 // Импортируем нашу новую обертку
 import { AnimatedLayout } from './AnimatedLayout'
 
+import { useUpdateActivity } from './hooks/useUpdateActivity'
+
 // Импортируем все страницы
 import StartPages from './pages/StartPage/StartPage'
 import OfficerPage from './pages/OfficerPage/OfficerPage'
 import { Store } from './pages/StorePage/Store'
 import { SpecialistsPage } from './pages/SpecialistsPage/SpecialistsPage'
 import { CosmeticsPage } from './pages/CosmeticsPage/CosmeticsPage'
+import { useAuth } from './hooks/useAuth'
+import { useEffect } from 'react'
 
 function App() {
+	const { user } = useAuth()
 	const location = useLocation()
+	const { mutate: updateActivity } = useUpdateActivity()
+
+	useEffect(() => {
+		if (user?.id) {
+			updateActivity(user.id)
+
+			const intervalId = setInterval(() => {
+				updateActivity(user.id)
+			}, 60000)
+
+			return () => clearInterval(intervalId)
+		}
+	}, [user?.id, updateActivity])
 
 	return (
-		// AnimatePresence должен быть снаружи Routes
 		<AnimatePresence mode='wait'>
-			{/* Ключ и location необходимы для корректной работы AnimatePresence с роутером */}
 			<Routes location={location} key={location.pathname}>
-				{/* Создаем родительский маршрут с нашей анимированной оберткой */}
 				<Route path='/' element={<AnimatedLayout />}>
-					{/* А все дочерние маршруты будут рендериться внутри <Outlet /> */}
 					<Route index element={<StartPages />} />
 					<Route path='officer' element={<OfficerPage />} />
 					<Route path='store' element={<Store />} />
@@ -38,10 +52,6 @@ function App() {
 		</AnimatePresence>
 	)
 }
-
-// Важно: чтобы useLocation работал, App нужно обернуть в <Router> в файле main.tsx (или index.tsx)
-// Если <Router> был здесь, оставляем его. Если он был в main.tsx, то убираем его из App.tsx
-// Для простоты я оставлю <Router> здесь, как в вашем примере.
 
 const Root = () => (
 	<Router>
