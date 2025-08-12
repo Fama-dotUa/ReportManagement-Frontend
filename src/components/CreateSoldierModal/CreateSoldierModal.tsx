@@ -100,6 +100,7 @@ const CreateSoldierModal: React.FC<Props> = ({ onClose, onCreate }) => {
 							src={tempIcon || '/default-avatar.png'}
 							alt='avatar'
 							className='avatar-img'
+							loading='lazy'
 						/>
 						<button
 							type='button'

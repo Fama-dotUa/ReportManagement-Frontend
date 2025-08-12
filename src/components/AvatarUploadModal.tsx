@@ -53,6 +53,7 @@ const AvatarUploadModal: React.FC<Props> = ({
 							src={preview}
 							alt='preview'
 							className='avatar-upload-modal__preview'
+							loading='lazy'
 						/>
 					) : (
 						<p>Перетащите файл сюда или выберите на компьютере</p>

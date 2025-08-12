@@ -81,6 +81,7 @@ export const CosmeticRow: React.FC<Props> = ({
 											: 'https://placehold.co/120x120/cccccc/ffffff?text=N/A'
 									}
 									alt={item.name}
+									loading='lazy'
 								/>
 								<div className='item-name-overlay'>{item.name}</div>
 							</div>

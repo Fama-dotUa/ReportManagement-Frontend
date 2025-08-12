@@ -153,6 +153,7 @@ const UserProfileForm: React.FC<Props> = ({
 				<img
 					src={formData.profile_background_active_url}
 					className='background-img-profile'
+					loading='lazy'
 				></img>
 				<div className='profile-top-panel'>
 					{(editable || isSelf) && (
@@ -221,6 +222,7 @@ const UserProfileForm: React.FC<Props> = ({
 								src={user_to.framesfor_avatar_active_url}
 								alt='avatar frame'
 								className='profile-frame'
+								loading='lazy'
 							/>
 
 							{editOk && (
@@ -247,6 +249,7 @@ const UserProfileForm: React.FC<Props> = ({
 								src={user_to.framesfor_avatar_active_url}
 								alt='хуй'
 								className='profile-frame'
+								loading='lazy'
 							/>
 						</div>
 					</div>

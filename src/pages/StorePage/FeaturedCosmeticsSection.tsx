@@ -8,7 +8,7 @@ import {
 // Компонент для отображения одной карточки превью
 const PreviewCard: React.FC<{ item: CosmeticItem }> = ({ item }) => (
 	<div className='cosmetic-preview-item'>
-		<img src={item.imageUrl} alt={item.name} />
+		<img src={item.imageUrl} alt={item.name} loading='lazy' />
 		<h3>{item.name}</h3>
 		<p>{item.description}</p>
 		<span className='preview-price'>{item.price} CR</span>

@@ -9,10 +9,7 @@ import { useUpdateUser } from '../../hooks/useUpdateUser'
 import { useAuth } from '../../hooks/useAuth'
 import type { User } from '../../types/User'
 
-// ✅ Вспомогательная функция для определения стилей кнопки
-// Размещена вне компонента для чистоты кода
 const getButtonStyle = (user: User, currentUserId: string | null) => {
-	// 1. Если есть активный фон - ставим его
 	if (user.fon_schildik_active_url) {
 		return {
 			backgroundImage: `url(${user.fon_schildik_active_url})`,
@@ -24,12 +21,10 @@ const getButtonStyle = (user: User, currentUserId: string | null) => {
 		}
 	}
 
-	// 2. Если нет фона, но это текущий пользователь - делаем фон зеленым
 	if (String(user.id) === currentUserId) {
 		return { backgroundColor: '#d0f0c0' }
 	}
 
-	// 3. Во всех остальных случаях - фон прозрачный
 	return { backgroundColor: 'transparent' }
 }
 

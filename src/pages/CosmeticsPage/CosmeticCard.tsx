@@ -62,6 +62,7 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 						src={item.preview.imageUrl}
 						alt={item.title}
 						className={`frame-preview ${item.preview.style}`}
+						loading='lazy'
 					/>
 				)
 			case 'profile-bg':
@@ -70,6 +71,7 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 						src={item.preview.imageUrl}
 						alt={item.title}
 						className='profile-bg-preview'
+						loading='lazy'
 					/>
 				)
 			case 'chevron-bg':
@@ -78,6 +80,7 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 						src={item.preview.imageUrl}
 						alt={item.title}
 						className='chevron-bg-preview'
+						loading='lazy'
 					/>
 				)
 			default:
