@@ -12,8 +12,8 @@ export const ShopHeader: React.FC<ShopHeaderProps> = ({ title, balance }) => {
 		<header className='header'>
 			<h1>{title}</h1>
 			<div className='balance-display'>
-				<span>Баланс CR:</span>
 				<span>{balance.toLocaleString()}</span>
+				<span> CR</span>
 			</div>
 			<button onClick={() => navigate('/officer')} className='back-button'>
 				<BsArrowLeft className='icon-arrow' /> На главную

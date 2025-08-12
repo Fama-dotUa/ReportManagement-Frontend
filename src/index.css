@@ -26,7 +26,8 @@
 	--chiher-color: rgba(120, 20, 20, 0.8);
 	--status-text-color: rgba(20, 120, 20, 0.8);
 	--form-background: rgba(255, 255, 255, 0.8);
-	--cosmetic-border-color: rgb(0, 0, 0, 0.15);
+	--cosmetic-border-color: rgba(91, 117, 143, 0.15);
+	--CR_for_all_time-color: rgba(82, 105, 123, 1);
 }
 [data-theme='dark'] {
 	--background-color: rgba(92, 92, 92, 0.45);
@@ -45,6 +46,7 @@
 	--status-text-color: rgba(48, 115, 223, 0.8);
 	--form-background: rgb(11, 11, 11, 0.8);
 	--cosmetic-border-color: rgba(171, 171, 171, 0.24);
+	--CR_for_all_time-color: rgb(114, 141, 151);
 }
 a {
 	font-weight: 500;

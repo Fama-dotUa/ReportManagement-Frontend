@@ -66,7 +66,9 @@ const OfficerPage: React.FC = () => {
 				</div>
 
 				<div className='right-nav'>
-					<label className='label-CR'>CR: {CR}</label>
+					<label className='label-CR'>
+						CR: {CR}/<span id='CR_for_all_time'>{user?.CR_for_all_time}</span>
+					</label>
 					<button className='nav-button Notifications-nav-button'>
 						<MdOutlineMail />
 					</button>
