@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useLogin } from '../../hooks/useLogin'
 import './AuthForm.css'
 
 type AuthFormProps = {
@@ -8,44 +9,28 @@ type AuthFormProps = {
 
 const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 	const [form, setForm] = useState({ username: '', password: '' })
-	const [error, setError] = useState<string | null>(null)
 	const navigate = useNavigate()
+
+	const { mutate: login, isPending, error } = useLogin()
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setForm({ ...form, [e.target.name]: e.target.value })
 	}
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
-		setError(null)
 
-		try {
-			const res = await fetch(
-				`${import.meta.env.VITE_API_URL}/api/auth/local`,
-				{
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						identifier: form.username,
-						password: form.password,
-					}),
-				}
-			)
-
-			const data = await res.json()
-
-			if (res.ok) {
-				const token = data.jwt
-				const user = data.user
-				localStorage.setItem('jwt', token)
-				localStorage.setItem('user', JSON.stringify(user))
-
-				navigate('/officer')
-			} else {
-				setError(data?.error?.message || 'Неверный логин или пароль')
-			}
-		} catch {
-			setError('Ошибка подключения к серверу')
+		const credentials = {
+			identifier: form.username,
+			password: form.password,
 		}
+
+		login(credentials, {
+			onSuccess: () => {
+				onClose()
+				navigate('/officer')
+			},
+		})
 	}
 
 	return (
@@ -64,8 +49,8 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 							value={form.username}
 							onChange={handleChange}
 							required
+							disabled={isPending}
 						/>
-
 						<input
 							type='password'
 							name='password'
@@ -73,9 +58,12 @@ const AuthForm: React.FC<AuthFormProps> = ({ onClose }) => {
 							value={form.password}
 							onChange={handleChange}
 							required
+							disabled={isPending}
 						/>
-						<button type='submit'>Войти</button>
-						{error && <p className='auth-error'>{error}</p>}
+						<button type='submit' disabled={isPending}>
+							{isPending ? 'Входим...' : 'Войти'}
+						</button>
+						{error && <p className='auth-error'>{error.message}</p>}
 					</form>
 				</div>
 			</div>

@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import React from 'react'
 import dayjs from 'dayjs'
 import './OfficerPage.css'
 
-import { useAuth } from '../../hooks/useAuth'
 import { getReportFileUrl } from '../../hooks/getReportFileUrl'
-
-import type { Report } from '../../intefaces/Report'
+import { useReports } from '../../hooks/useReports'
 
 const handlePreview = async (reportId: number) => {
 	const url = await getReportFileUrl(reportId)
@@ -18,44 +15,21 @@ const handlePreview = async (reportId: number) => {
 }
 
 const LeftPanel: React.FC = () => {
-	const [reports, setReports] = useState<Report[]>([])
-	const { token } = useAuth()
-	useEffect(() => {
-		const fetchReports = async () => {
-			const date = dayjs().subtract(3, 'day').startOf('day').toISOString()
-
-			const res = await axios.get(
-				`${import.meta.env.VITE_API_URL}/api/reports`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-					params: {
-						'filters[createdAt][$gte]': date,
-						'sort[0]': 'createdAt:desc',
-						'populate[user]': true,
-						'populate[reason]': true,
-					},
-				}
-			)
-			const reportsData = res.data.data.map((item: any) => ({
-				id: item.id,
-				createdAt: item.createdAt,
-				reasonCipher: item.reason?.cipher || ' ',
-				reasonNumber: item.reason?.number || 0,
-				username: item.user.username,
-			}))
-			setReports(reportsData)
-		}
-
-		fetchReports()
-	}, [])
+	const { data: reports, isLoading } = useReports()
+	if (isLoading) {
+		return (
+			<div className='left-panel'>
+				<h3>Последние рапорты</h3>
+				<p>Загрузка...</p>
+			</div>
+		)
+	}
 
 	return (
 		<div className='left-panel'>
 			<h3>Последние рапорты</h3>
 			<ul className='reports-list'>
-				{reports.map(report => (
+				{reports?.map(report => (
 					<li key={report.id}>
 						<button onClick={() => handlePreview(report.id)}>
 							{report.username} — {report.reasonCipher}-{report.reasonNumber}

@@ -14,6 +14,8 @@ import { useAuth } from '../../hooks/useAuth'
 import { LuView } from 'react-icons/lu'
 import { Cosmetics } from '../CosmeticForm/Cosmetic'
 
+import { useCurrentUser } from '../../hooks/useCurrentUser'
+
 type Props = {
 	user_to: User
 	editable?: boolean
@@ -27,7 +29,7 @@ const UserProfileForm: React.FC<Props> = ({
 	onSubmit,
 	onClose,
 }) => {
-	const { currentUserId } = useUsers()
+	const { data: currentUser } = useCurrentUser()
 	const { token } = useAuth()
 	const [editOk, setEditOk] = useState(false)
 	const [showAvatarModal, setShowAvatarModal] = useState(false)
@@ -54,7 +56,7 @@ const UserProfileForm: React.FC<Props> = ({
 		editable,
 		onSubmit,
 		onClose,
-		currentUserId ?? undefined
+		currentUser.id ?? undefined
 	)
 
 	const handlePasswordChange = async (currentPass: string, newPass: string) => {

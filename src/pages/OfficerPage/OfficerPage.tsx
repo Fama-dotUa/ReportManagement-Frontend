@@ -30,7 +30,6 @@ const OfficerPage: React.FC = () => {
 			handleDailyLoginReward(user)
 		}
 	}, [isAuth, user])
-
 	return (
 		<div className='officer-page'>
 			<div className='blur-background'></div>

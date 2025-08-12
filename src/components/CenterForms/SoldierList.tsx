@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import './SoldierList.css'
 import { useUsers } from '../../hooks/useUsers'
+import { useCurrentUser } from '../../hooks/useCurrentUser'
 import { useSearch } from '../../hooks/useSearch'
 import type { User } from '../../types/User'
 
@@ -10,7 +11,7 @@ interface Props {
 	excludeId?: number | string
 }
 const getButtonStyle = (user: User, currentUserId: string | null) => {
-	// 1. Если есть активный фон - ставим его
+	// ... (эта функция остаётся без изменений)
 	if (user.fon_schildik_active_url) {
 		return {
 			backgroundImage: `url(${user.fon_schildik_active_url})`,
@@ -21,19 +22,30 @@ const getButtonStyle = (user: User, currentUserId: string | null) => {
 				'-1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black',
 		}
 	}
-
-	// 2. Если нет фона, но это текущий пользователь - делаем фон зеленым
 	if (String(user.id) === currentUserId) {
 		return { backgroundColor: '#d0f0c0' }
 	}
-
-	// 3. Во всех остальных случаях - фон прозрачный
 	return { backgroundColor: 'transparent' }
 }
+
 const SoldierList: React.FC<Props> = ({ selectedId, onSelect, excludeId }) => {
-	const { users, currentUserId } = useUsers()
+	// ================== ВСЕ ХУКИ ДОЛЖНЫ БЫТЬ ЗДЕСЬ ==================
+
+	// 1. Хуки для получения данных
+	const { data: allUsers, isLoading: isLoadingUsers } = useUsers()
+	const { data: currentUser } = useCurrentUser()
+
+	// 2. Хуки для состояния и логики поиска (перенесены наверх)
 	const [searchQuery, setSearchQuery] = useState('')
-	const filteredUsers = useSearch(users, searchQuery)
+	const filteredUsers = useSearch(allUsers || [], searchQuery)
+
+	// =================================================================
+
+	// Теперь, когда все хуки вызваны, можно делать условный рендеринг
+	if (isLoadingUsers) {
+		return <div>Загрузка...</div>
+	}
+
 	const visibleUsers = filteredUsers.filter(
 		u => String(u.id) !== String(excludeId)
 	)
@@ -54,7 +66,7 @@ const SoldierList: React.FC<Props> = ({ selectedId, onSelect, excludeId }) => {
 							onClick={() => onSelect(String(user.id))}
 							style={getButtonStyle(
 								user,
-								currentUserId !== null ? String(currentUserId) : null
+								currentUser?.id !== null ? String(currentUser?.id) : null
 							)}
 						>
 							<span className='truncate-text' title={user.username}>

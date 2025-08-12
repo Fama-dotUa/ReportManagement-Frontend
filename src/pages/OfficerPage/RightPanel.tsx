@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useUsers } from '../../hooks/useUsers'
+import { useCurrentUser } from '../../hooks/useCurrentUser'
 import { useSearch } from '../../hooks/useSearch'
 import UserProfileModal from '../../components/ProfileForm/UserProfileModal'
 import CreateSoldierModal from '../../components/CreateSoldierModal/CreateSoldierModal'
@@ -29,12 +30,16 @@ const getButtonStyle = (user: User, currentUserId: string | null) => {
 }
 
 const RightPanel: React.FC = () => {
-	const { users, currentUserId } = useUsers()
+	const { data: allUsers, isLoading: isLoadingUsers } = useUsers()
+
+	// Мгновенно получаем данные текущего юзера из кэша
+	const { data: currentUser } = useCurrentUser()
+
 	const [searchQuery, setSearchQuery] = useState('')
-	const filteredUsers = useSearch(users, searchQuery)
+	const filteredUsers = useSearch(allUsers || [], searchQuery)
 	const [selectedUser, setSelectedUser] = useState<User | null>(null)
 	const [isGeneral, setIsGeneral] = useState<boolean>(true)
-	const { updateUser } = useUpdateUser(currentUserId)
+	const { updateUser } = useUpdateUser(currentUser?.id)
 	const { role } = useAuth()
 	const [creating, setCreating] = useState(false)
 	const { createUser } = useCreateUser()
@@ -70,6 +75,10 @@ const RightPanel: React.FC = () => {
 		}
 	}, [role])
 
+	if (isLoadingUsers) {
+		return <div>Загрузка...</div>
+	}
+
 	return (
 		<div className='right-panel'>
 			<h3>Солдаты</h3>
@@ -86,7 +95,7 @@ const RightPanel: React.FC = () => {
 							onClick={() => handleClick(user)}
 							style={getButtonStyle(
 								user,
-								currentUserId !== null ? String(currentUserId) : null
+								currentUser?.id !== null ? String(currentUser?.id) : null
 							)}
 						>
 							<span className='truncate-text' title={user.username}>
@@ -113,7 +122,7 @@ const RightPanel: React.FC = () => {
 			{selectedUser && (
 				<UserProfileModal
 					user={selectedUser}
-					editable={isGeneral || selectedUser.id === currentUserId}
+					editable={isGeneral || selectedUser.id === currentUser?.id}
 					onSubmit={handleUpdate}
 					onClose={() => setSelectedUser(null)}
 				/>
