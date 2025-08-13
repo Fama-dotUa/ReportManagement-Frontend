@@ -14,8 +14,13 @@ export interface TrainingRequest {
 		| 'провалено'
 	createdAt: string
 	applicant: { id: number; username: string }
-	instructor?: { id: number; username: string }
-	position: { id: number; name: string; description: string }
+	instructor?: {
+		id: number
+		username: string
+		CR: number
+		CR_for_all_time: number
+	}
+	position: { id: number; name: string; description: string; CR: number }
 	rejection_reason?: string
 }
 

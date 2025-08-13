@@ -21,7 +21,8 @@ const Chancery: React.FC = () => {
 	const handleRequestClick = (request: TrainingRequest) => {
 		if (
 			request.status_request === 'рассматривается' ||
-			request.status_request === 'обучается'
+			request.status_request === 'обучается' ||
+			request.status_request === 'отклонён'
 		) {
 			setSelectedRequest(request)
 		}
