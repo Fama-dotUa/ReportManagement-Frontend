@@ -11,12 +11,19 @@ import { useAuth } from '../../hooks/useAuth'
 import type { User } from '../../types/User'
 
 // Обновлённая функция getButtonStyle
+// RightPanel.tsx
+
 const getButtonStyle = (
 	user: User,
 	currentUserId: string | null
 ): React.CSSProperties => {
 	const style: React.CSSProperties = {
-		border: '2px solid transparent',
+		// --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+		// Вместо одного 'border' используем три отдельных свойства
+		borderWidth: '2px',
+		borderStyle: 'solid',
+		borderColor: 'transparent', // Цвет по умолчанию
+		// -------------------------
 		transition: 'border-color 0.3s ease',
 	}
 
@@ -25,9 +32,11 @@ const getButtonStyle = (
 		dayjs(user.last_seen).isAfter(dayjs().subtract(5, 'minutes'))
 
 	if (isOnline) {
+		// Теперь эта строка безопасно перезаписывает только цвет
 		style.borderColor = '#28a745' // Зелёная рамка
 	}
 
+	// ... остальная логика функции без изменений ...
 	if (user.fon_schildik_active_url) {
 		style.backgroundImage = `url(${user.fon_schildik_active_url})`
 		style.backgroundSize = 'cover'
@@ -42,7 +51,6 @@ const getButtonStyle = (
 
 	return style
 }
-
 const RightPanel: React.FC = () => {
 	const { data: allUsers, isLoading: isLoadingUsers } = useUsers()
 	const { data: currentUser } = useCurrentUser()

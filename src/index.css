@@ -28,6 +28,37 @@
 	--form-background: rgba(255, 255, 255, 0.8);
 	--cosmetic-border-color: rgba(91, 117, 143, 0.15);
 	--CR_for_all_time-color: rgba(82, 105, 123, 1);
+
+	--background-gradient-1: linear-gradient(
+		135deg,
+		var(--background-color),
+		#00a6ff 100%
+	);
+	--background-gradient-2: linear-gradient(
+		135deg,
+		var(--background-color),
+		#abda81 100%
+	);
+	--background-gradient-3: linear-gradient(
+		135deg,
+		var(--background-color),
+		#dec14a 100%
+	);
+	--background-gradient-4: linear-gradient(
+		135deg,
+		var(--background-color),
+		#d15246 100%
+	);
+	--background-gradient-5: linear-gradient(
+		135deg,
+		var(--background-color),
+		#d15246 100%
+	);
+	--background-gradient-6: linear-gradient(
+		135deg,
+		var(--background-color),
+		#d15246 100%
+	);
 }
 [data-theme='dark'] {
 	--background-color: rgba(92, 92, 92, 0.45);
@@ -47,6 +78,37 @@
 	--form-background: rgb(11, 11, 11, 0.8);
 	--cosmetic-border-color: rgba(171, 171, 171, 0.24);
 	--CR_for_all_time-color: rgb(114, 141, 151);
+
+	--background-gradient-1: linear-gradient(
+		135deg,
+		var(--background-color),
+		#00a6ff 100%
+	);
+	--background-gradient-2: linear-gradient(
+		135deg,
+		var(--background-color),
+		#d9f7be 100%
+	);
+	--background-gradient-3: linear-gradient(
+		135deg,
+		var(--background-color),
+		#fff1b8 100%
+	);
+	--background-gradient-4: linear-gradient(
+		135deg,
+		var(--background-color),
+		#ffccc7 100%
+	);
+	--background-gradient-5: linear-gradient(
+		135deg,
+		var(--background-color),
+		#ffccc7 100%
+	);
+	--background-gradient-6: linear-gradient(
+		135deg,
+		var(--background-color),
+		#ffccc7 100%
+	);
 }
 a {
 	font-weight: 500;

@@ -258,3 +258,41 @@
 	text-align: right;
 	color: var(--text-color);
 }
+
+.center-chancery {
+}
+
+.center-header {
+	border-bottom: var(--border-color) 2px solid;
+	display: flex;
+	justify-content: space-between;
+}
+
+.center-header-button {
+	font-size: 18px;
+	border: none;
+	background-color: transparent;
+	position: relative;
+	padding: 0 16px 14px 0;
+}
+
+.center-header-button:disabled {
+	color: #888;
+}
+
+.center-header-button:hover {
+	box-shadow: none;
+}
+.center-header-button.active {
+	color: rgba(138, 183, 107);
+}
+
+.chancery-content {
+	padding: 12px;
+}
+
+.briefing-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 40px;
+}

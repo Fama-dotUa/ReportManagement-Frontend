@@ -44,5 +44,5 @@
 }
 
 .soldier-list li button.active {
-	background: rgba(138, 183, 107, 0.5);
+	border: 3px solid rgba(255, 34, 0, 0.9);
 }

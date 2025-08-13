@@ -10,12 +10,16 @@ import LeftPanel from './LeftPanel'
 import RightPanel from './RightPanel'
 import AllSoldiers from '../../components/CenterForms/AllSoldiers'
 import ReportForm from '../../components/CenterForms/ReportForm'
+import Chancery from '../../components/CenterForms/ChanceryForm/Chancery'
 import ThemeToggleButton from '../../components/ThemeContext/ThemeToggleButton'
 import { handleDailyLoginReward } from '../../scripts/dailyReward'
 import { BurgerMenu } from '../../components/BurgerMenu/BurgerMenu'
+import { useTrainingRequests } from '../../hooks/useTrainingRequests'
 
 const OfficerPage: React.FC = () => {
-	const [activeTab, setActiveTab] = useState<'all' | 'report'>('all')
+	const [activeTab, setActiveTab] = useState<'all' | 'report' | 'chancery'>(
+		'all'
+	)
 	const navigate = useNavigate()
 	const { user, isAuth, role, CR } = useAuth()
 	const handleLogout = () => {
@@ -25,6 +29,12 @@ const OfficerPage: React.FC = () => {
 			navigate('/')
 		}
 	}
+	const { data: trainingRequests } = useTrainingRequests()
+
+	const hasNewBriefings = trainingRequests?.some(
+		req => req.status_request === 'рассматривается'
+	)
+
 	useEffect(() => {
 		if (isAuth && user) {
 			handleDailyLoginReward(user)
@@ -56,7 +66,19 @@ const OfficerPage: React.FC = () => {
 								}
 								onClick={() => setActiveTab('report')}
 							>
-								Создать рапорт
+								Донести рапорт
+							</button>
+						)}
+					{role &&
+						['officer', 'general', 'comander_officer'].includes(role) && (
+							<button
+								className={
+									activeTab === 'chancery' ? 'nav-button active' : 'nav-button'
+								}
+								onClick={() => setActiveTab('chancery')}
+							>
+								Канцелярия
+								{hasNewBriefings && <span className='notification-dot'></span>}
 							</button>
 						)}
 					<button className='nav-button' onClick={() => navigate('/store')}>
@@ -83,6 +105,7 @@ const OfficerPage: React.FC = () => {
 				<div className='officer-content'>
 					{activeTab === 'all' && <AllSoldiers />}
 					{activeTab === 'report' && <ReportForm />}
+					{activeTab === 'chancery' && <Chancery />}
 				</div>
 
 				<RightPanel />

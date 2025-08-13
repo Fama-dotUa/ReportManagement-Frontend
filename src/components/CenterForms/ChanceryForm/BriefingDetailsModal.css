@@ -1,0 +1,26 @@
+.modal-content.modal-content-briefing {
+	width: 600px;
+	padding: 2rem;
+	height: auto;
+}
+
+.modal-content.modal-content-briefing h2 {
+	color: rgba(176, 130, 14, 0.9);
+}
+
+#position-description {
+	padding: 2rem;
+	border: var(--border-color) 1px dashed;
+}
+
+.modal-actions {
+	display: flex;
+	justify-content: space-between;
+}
+
+#danger {
+	background-color: rgba(208, 79, 79, 0.8);
+}
+#take_on {
+	background-color: rgba(114, 190, 42, 0.8);
+}

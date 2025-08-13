@@ -28,7 +28,7 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 2px 40px;
-	gap: 60px;
+	gap: 20px;
 	background: var(--panel-background);
 	border-radius: 4px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -38,6 +38,7 @@
 }
 
 .officer-nav button {
+	position: relative;
 	padding: 0 16px;
 	border: none;
 	background: initial;
@@ -52,6 +53,17 @@
 .nav-button.active {
 	font-weight: 600;
 	color: rgba(138, 183, 107);
+}
+
+.notification-dot {
+	position: absolute;
+	top: 0px;
+	right: 5px;
+	width: 8px;
+	height: 8px;
+	background-color: #ff4d4f;
+	border-radius: 50%;
+	border: 1px solid white;
 }
 
 .left-nav {

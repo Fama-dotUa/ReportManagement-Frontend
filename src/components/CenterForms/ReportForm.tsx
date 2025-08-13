@@ -79,9 +79,7 @@ const ReportForm: React.FC = () => {
 			<div className='center-panel report-form'>
 				<h3>Создание рапорта</h3>
 
-				{!selectedId && (
-					<p className='placeholder'>Сначала выберите солдата слева</p>
-				)}
+				{!selectedId && <p className='placeholder'></p>}
 
 				{selectedId && (
 					<>

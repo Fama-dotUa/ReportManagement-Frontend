@@ -125,7 +125,7 @@ const AllSoldiers: React.FC = () => {
 						</ul>
 					)
 				) : (
-					<p className='placeholder'>Выберите солдата слева</p>
+					<p className='placeholder'></p>
 				)}
 			</div>
 		</div>
