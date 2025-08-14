@@ -19,6 +19,26 @@ export const BurgerMenu: React.FC = () => {
 			},
 		},
 		{
+			label: 'ЗВАНИЯ',
+			onClick: () => {
+				window.open(
+					'https://docs.google.com/document/d/1Yrwn6pt8J-ypGLlEk8fdwUvCkXYCzLahxyaL--XMKSw/edit?usp=sharing',
+					'_blank',
+					'noopener,noreferrer'
+				)
+			},
+		},
+		{
+			label: 'Хост игры',
+			onClick: () => {
+				window.open(
+					'https://docs.google.com/document/d/1ec0vTqfN4hyTz1NMwA6rah1l7jk-x_-KD6M4gp8Z4JA/edit?usp=sharing',
+					'_blank',
+					'noopener,noreferrer'
+				)
+			},
+		},
+		{
 			label: 'ПОДСКАЗКИ',
 			onClick: () => {
 				window.open(
