@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 
 export interface PositionItem {
 	id: number
@@ -12,66 +13,33 @@ export interface GroupedPositions {
 	[key: string]: PositionItem[]
 }
 
-/**
- * Кастомный хук для получения и группировки должностей по типу.
- * @returns {object} Объект с сгруппированными данными, состоянием загрузки и ошибкой.
- */
-export const useGroupedPositions = () => {
-	const [groupedData, setGroupedData] = useState<GroupedPositions>({})
-	const [loading, setLoading] = useState<boolean>(true)
-	const [error, setError] = useState<Error | null>(null)
+const fetchPositions = async (): Promise<PositionItem[]> => {
+	const { data } = await axios.get(
+		`${import.meta.env.VITE_API_URL}/api/positions?populate=*&filters[buy]=true`
+	)
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				setError(null)
-				setLoading(true)
+	return data.data.map((item: any) => ({
+		id: item.id,
+		...item,
+	}))
+}
 
-				const response = await fetch(
-					`${
-						import.meta.env.VITE_API_URL
-					}/api/positions?populate=*&filters[buy]=true`
-				)
-
-				if (!response.ok) {
-					throw new Error(`Ошибка сети: ${response.status}`)
-				}
-
-				const rawData = await response.json()
-				const transformedItems: PositionItem[] = rawData.data.map(
-					(item: any) => ({
-						id: item.id,
-						...item,
-					})
-				)
-
-				const grouped = transformedItems.reduce(
-					(acc: GroupedPositions, item: PositionItem) => {
-						const key = item.type
-
-						if (!acc[key]) {
-							acc[key] = []
-						}
-
-						acc[key].push(item)
-
-						return acc
-					},
-					{}
-				)
-
-				setGroupedData(grouped)
-			} catch (e) {
-				if (e instanceof Error) {
-					setError(e)
-				}
-			} finally {
-				setLoading(false)
-			}
+const groupPositionsByType = (items: PositionItem[]): GroupedPositions => {
+	return items.reduce((acc: GroupedPositions, item: PositionItem) => {
+		const key = item.type
+		if (!acc[key]) {
+			acc[key] = []
 		}
+		acc[key].push(item)
+		return acc
+	}, {})
+}
 
-		fetchData()
-	}, [])
-
-	return { groupedData, loading, error }
+export const useGroupedPositions = () => {
+	return useQuery({
+		queryKey: ['positions'],
+		queryFn: fetchPositions,
+		select: groupPositionsByType,
+		staleTime: 60 * 60 * 1000,
+	})
 }

@@ -55,6 +55,10 @@ export const useUpdateUser = (currentUserId: number | null) => {
 					discord: updatedUser.discord,
 				}
 
+				if (typeof updatedUser.CR !== 'undefined') {
+					payload.CR = updatedUser.CR
+				}
+
 				if (!isSelf && updatedUser.role) {
 					const roleType =
 						typeof updatedUser.role === 'object'

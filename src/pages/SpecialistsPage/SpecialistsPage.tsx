@@ -3,11 +3,11 @@ import { PageHeader } from './PageHeader'
 import { ContentSection } from './ContentSection'
 import { PurchasableCard, type Item } from './PurchasableCard'
 import {
-	useGroupedPositions,
-	type PositionItem,
-} from '../../hooks/useGroupedPositions'
-import './SpecialistsPage.css'
+	usePurchasablePositions,
+	type PurchasablePositionItem,
+} from '../../hooks/usePurchasablePositions' // <-- Импортируем только один нужный хук
 
+import './SpecialistsPage.css'
 import type { HoverColor } from './PurchasableCard'
 
 const themeMap: Record<string, HoverColor> = {
@@ -17,25 +17,18 @@ const themeMap: Record<string, HoverColor> = {
 }
 
 export const SpecialistsPage: React.FC = () => {
-	const { groupedData, loading, error } = useGroupedPositions()
+	const { purchasableData, error } = usePurchasablePositions()
 
 	const allItems = useMemo(() => {
-		return Object.values(groupedData).flat()
-	}, [groupedData])
+		if (!purchasableData) return []
+		return Object.values(purchasableData).flat()
+	}, [purchasableData])
 
 	const handleBuy = (id: Item['id']) => {
 		const item = allItems.find(i => i.id === id)
 		if (item) {
 			alert(`Покупка: ${item.name} за ${item.CR} CR`)
 		}
-	}
-
-	if (loading) {
-		return (
-			<div className='shop-container'>
-				<h2>Загрузка специальностей...</h2>
-			</div>
-		)
 	}
 
 	if (error) {
@@ -51,7 +44,9 @@ export const SpecialistsPage: React.FC = () => {
 			<div className='blur-background'></div>
 			<div className='shop-container'>
 				<PageHeader title='Должности и Обучение' />
-				{Object.entries(groupedData).map(([sectionTitle, items]) => {
+
+				{/* 3. ИСПРАВЛЕНИЕ: Итерируемся по purchasableData, а не groupedData */}
+				{Object.entries(purchasableData || {}).map(([sectionTitle, items]) => {
 					const theme = themeMap[sectionTitle] || 'sky'
 
 					return (
@@ -60,7 +55,7 @@ export const SpecialistsPage: React.FC = () => {
 							title={sectionTitle}
 							theme={theme}
 						>
-							{items.map((item: PositionItem) => {
+							{items.map((item: PurchasablePositionItem) => {
 								const cardItem: Item = {
 									id: item.id,
 									title: item.name,
@@ -73,6 +68,8 @@ export const SpecialistsPage: React.FC = () => {
 										item={cardItem}
 										onBuy={handleBuy}
 										hoverColor={theme}
+										// Теперь item содержит purchaseStatus, и ошибки не будет
+										status={item.purchaseStatus}
 									/>
 								)
 							})}

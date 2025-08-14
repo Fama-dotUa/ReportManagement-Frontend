@@ -1,7 +1,5 @@
-// src/components/PurchasableCard/PurchasableCard.tsx
 import React from 'react'
 
-// Общий тип для любого покупаемого предмета
 export interface Item {
 	id: number | string
 	title: string
@@ -15,15 +13,31 @@ interface PurchasableCardProps {
 	item: Item
 	onBuy: (id: Item['id']) => void
 	hoverColor?: HoverColor
+	status: 'owned' | 'canBuy' | 'insufficientFunds'
 }
 
 export const PurchasableCard: React.FC<PurchasableCardProps> = ({
 	item,
 	onBuy,
 	hoverColor = 'blue',
+	status,
 }) => {
 	// Динамически формируем классы для карточки
 	const cardClassName = `purchasable-card hover-${hoverColor}`
+
+	const getButtonState = () => {
+		switch (status) {
+			case 'owned':
+				return { text: 'Обучен', disabled: true }
+			case 'insufficientFunds':
+				return { text: 'Нищий', disabled: true }
+			case 'canBuy':
+			default:
+				return { text: 'Купить', disabled: false }
+		}
+	}
+
+	const { text, disabled } = getButtonState()
 
 	return (
 		<div className={cardClassName}>
@@ -31,8 +45,12 @@ export const PurchasableCard: React.FC<PurchasableCardProps> = ({
 			<p>{item.description}</p>
 			<div className='card-footer'>
 				<span>{item.price} CR</span>
-				<button className='buy-button' onClick={() => onBuy(item.id)}>
-					Купить
+				<button
+					className='buy-button'
+					onClick={() => onBuy(item.id)}
+					disabled={disabled}
+				>
+					{text}
 				</button>
 			</div>
 		</div>

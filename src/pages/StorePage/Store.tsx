@@ -7,33 +7,51 @@ import { FeaturedCosmeticsSection } from './FeaturedCosmeticsSection'
 
 import { useAuth } from '../../hooks/useAuth'
 import {
-	useGroupedPositions,
-	type PositionItem,
-} from '../../hooks/useGroupedPositions'
-
+	usePurchasablePositions,
+	type PurchasablePositionItem,
+} from '../../hooks/usePurchasablePositions'
+import { usePurchasePosition } from '../../hooks/usePurchasePosition'
+import { useUpdateUser } from '../../hooks/useUpdateUser'
 import './Store.css'
 
 export const Store: React.FC = () => {
-	const { groupedData, loading, error } = useGroupedPositions()
-	const { CR } = useAuth()
+	const { purchasableData, error } = usePurchasablePositions()
+	const { user, CR } = useAuth()
 	const navigate = useNavigate()
 
+	const { mutate: purchasePosition } = usePurchasePosition()
+	const { updateUser } = useUpdateUser(user?.id)
+
 	const allPositions = useMemo(() => {
-		if (!groupedData) return []
-		return Object.values(groupedData).flat()
-	}, [groupedData])
+		if (!purchasableData) return []
+		return Object.values(purchasableData).flat()
+	}, [purchasableData])
 
 	const featuredPositions = allPositions.slice(0, 5)
 
-	const handleBuyItem = (id: number) => {
+	const handleBuyItem = async (id: number) => {
 		const item = allPositions.find(p => p.id === id)
-		if (item) {
-			alert(`Попытка покупки "${item.name}" за ${item.CR} CR`)
-		}
-	}
+		if (!item || !user) return
 
-	if (loading) {
-		return <div className='store-loading'>Загрузка данных...</div>
+		if (
+			!window.confirm(
+				`Вы уверены, что хотите купить "${item.name}" за ${item.CR} CR?`
+			)
+		) {
+			return
+		}
+
+		try {
+			const newBalance = user.CR - item.CR
+			await updateUser({ id: user.id, CR: newBalance })
+
+			purchasePosition({ applicantId: user.id, positionId: item.id })
+
+			alert('Покупка успешна! Заявка отправлена на рассмотрение.')
+		} catch (err) {
+			console.error('Ошибка при покупке:', err)
+			// Здесь можно добавить логику возврата средств, если первый шаг прошел, а второй нет
+		}
 	}
 
 	if (error) {
@@ -52,7 +70,7 @@ export const Store: React.FC = () => {
 					<section className='sectionstore section-positions'>
 						<h2>Должности и Обучение</h2>
 						<div className='cards-grid-shop positions-grid'>
-							{featuredPositions.map((item: PositionItem) => {
+							{featuredPositions.map((item: PurchasablePositionItem) => {
 								const cardItem: ShopItem = {
 									id: item.id,
 									title: item.name,
@@ -64,6 +82,7 @@ export const Store: React.FC = () => {
 										key={item.id}
 										item={cardItem}
 										onBuy={handleBuyItem}
+										status={item.purchaseStatus}
 									/>
 								)
 							})}

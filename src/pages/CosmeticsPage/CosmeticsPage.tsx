@@ -1,4 +1,3 @@
-// src/components/CosmeticsPage/CosmeticsPage.tsx
 import React from 'react'
 import { PageHeader } from '../SpecialistsPage/PageHeader'
 import { ContentSection } from '../SpecialistsPage/ContentSection'
