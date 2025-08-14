@@ -35,36 +35,35 @@ export const CosmeticsPage: React.FC = () => {
 
 		if (!isConfirmed) return
 
-		// --- Шаг 2: Подготовка данных для PUT-запроса ---
 		try {
-			let relationField = '' // Поле для обновления (напр., 'framesfor_avatars_all')
-			let currentOwnedIds: number[] = [] // ID предметов, которые уже есть у пользователя
+			let relationField = ''
+			let currentOwnedIds: number[] = []
 
-			// Определяем, с какой связью мы работаем, в зависимости от типа предмета
 			switch (item.type) {
 				case 'frame':
 					relationField = 'framesfor_avatars_all'
-					currentOwnedIds = user.framesfor_avatars_all?.map(i => i.id) || []
+					currentOwnedIds =
+						user.framesfor_avatars_all?.map((i: { id: any }) => i.id) || []
 					break
 				case 'profile-bg':
 					relationField = 'profile_backgrounds_all'
-					currentOwnedIds = user.profile_backgrounds_all?.map(i => i.id) || []
+					currentOwnedIds =
+						user.profile_backgrounds_all?.map((i: { id: any }) => i.id) || []
 					break
 				case 'chevron-bg':
 					relationField = 'fon_schildiks_all'
-					currentOwnedIds = user.fon_schildiks_all?.map(i => i.id) || []
+					currentOwnedIds =
+						user.fon_schildiks_all?.map((i: { id: any }) => i.id) || []
 					break
 				default:
 					throw new Error('Неизвестный тип предмета')
 			}
 
-			// Создаем тело запроса
 			const payload = {
 				CR: (user.CR || 0) - item.price,
 				[relationField]: [...currentOwnedIds, parseInt(item.id, 10)],
 			}
 
-			// --- Шаг 3: Отправка запроса на сервер ---
 			const response = await fetch(`${API_URL}/api/users/${user.id}`, {
 				method: 'PUT',
 				headers: {

@@ -5,7 +5,6 @@ import './UserProfileForm.css'
 import AvatarUploadModal from '../AvatarUploadModal'
 import { useUserProfileForm } from './useUserProfileForm'
 import { RiLockPasswordFill } from 'react-icons/ri'
-import { useUsers } from '../../hooks/useUsers'
 import type { User } from '../../types/User'
 import ChangePasswordModal from '../ChangePassword/ChangePasswordModal'
 import { IoIosInformationCircleOutline } from 'react-icons/io'
@@ -29,6 +28,7 @@ const UserProfileForm: React.FC<Props> = ({
 	onSubmit,
 	onClose,
 }) => {
+	const API_URL = import.meta.env.VITE_API_URL
 	const { data: currentUser } = useCurrentUser()
 	const { token } = useAuth()
 	const [editOk, setEditOk] = useState(false)
@@ -149,14 +149,58 @@ const UserProfileForm: React.FC<Props> = ({
 		}
 	}
 
+	console.log(formData)
+
 	return (
 		<>
 			<form onSubmit={handleSubmit} className='user-profile-form'>
-				<img
-					src={formData.profile_background_active_url}
-					className='background-img-profile'
-					loading='lazy'
-				></img>
+				{(() => {
+					const IMAGE_EXTENSIONS = [
+						'.jpg',
+						'.jpeg',
+						'.png',
+						'.gif',
+						'.webp',
+						'.svg',
+					]
+					const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov']
+
+					const media = formData.profile_background_active?.image
+
+					if (!media || !media.url || !media.ext) {
+						return null
+					}
+
+					const fullSrc = API_URL + media.url
+					const extension = media.ext.toLowerCase()
+
+					if (IMAGE_EXTENSIONS.includes(extension)) {
+						return (
+							<img
+								src={fullSrc}
+								className='background-img-profile'
+								loading='lazy'
+								alt={'Фон профиля'}
+							/>
+						)
+					}
+
+					if (VIDEO_EXTENSIONS.includes(extension)) {
+						return (
+							<video
+								src={fullSrc}
+								className='background-img-profile'
+								autoPlay
+								loop
+								muted
+								playsInline
+							/>
+						)
+					}
+
+					// Если формат не подошел, ничего не показываем
+					return null
+				})()}
 				<div className='profile-top-panel'>
 					{(editable || isSelf) && (
 						<button
@@ -221,7 +265,7 @@ const UserProfileForm: React.FC<Props> = ({
 							/>
 
 							<img
-								src={user_to.framesfor_avatar_active_url}
+								src={API_URL + user_to.framesfor_avatar_active?.image?.url}
 								alt='avatar frame'
 								className='profile-frame'
 								loading='lazy'
@@ -248,7 +292,7 @@ const UserProfileForm: React.FC<Props> = ({
 							</button>
 
 							<img
-								src={user_to.framesfor_avatar_active_url}
+								src={API_URL + user_to.framesfor_avatar_active?.image?.url}
 								alt='хуй'
 								className='profile-frame'
 								loading='lazy'

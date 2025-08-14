@@ -51,6 +51,7 @@ const transformStrapiCollection = (
 					type: 'profile-bg',
 					preview: {
 						imageUrl: imageUrl,
+						ext: item.image.ext || 'jpg',
 					},
 				}
 			case 'chevron-bg':

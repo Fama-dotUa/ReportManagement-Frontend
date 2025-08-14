@@ -6,6 +6,7 @@ export type CosmeticItem = {
 	image?: {
 		id: number
 		url: string
+		ext: string
 	}
 }
 
@@ -25,9 +26,6 @@ export type User = {
 		position_daily_reward?: number
 	}[]
 	last_login?: string
-	fon_schildik_active_url?: string
-	framesfor_avatar_active_url?: string
-	profile_background_active_url?: string
 	CR_for_all_time?: number
 	last_seen?: string
 	fon_schildiks_all?: CosmeticItem[]

@@ -9,7 +9,7 @@ import { useCreateUser } from '../../hooks/useCreateUser'
 import { useUpdateUser } from '../../hooks/useUpdateUser'
 import { useAuth } from '../../hooks/useAuth'
 import type { User } from '../../types/User'
-
+const API_URL = import.meta.env.VITE_API_URL
 const getButtonStyle = (
 	user: User,
 	currentUserId: string | null
@@ -29,8 +29,10 @@ const getButtonStyle = (
 		style.borderColor = '#28a745'
 	}
 
-	if (user.fon_schildik_active_url) {
-		style.backgroundImage = `url(${user.fon_schildik_active_url})`
+	if (user.fon_schildik_active?.image?.url) {
+		style.backgroundImage = `url(${
+			API_URL + user.fon_schildik_active?.image?.url
+		})`
 		style.backgroundSize = 'cover'
 		style.backgroundPosition = 'center'
 		style.color = 'white'

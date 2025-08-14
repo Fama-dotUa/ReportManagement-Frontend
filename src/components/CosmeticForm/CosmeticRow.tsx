@@ -4,15 +4,15 @@ import { MdArrowBackIos, MdArrowForwardIos } from 'react-icons/md'
 interface CosmeticItem {
 	id: number
 	name: string
-	image?: { url: string }
+	image?: { url: string; ext: string }
 }
 
 interface Props {
 	title: string
 	items: CosmeticItem[]
 	selectedItemId: number | null
-	onSelectItem: (id: number | null) => void // Разрешаем передавать null, чтобы можно было снять выбор
-	itemClassName: string // ✅ Новый пропс для уникального класса
+	onSelectItem: (id: number | null) => void
+	itemClassName: string
 }
 
 const API_URL = import.meta.env.VITE_API_URL
@@ -69,20 +69,52 @@ export const CosmeticRow: React.FC<Props> = ({
 							<div
 								key={item.id}
 								className={finalClassName.trim()}
-								// Позволяем снять выбор повторным кликом
 								onClick={() =>
 									onSelectItem(isCurrentlySelected ? null : item.id)
 								}
 							>
-								<img
-									src={
-										item.image?.url
-											? `${API_URL}${item.image.url}`
-											: 'https://placehold.co/120x120/cccccc/ffffff?text=N/A'
+								{(() => {
+									const IMAGE_EXTENSIONS = [
+										'.jpg',
+										'.jpeg',
+										'.png',
+										'.gif',
+										'.webp',
+										'.svg',
+									]
+									const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov']
+
+									const media = item.image
+									if (!media || !media.url || !media.ext) {
+										return null
 									}
-									alt={item.name}
-									loading='lazy'
-								/>
+
+									const fullSrc = API_URL + media.url
+									const extension = media.ext.toLowerCase()
+
+									if (IMAGE_EXTENSIONS.includes(extension)) {
+										return (
+											<img
+												src={
+													item.image?.url
+														? fullSrc
+														: 'https://placehold.co/120x120/cccccc/ffffff?text=N/A'
+												}
+												alt={item.name}
+												loading='lazy'
+											/>
+										)
+									}
+
+									if (VIDEO_EXTENSIONS.includes(extension)) {
+										return (
+											<video src={fullSrc} autoPlay loop muted playsInline />
+										)
+									}
+
+									// Если формат не подошел, ничего не показываем
+									return null
+								})()}
 								<div className='item-name-overlay'>{item.name}</div>
 							</div>
 						)

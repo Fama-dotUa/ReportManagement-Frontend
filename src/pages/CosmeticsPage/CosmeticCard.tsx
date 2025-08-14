@@ -2,7 +2,6 @@ import React from 'react'
 
 export type HoverColor = 'green' | 'blue' | 'red'
 
-// Базовый тип
 interface BaseCosmeticItem {
 	id: string
 	title: string
@@ -11,7 +10,6 @@ interface BaseCosmeticItem {
 	canBuy: boolean
 }
 
-// Типы для каждого вида превью
 export interface FrameItem extends BaseCosmeticItem {
 	type: 'frame'
 	preview: {
@@ -24,6 +22,7 @@ export interface ProfileBgItem extends BaseCosmeticItem {
 	type: 'profile-bg'
 	preview: {
 		imageUrl: string
+		ext?: string
 	}
 }
 
@@ -34,10 +33,7 @@ export interface ChevronBgItem extends BaseCosmeticItem {
 	}
 }
 
-// Объединяем все в один тип
 export type CosmeticItem = FrameItem | ProfileBgItem | ChevronBgItem
-
-// --- Пропсы компонента ---
 
 interface CosmeticCardProps {
 	item: CosmeticItem
@@ -45,8 +41,6 @@ interface CosmeticCardProps {
 	hoverColor: HoverColor
 	userCR: number
 }
-
-// --- Сам компонент ---
 
 export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 	item,
@@ -66,14 +60,51 @@ export const CosmeticCard: React.FC<CosmeticCardProps> = ({
 					/>
 				)
 			case 'profile-bg':
-				return (
-					<img
-						src={item.preview.imageUrl}
-						alt={item.title}
-						className='profile-bg-preview'
-						loading='lazy'
-					/>
-				)
+				return (() => {
+					const IMAGE_EXTENSIONS = [
+						'.jpg',
+						'.jpeg',
+						'.png',
+						'.gif',
+						'.webp',
+						'.svg',
+					]
+					const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov']
+
+					const media = item.preview
+
+					if (!media || !media.imageUrl || !media.ext) {
+						return null
+					}
+
+					const fullSrc = media.imageUrl
+					const extension = media.ext.toLowerCase()
+
+					if (IMAGE_EXTENSIONS.includes(extension)) {
+						return (
+							<img
+								src={fullSrc}
+								alt={item.title}
+								className='profile-bg-preview'
+								loading='lazy'
+							/>
+						)
+					}
+
+					if (VIDEO_EXTENSIONS.includes(extension)) {
+						return (
+							<video
+								src={fullSrc}
+								className='profile-bg-preview'
+								autoPlay
+								loop
+								muted
+								playsInline
+							/>
+						)
+					}
+					return null
+				})()
 			case 'chevron-bg':
 				return (
 					<img

@@ -4,7 +4,7 @@ import { useUsers } from '../../hooks/useUsers'
 import { useCurrentUser } from '../../hooks/useCurrentUser'
 import { useSearch } from '../../hooks/useSearch'
 import type { User } from '../../types/User'
-
+const API_URL = import.meta.env.VITE_API_URL
 interface Props {
 	selectedId: string | null
 	onSelect: (id: string) => void
@@ -12,9 +12,9 @@ interface Props {
 }
 const getButtonStyle = (user: User, currentUserId: string | null) => {
 	// ... (эта функция остаётся без изменений)
-	if (user.fon_schildik_active_url) {
+	if (user.fon_schildik_active?.image?.url) {
 		return {
-			backgroundImage: `url(${user.fon_schildik_active_url})`,
+			backgroundImage: `url(${API_URL + user.fon_schildik_active.image.url})`,
 			backgroundSize: 'cover',
 			backgroundPosition: 'center',
 			color: 'white',

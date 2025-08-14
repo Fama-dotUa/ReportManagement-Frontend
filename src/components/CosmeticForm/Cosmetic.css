@@ -109,7 +109,6 @@
 	height: 120px;
 	object-fit: cover;
 }
-
 /* Стиль для активного/выбранного элемента */
 .cosmetic-item-preview.active {
 	border-color: #48bb78; /* Зеленая рамка */
@@ -162,22 +161,16 @@
 	background-color: #2f855a;
 }
 
-/* Cosmetic.css */
-
-/* Общий стиль для всех превью */
-.cosmetic-item-preview {
-}
-
-/* Уникальный стиль для рамок (например, делаем их круглыми) */
-.cosmetic-item-preview.frame-item,
-.cosmetic-item-preview.frame-item img {
-}
-
 /* Уникальный стиль для фонов профиля (например, более широкие) */
 .cosmetic-item-preview.background-item {
 	width: 180px;
 }
 .cosmetic-item-preview.background-item img {
+	width: 180px;
+	height: 100px;
+	object-fit: cover;
+}
+.cosmetic-item-preview.background-item video {
 	width: 180px;
 	height: 100px;
 	object-fit: cover;
