@@ -29,6 +29,17 @@ export const BurgerMenu: React.FC = () => {
 			},
 		},
 		{
+			label: 'Медали/Ордена',
+			onClick: () => {
+				window.open(
+					'https://docs.google.com/spreadsheets/d/1624gcVwCWBieRDiz5fVrbNmm3CLZF8wZkQ5892uJf3k/edit?usp=sharing',
+					'_blank',
+					'noopener,noreferrer'
+				)
+			},
+		},
+
+		{
 			label: 'Хост игры',
 			onClick: () => {
 				window.open(

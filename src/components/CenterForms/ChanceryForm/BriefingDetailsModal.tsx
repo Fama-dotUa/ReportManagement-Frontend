@@ -163,9 +163,10 @@ const BriefingDetailsModal: React.FC<Props> = ({ request, onClose }) => {
 						</div>
 
 						{(role === 'general' ||
-							currentUser?.positions?.some(
+							(currentUser?.positions?.some(
 								(pos: { name: string }) => pos.name === 'Инструктор'
-							)) && (
+							) &&
+								request.applicant?.id !== currentUser.id)) && (
 							<div className='modal-actions'>
 								<button
 									id='take_on'

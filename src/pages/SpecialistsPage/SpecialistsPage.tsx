@@ -5,10 +5,14 @@ import { PurchasableCard, type Item } from './PurchasableCard'
 import {
 	usePurchasablePositions,
 	type PurchasablePositionItem,
-} from '../../hooks/usePurchasablePositions' // <-- Импортируем только один нужный хук
+} from '../../hooks/usePurchasablePositions'
 
 import './SpecialistsPage.css'
 import type { HoverColor } from './PurchasableCard'
+import { useAuth } from '../../hooks/useAuth'
+
+import { usePurchasePosition } from '../../hooks/usePurchasePosition'
+import { useUpdateUser } from '../../hooks/useUpdateUser'
 
 const themeMap: Record<string, HoverColor> = {
 	'Воздушная Техника': 'sky',
@@ -18,16 +22,38 @@ const themeMap: Record<string, HoverColor> = {
 
 export const SpecialistsPage: React.FC = () => {
 	const { purchasableData, error } = usePurchasablePositions()
+	const { user } = useAuth()
 
-	const allItems = useMemo(() => {
+	const { mutate: purchasePosition } = usePurchasePosition()
+	const { updateUser } = useUpdateUser(user?.id)
+
+	const allPositions = useMemo(() => {
 		if (!purchasableData) return []
 		return Object.values(purchasableData).flat()
 	}, [purchasableData])
 
-	const handleBuy = (id: Item['id']) => {
-		const item = allItems.find(i => i.id === id)
-		if (item) {
-			alert(`Покупка: ${item.name} за ${item.CR} CR`)
+	const handleBuyItem = async (id: string | number) => {
+		const numericId = typeof id === 'string' ? Number(id) : id
+		const item = allPositions.find(p => p.id === numericId)
+		if (!item || !user) return
+
+		if (
+			!window.confirm(
+				`Вы уверены, что хотите купить "${item.name}" за ${item.CR} CR?`
+			)
+		) {
+			return
+		}
+
+		try {
+			const newBalance = user.CR - item.CR
+			await updateUser({ id: user.id, CR: newBalance })
+
+			purchasePosition({ applicantId: user.id, positionId: item.id })
+
+			alert('Покупка успешна! Заявка отправлена на рассмотрение.')
+		} catch (err) {
+			console.error('Ошибка при покупке:', err)
 		}
 	}
 
@@ -66,7 +92,7 @@ export const SpecialistsPage: React.FC = () => {
 									<PurchasableCard
 										key={item.id}
 										item={cardItem}
-										onBuy={handleBuy}
+										onBuy={handleBuyItem}
 										hoverColor={theme}
 										// Теперь item содержит purchaseStatus, и ошибки не будет
 										status={item.purchaseStatus}

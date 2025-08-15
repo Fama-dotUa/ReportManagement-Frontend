@@ -48,6 +48,6 @@ export const useTrainingRequests = () => {
 	return useQuery<TrainingRequest[]>({
 		queryKey: ['trainingRequests'],
 		queryFn: fetchTrainingRequests,
-		staleTime: 5 * 60 * 1000, // 5 минут
+		staleTime: 5 * 60 * 1000,
 	})
 }
