@@ -260,6 +260,7 @@
 }
 
 .center-chancery {
+	height: 90%;
 }
 
 .center-header {
@@ -289,10 +290,34 @@
 
 .chancery-content {
 	padding: 12px;
+	height: 100%;
+	overflow-y: auto;
 }
 
 .briefing-list {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 40px;
+}
+
+.issue_loans-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 60px;
+	height: 100%;
+	margin-top: 10px;
+}
+
+.issue_loans-container button {
+	width: 300px;
+	cursor: pointer;
+}
+
+.issue_loans-container #release-button {
+	background-color: rgba(138, 183, 107, 0.9);
+}
+.issue_loans-container #collect-button {
+	background-color: rgba(197, 82, 82, 0.9);
 }

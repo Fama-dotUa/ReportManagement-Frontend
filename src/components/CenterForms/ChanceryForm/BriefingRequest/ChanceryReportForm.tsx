@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import MDEditor from '@uiw/react-md-editor'
-import { getReasons } from '../../../api/getReasons'
-import { createReport } from '../../../hooks/useCreateReport'
-import { useAuth } from '../../../hooks/useAuth'
-import { generateChanceryPdfBlob } from '../../../hooks/generateChanceryPdfBlob'
+import { getReasons } from '../../../../api/getReasons'
+import { createReport } from '../../../../hooks/useCreateReport'
+import { useAuth } from '../../../../hooks/useAuth'
+import { generateChanceryPdfBlob } from '../../../../hooks/generateChanceryPdfBlob'
 
 interface ChanceryReportFormProps {
 	traineeId?: string | null

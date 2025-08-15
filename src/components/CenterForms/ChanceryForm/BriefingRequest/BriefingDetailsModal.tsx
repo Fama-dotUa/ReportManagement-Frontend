@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import dayjs from 'dayjs'
-import { useAuth } from '../../../hooks/useAuth'
-import { useUpdateTrainingRequest } from '../../../hooks/useUpdateTrainingRequest'
-import type { TrainingRequest } from '../../../hooks/useTrainingRequests'
+import { useAuth } from '../../../../hooks/useAuth'
+import { useUpdateTrainingRequest } from '../../../../hooks/useUpdateTrainingRequest'
+import type { TrainingRequest } from '../../../../hooks/useTrainingRequests'
 import ChanceryReportForm from './ChanceryReportForm'
 import './BriefingDetailsModal.css'
-import { useUpdateUserPosition } from '../../../hooks/useUpdateUserPosition'
+import { useUpdateUserPosition } from '../../../../hooks/useUpdateUserPosition'
 
 interface Props {
 	request: TrainingRequest

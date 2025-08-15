@@ -1,0 +1,51 @@
+.bookkeeping-list {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+.bookkeeping-item {
+	padding: 15px;
+	border-radius: 8px;
+	border: 1px solid #444;
+	cursor: pointer;
+	transition: transform 0.2s;
+}
+.bookkeeping-item:hover {
+	transform: scale(1.03);
+}
+
+/* Зеленый фон для выдачи */
+.bookkeeping-item.issue {
+	background: linear-gradient(
+		135deg,
+		rgba(40, 167, 69, 0.4),
+		rgba(40, 167, 69, 0.6)
+	);
+}
+
+/* Красный фон для взыскания */
+.bookkeeping-item.collect {
+	background: linear-gradient(
+		135deg,
+		rgba(220, 53, 69, 0.4),
+		rgba(220, 53, 69, 0.6)
+	);
+}
+
+.bookkeeping-header {
+	display: flex;
+	justify-content: space-between;
+	font-size: 0.8em;
+	opacity: 0.8;
+	margin-bottom: 10px;
+}
+.bookkeeping-header .sum {
+	font-weight: bold;
+}
+.bookkeeping-body {
+	display: flex;
+}
+.bookkeeping-body .label {
+	font-weight: bold;
+	margin-right: 5px;
+}

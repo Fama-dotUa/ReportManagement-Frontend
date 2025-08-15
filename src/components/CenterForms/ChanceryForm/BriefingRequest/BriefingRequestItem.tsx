@@ -1,6 +1,6 @@
 import React from 'react'
 import dayjs from 'dayjs'
-import type { TrainingRequest } from '../../../hooks/useTrainingRequests'
+import type { TrainingRequest } from '../../../../hooks/useTrainingRequests'
 import './BriefingRequestItem.css'
 
 interface Props {

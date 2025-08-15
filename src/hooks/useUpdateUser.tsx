@@ -54,7 +54,9 @@ export const useUpdateUser = (currentUserId: number | null) => {
 					username: updatedUser.username,
 					discord: updatedUser.discord,
 				}
-
+				if (typeof updatedUser.CR_for_all_time !== 'undefined') {
+					payload.CR_for_all_time = updatedUser.CR_for_all_time
+				}
 				if (typeof updatedUser.CR !== 'undefined') {
 					payload.CR = updatedUser.CR
 				}
