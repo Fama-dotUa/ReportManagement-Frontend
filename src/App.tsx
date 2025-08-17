@@ -32,7 +32,7 @@ function App() {
 
 			const intervalId = setInterval(() => {
 				updateActivity(user.id)
-			}, 60000)
+			}, 60000 * 5)
 
 			return () => clearInterval(intervalId)
 		}

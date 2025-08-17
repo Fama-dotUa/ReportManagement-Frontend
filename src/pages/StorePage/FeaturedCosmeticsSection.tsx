@@ -8,7 +8,36 @@ import {
 // Компонент для отображения одной карточки превью
 const PreviewCard: React.FC<{ item: CosmeticItem }> = ({ item }) => (
 	<div className='cosmetic-preview-item'>
-		<img src={item.imageUrl} alt={item.name} loading='lazy' />
+		{(() => {
+			const IMAGE_EXTENSIONS = [
+				'.jpg',
+				'.jpeg',
+				'.png',
+				'.gif',
+				'.webp',
+				'.svg',
+			]
+			const VIDEO_EXTENSIONS = ['.mp4', '.webm', '.mov']
+
+			const media = item
+
+			if (!media || !media.imageUrl || !media.ext) {
+				return null
+			}
+
+			const fullSrc = media.imageUrl
+			const extension = media.ext.toLowerCase()
+
+			if (IMAGE_EXTENSIONS.includes(extension)) {
+				return <img src={fullSrc} alt={item.name} loading='lazy' />
+			}
+
+			if (VIDEO_EXTENSIONS.includes(extension)) {
+				return <video src={fullSrc} autoPlay loop muted playsInline />
+			}
+			return null
+		})()}
+
 		<h3>{item.name}</h3>
 		<p>{item.description}</p>
 		<span className='preview-price'>{item.price} CR</span>

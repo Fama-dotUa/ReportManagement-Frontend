@@ -10,6 +10,7 @@ export interface CosmeticItem {
 	price: number
 	imageUrl: string
 	type: 'frame' | 'background' | 'schildik'
+	ext?: string
 }
 
 // Формат данных, который будет возвращать хук
@@ -33,6 +34,7 @@ const transformStrapiData = (
 			? `${API_URL}${item.image.url}`
 			: 'https://placehold.co/150x150/cccccc/ffffff?text=No+Image',
 		type,
+		ext: item.image.ext,
 	}
 }
 

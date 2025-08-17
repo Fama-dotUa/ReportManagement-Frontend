@@ -17,8 +17,26 @@ const ReportForm: React.FC = () => {
 	const [excludeSelf, setExcludeSelf] = useState(true)
 
 	useEffect(() => {
-		getReasons().then(setReasons).catch(console.error)
+		getReasons()
+			.then(allReasons => {
+				const excludedSubstrings = [
+					'Отказ от прохождения обучения',
+					'Повышена квалификация',
+					'Обучен новой специальности',
+				]
+
+				const filteredReasons = allReasons.filter(
+					(reason: { label: string }) =>
+						!excludedSubstrings.some(substring =>
+							reason.label.toLowerCase().includes(substring.toLowerCase())
+						)
+				)
+
+				setReasons(filteredReasons)
+			})
+			.catch(console.error)
 	}, [])
+
 	const handleSubmit = async () => {
 		if (
 			!selectedId ||

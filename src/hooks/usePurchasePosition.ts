@@ -1,7 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import axios from 'axios'
-import dayjs from 'dayjs'
-
 const API_URL = import.meta.env.VITE_API_URL
 
 interface PurchasePayload {
@@ -23,7 +21,6 @@ const purchasePositionRequest = async ({
 				status_request: 'рассматривается',
 				applicant: applicantId,
 				position: positionId,
-				consideration_deadline: dayjs().add(3, 'day').toISOString(),
 			},
 		},
 		{ headers: { Authorization: `Bearer ${token}` } }
