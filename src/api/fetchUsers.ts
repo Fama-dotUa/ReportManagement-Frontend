@@ -16,6 +16,7 @@ export const fetchUsers = async () => {
 		&populate[framesfor_avatars_all][populate]=image
 		&populate[profile_backgrounds_all][filters][publishedAt][$notNull]=null
 		&populate[profile_backgrounds_all][populate]=image
+		&populate[love_medal][populate]=image
 `,
 		{
 			headers: {

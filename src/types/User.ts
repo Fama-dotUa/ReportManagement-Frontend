@@ -28,6 +28,7 @@ export type User = {
 	last_login?: string
 	CR_for_all_time?: number
 	last_seen?: string
+	love_medal?: CosmeticItem
 	fon_schildiks_all?: CosmeticItem[]
 	fon_schildik_active?: CosmeticItem
 	framesfor_avatars_all?: CosmeticItem[]

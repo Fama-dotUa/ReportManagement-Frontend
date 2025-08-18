@@ -12,6 +12,8 @@ import ProfileInfoPanel from '../ProfileInfoPanel/ProfileInfoPanel'
 import { useAuth } from '../../hooks/useAuth'
 import { LuView } from 'react-icons/lu'
 import { Cosmetics } from '../CosmeticForm/Cosmetic'
+import { useUserAwards } from '../../hooks/useUserAwards'
+import UserAwards from './UserAwards'
 
 import { useCurrentUser } from '../../hooks/useCurrentUser'
 
@@ -36,6 +38,12 @@ const UserProfileForm: React.FC<Props> = ({
 	const [showPasswordModal, setShowPasswordModal] = useState(false)
 	const [showInfoPanel, setShowInfoPanel] = useState(false)
 	const [showAppearancePanel, setShowAppearancePanel] = useState(false)
+	const {
+		awards,
+		loading: awardsLoading,
+		error: awardsError,
+	} = useUserAwards(user_to?.id)
+
 	const {
 		formData,
 		changed,
@@ -115,11 +123,11 @@ const UserProfileForm: React.FC<Props> = ({
 			alert('Не удалось сохранить описание. Попробуйте еще раз.')
 		}
 	}
-
 	const handleCosmeticChange = async (cosmeticData: {
 		framesfor_avatar_active: number
 		profile_background_active: number
 		fon_schildik_active: number
+		love_medal: number | null
 	}): Promise<void> => {
 		if (!token || !user_to.id) {
 			alert('Ошибка: Пользователь не авторизован или ID не найден.')
@@ -148,8 +156,6 @@ const UserProfileForm: React.FC<Props> = ({
 			alert('Не удалось сохранить косметику. Попробуйте еще раз.')
 		}
 	}
-
-	console.log(formData)
 
 	return (
 		<>
@@ -281,7 +287,6 @@ const UserProfileForm: React.FC<Props> = ({
 								</button>
 							)}
 						</div>
-
 						<div className='info-button-wrapper'>
 							<button
 								type='button'
@@ -300,6 +305,16 @@ const UserProfileForm: React.FC<Props> = ({
 						</div>
 					</div>
 					<div className='info-block'>
+						{user_to.love_medal && (
+							<div id='love-medal'>
+								<img
+									src={API_URL + user_to.love_medal.image?.url}
+									alt='Love Medal'
+									className='love-medal'
+									loading='lazy'
+								/>
+							</div>
+						)}
 						{renderTextField('', 'username', 'username')}
 						{renderTextField('', 'discord', 'discord')}
 						{renderSelectField('Звание:', 'rank', ranks)}
@@ -307,7 +322,11 @@ const UserProfileForm: React.FC<Props> = ({
 						{renderPositionsField('Специализация:')}
 					</div>
 				</div>
-				<div className='profile-bottom-medal-panel'></div>
+				<div className='profile-bottom-medal-panel'>
+					{awardsLoading && <p>Загрузка наград...</p>}
+					{awardsError && <p style={{ color: 'red' }}>{awardsError}</p>}
+					{!awardsLoading && !awardsError && <UserAwards awards={awards} />}
+				</div>
 				{editOk && (
 					<button type='submit' disabled={!changed}>
 						Сохранить
@@ -353,6 +372,7 @@ const UserProfileForm: React.FC<Props> = ({
 					user={user_to}
 					onClose={() => setShowAppearancePanel(false)}
 					onSubmit={handleCosmeticChange}
+					awards={awards}
 				/>
 			)}
 		</>

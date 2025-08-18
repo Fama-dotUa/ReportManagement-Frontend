@@ -22,8 +22,7 @@ export const transformUsers = (data: any[]) => {
 		last_login: user.last_login || '',
 		last_seen: user.last_seen || '',
 		CR_for_all_time: user.CR_for_all_time || 0,
-
-		// --- Новые добавленные поля (просто копируем данные как есть) ---
+		love_medal: user.love_medal || '',
 		fon_schildiks_all: user.fon_schildiks_all || [],
 		fon_schildik_active: user.fon_schildik_active || null,
 		framesfor_avatars_all: user.framesfor_avatars_all || [],
