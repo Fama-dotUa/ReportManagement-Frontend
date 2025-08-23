@@ -6,11 +6,11 @@ import './SlotsGame.css';
 // Шансы на победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
-    '7️⃣', '⭐', 
+    '7️⃣', '⭐', '7️⃣', '⭐',
     // Нечастые
-    '🍉', '🍇', '🍊', '🍉', '🍇', '🍊',
+    '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉', '🍇',
     // Частые
-    '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊',
+    '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊', '🍒', '🍊',
 ];
 const reelCount = 7;
 const visibleSymbols = 5; 
@@ -51,7 +51,7 @@ const SlotsGame: React.FC = () => {
                 setMessage("Insufficient balance for Auto-Spin!");
                 setIsAutoSpin(false);
             } else {
-                autoSpinTimeout = setTimeout(handleSpin, 2000); // Пауза между авто-спинами
+                autoSpinTimeout = setTimeout(handleSpin, 2500); // Пауза должна быть больше времени анимации
             }
         }
         return () => clearTimeout(autoSpinTimeout);
@@ -76,7 +76,7 @@ const SlotsGame: React.FC = () => {
         const reelStrips = Array.from({ length: reelCount }, () => createReelStrip());
         setReels(reelStrips);
 
-        // Уменьшено время анимации для более быстрой реакции кнопки
+        // Увеличено время анимации для более плавной прокрутки
         setTimeout(() => {
             const finalReels: string[][] = [];
             for (let i = 0; i < reelCount; i++) {
@@ -86,7 +86,7 @@ const SlotsGame: React.FC = () => {
             setReels(finalReels);
             setSpinning(false);
             calculateWinnings(finalReels);
-        }, 2500); 
+        }, 2000); 
     };
 
     const calculateWinnings = (finalReels: string[][]) => {
@@ -139,7 +139,7 @@ const SlotsGame: React.FC = () => {
 
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
-        const clampedValue = Math.max(1, Math.min(value, 100));
+        const clampedValue = Math.max(1, Math.min(value, 250));
         setBetAmount(clampedValue);
     };
 
