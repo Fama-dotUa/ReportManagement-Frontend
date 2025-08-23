@@ -13,7 +13,6 @@ const numberColors: { [key: number]: string } = {
 };
 
 // --- СИМУЛЯЦИЯ СЕРВЕРА ДЛЯ СИНХРОНИЗАЦИИ ---
-// Этот объект имитирует единое состояние игры для всех пользователей.
 const rouletteService = {
     state: {
         countdown: 20,
@@ -64,18 +63,17 @@ const rouletteService = {
         setTimeout(() => {
             this.state = { ...this.state, isSpinning: false, countdown: 20 };
             this.notify();
-        }, 7000); // 7 секунд анимации
+        }, 7000); 
     }
 };
 
-// Запускаем "сервер" один раз при загрузке кода
 rouletteService.start();
 // ---------------------------------------------
 
 
-// Создаем массив номеров для ленты рулетки
+// Увеличиваем массив, чтобы избежать визуальных сбросов на длинной дистанции
 const rouletteNumbers = Array.from({ length: 37 }, (_, i) => i);
-const wheelNumbers = [...rouletteNumbers, ...rouletteNumbers, ...rouletteNumbers, ...rouletteNumbers]; // Добавим еще один блок для плавного перехода
+const wheelNumbers = Array.from({ length: 10 }).flatMap(() => rouletteNumbers);
 
 const RouletteGame: React.FC = () => {
     const { user } = useAuth();
@@ -86,10 +84,12 @@ const RouletteGame: React.FC = () => {
     const [totalWin, setTotalWin] = useState(0);
     const [betsAccepted, setBetsAccepted] = useState(false);
     
-    // Состояние игры, синхронизированное с "сервисом"
     const [gameState, setGameState] = useState(rouletteService.state);
-    const [lastWinningNumber, setLastWinningNumber] = useState<number | null>(0); // Хранит позицию для остановки
     const { isSpinning, countdown, winningNumber } = gameState;
+
+    // Новые состояния для управления непрерывным вращением
+    const [spinCount, setSpinCount] = useState(0);
+    const [lastSpinTranslateX, setLastSpinTranslateX] = useState(-500); // Начальное смещение
 
     useEffect(() => {
         const handleStateUpdate = (newState: any) => {
@@ -97,14 +97,21 @@ const RouletteGame: React.FC = () => {
                 calculateWinnings(newState.winningNumber);
                 setSpinResult({ number: newState.winningNumber, color: numberColors[newState.winningNumber] });
                 setBetsAccepted(false); 
-                setLastWinningNumber(newState.winningNumber); // Сохраняем последнее число для плавной остановки
+
+                // Рассчитываем и сохраняем конечное положение
+                const centeringOffset = 500;
+                const finalTarget = (37 * (2 + spinCount)) + (newState.winningNumber ?? 0);
+                const finalTranslateX = -(finalTarget * 100 - centeringOffset);
+                setLastSpinTranslateX(finalTranslateX);
+                
+                setSpinCount(prev => prev + 1);
             }
             setGameState(newState);
         };
 
         rouletteService.subscribe(handleStateUpdate);
         return () => rouletteService.unsubscribe(handleStateUpdate);
-    }, [gameState.isSpinning, bets, betsAccepted]);
+    }, [gameState.isSpinning, bets, betsAccepted, spinCount]);
 
     const placeBet = (betType: string) => {
         if (betsAccepted) {
@@ -149,31 +156,37 @@ const RouletteGame: React.FC = () => {
 
         for (const betType in bets) {
             const betValue = bets[betType];
-            let conditionMet = false;
+            let isWin = false;
+            let multiplier = 0;
+
             if (betType.startsWith('number_')) {
                 if (parseInt(betType.split('_')[1]) === winner) {
-                    winnings += betValue * 36;
+                    isWin = true;
+                    multiplier = 36;
                 }
             } else {
                 switch (betType) {
-                    case 'red': if (winnerColor === 'red') conditionMet = true; break;
-                    case 'black': if (winnerColor === 'black') conditionMet = true; break;
-                    case 'even': if (winner !== 0 && winner % 2 === 0) conditionMet = true; break;
-                    case 'odd': if (winner !== 0 && winner % 2 !== 0) conditionMet = true; break;
-                    case '1-18': if (winner >= 1 && winner <= 18) conditionMet = true; break;
-                    case '19-36': if (winner >= 19 && winner <= 36) conditionMet = true; break;
-                    case '1-12': if (winner >= 1 && winner <= 12) conditionMet = true; break;
-                    case '13-24': if (winner >= 13 && winner <= 24) conditionMet = true; break;
-                    case '25-36': if (winner >= 25 && winner <= 36) conditionMet = true; break;
-                    case 'col1': if (winner > 0 && winner % 3 === 1) conditionMet = true; break;
-                    case 'col2': if (winner > 0 && winner % 3 === 2) conditionMet = true; break;
-                    case 'col3': if (winner > 0 && winner % 3 === 0) conditionMet = true; break;
+                    case 'red': if (winnerColor === 'red') isWin = true; break;
+                    case 'black': if (winnerColor === 'black') isWin = true; break;
+                    case 'even': if (winner !== 0 && winner % 2 === 0) isWin = true; break;
+                    case 'odd': if (winner !== 0 && winner % 2 !== 0) isWin = true; break;
+                    case '1-18': if (winner >= 1 && winner <= 18) isWin = true; break;
+                    case '19-36': if (winner >= 19 && winner <= 36) isWin = true; break;
+                    case '1-12': if (winner >= 1 && winner <= 12) isWin = true; break;
+                    case '13-24': if (winner >= 13 && winner <= 24) isWin = true; break;
+                    case '25-36': if (winner >= 25 && winner <= 36) isWin = true; break;
+                    case 'col1': if (winner > 0 && winner % 3 === 1) isWin = true; break;
+                    case 'col2': if (winner > 0 && winner % 3 === 2) isWin = true; break;
+                    case 'col3': if (winner > 0 && winner % 3 === 0) isWin = true; break;
                 }
 
-                if (conditionMet) {
-                    const multiplier = ['red', 'black', 'even', 'odd', '1-18', '19-36'].includes(betType) ? 2 : 3;
-                    winnings += betValue * multiplier;
+                if (isWin) {
+                    multiplier = ['red', 'black', 'even', 'odd', '1-18', '19-36'].includes(betType) ? 2 : 3;
                 }
+            }
+
+            if (isWin) {
+                winnings += betValue * multiplier;
             }
         }
         setBalance(prev => prev + winnings);
@@ -188,22 +201,17 @@ const RouletteGame: React.FC = () => {
         return null;
     };
 
-    // Функция для вычисления смещения translateX
     const getTransformValue = () => {
-        // Смещение для центрирования блока (половина ширины контейнера - половина ширины блока)
-        // Предполагаем, что ширина контейнера около 900px, поэтому центр 450px.
-        // 450 - 50 (половина ширины блока 100px) = 400
         const centeringOffset = 500;
-
-        // Цель для анимации находится в третьем блоке чисел
-        const spinTarget = (37 * 2) + (winningNumber ?? 0);
-        const spinTranslateX = -(spinTarget * 100 - centeringOffset);
-
-        // Позиция покоя находится во втором блоке чисел
-        const restingTarget = (37 * 1) + (lastWinningNumber ?? 0);
-        const restingTranslateX = -(restingTarget * 100 - centeringOffset);
-
-        return isSpinning ? spinTranslateX : restingTranslateX;
+        
+        if (isSpinning) {
+            // Цель для анимации всегда находится впереди
+            const spinTarget = (37 * (2 + spinCount)) + (winningNumber ?? 0);
+            return -(spinTarget * 100 - centeringOffset);
+        } else {
+            // В состоянии покоя остаемся на последней выигрышной позиции
+            return lastSpinTranslateX;
+        }
     };
 
     return (
