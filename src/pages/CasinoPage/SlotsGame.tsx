@@ -7,7 +7,7 @@ import './SlotsGame.css';
 // Шансы на победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
-    '7️⃣', '⭐', '7️⃣', '⭐',
+    '7️⃣', '⭐',
     // Нечастые
     '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉', '🍇',
     // Частые
@@ -45,6 +45,8 @@ const SlotsGame: React.FC = () => {
     const [freeSpins, setFreeSpins] = useState(0);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
     const [isWinning, setIsWinning] = useState(false);
+    // НОВОЕ СОСТОЯНИЕ: Хранит координаты [reelIndex, symbolIndex] выигрышных символов
+    const [winningSymbols, setWinningSymbols] = useState<[number, number][]>([]);
 
     // Логика для авто-спина
     useEffect(() => {
@@ -68,10 +70,11 @@ const SlotsGame: React.FC = () => {
             return;
         }
 
+        // Сбрасываем подсветку перед новым спином
+        setWinningSymbols([]);
         if (freeSpins > 0) {
             setFreeSpins(prev => prev - 1);
         } else {
-            // ИЗМЕНЕНИЕ: Обновляем глобальный баланс
             updateBalance(balance - betAmount);
         }
         
@@ -93,67 +96,126 @@ const SlotsGame: React.FC = () => {
         }, 2000); 
     };
 
-    // --- НОВАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ---
-    // Находит все последовательные комбинации символов в линии или колонке
-    const findConsecutiveCounts = (line: string[]): { [key: string]: number[] } => {
-        if (line.length === 0) return {};
+    // --- ОБНОВЛЕННАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ---
+    // Теперь возвращает также и начальный индекс каждой последовательности
+    const findConsecutiveSequences = (line: string[]): { symbol: string, count: number, startIndex: number }[] => {
+        if (line.length === 0) return [];
 
-        const allCounts: { [key: string]: number[] } = {};
+        const sequences: { symbol: string, count: number, startIndex: number }[] = [];
         let currentSymbol = line[0];
         let currentCount = 1;
+        let startIndex = 0;
 
         for (let i = 1; i < line.length; i++) {
             if (line[i] === currentSymbol) {
                 currentCount++;
             } else {
-                if (!allCounts[currentSymbol]) allCounts[currentSymbol] = [];
-                allCounts[currentSymbol].push(currentCount);
-                
+                sequences.push({ symbol: currentSymbol, count: currentCount, startIndex });
                 currentSymbol = line[i];
                 currentCount = 1;
+                startIndex = i;
             }
         }
-        // Добавляем последнюю найденную последовательность
-        if (!allCounts[currentSymbol]) allCounts[currentSymbol] = [];
-        allCounts[currentSymbol].push(currentCount);
+        sequences.push({ symbol: currentSymbol, count: currentCount, startIndex });
 
-        return allCounts;
+        return sequences;
     };
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА РАСЧЕТА ВЫИГРЫШЕЙ С УЧЕТОМ СОСЕДНИХ СИМВОЛОВ ---
+    // --- ОБНОВЛЕННАЯ ЛОГИКА РАСЧЕТА ВЫИГРЫШЕЙ СО ВСЕМИ ДИАГОНАЛЯМИ ---
     const calculateWinnings = (finalReels: string[][]) => {
         const effectiveBet = freeSpins > 0 ? 5 : betAmount;
         let totalMultiplier = 0;
         const winMessages: string[] = [];
         let winningCombos = 0;
+        const newWinningCoords: [number, number][] = [];
 
-        // Функция для обработки найденных комбинаций
-        const processCounts = (counts: { [key: string]: number[] }, type: '(H)' | '(V)') => {
-            for (const symbol in counts) {
-                for (const count of counts[symbol]) {
-                    if (payouts[symbol] && payouts[symbol][count]) {
-                        const multiplier = payouts[symbol][count];
-                        totalMultiplier += multiplier;
-                        winMessages.push(`${count} x ${symbol} ${type}`);
-                        winningCombos++;
+        // --- 1. Горизонтальная проверка ---
+        const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
+        const horizontalSequences = findConsecutiveSequences(centerLine);
+        for (const seq of horizontalSequences) {
+            if (payouts[seq.symbol] && payouts[seq.symbol][seq.count]) {
+                totalMultiplier += payouts[seq.symbol][seq.count];
+                winMessages.push(`${seq.count} x ${seq.symbol} (H)`);
+                winningCombos++;
+                for (let i = 0; i < seq.count; i++) {
+                    newWinningCoords.push([seq.startIndex + i, Math.floor(visibleSymbols / 2)]);
+                }
+            }
+        }
+
+        // --- 2. Вертикальная проверка ---
+        finalReels.forEach((reel, reelIndex) => {
+            const verticalSequences = findConsecutiveSequences(reel);
+            for (const seq of verticalSequences) {
+                if (payouts[seq.symbol] && payouts[seq.symbol][seq.count] && seq.count >= 3) {
+                    totalMultiplier += payouts[seq.symbol][seq.count];
+                    winMessages.push(`${seq.count} x ${seq.symbol} (V)`);
+                    winningCombos++;
+                    for (let i = 0; i < seq.count; i++) {
+                        newWinningCoords.push([reelIndex, seq.startIndex + i]);
                     }
                 }
             }
-        };
-
-        // --- 1. Горизонтальная проверка (только соседние) ---
-        const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
-        const horizontalConsecutiveCounts = findConsecutiveCounts(centerLine);
-        processCounts(horizontalConsecutiveCounts, '(H)');
-
-        // --- 2. Вертикальная проверка (только соседние) ---
-        finalReels.forEach((reel) => {
-            const verticalConsecutiveCounts = findConsecutiveCounts(reel);
-            processCounts(verticalConsecutiveCounts, '(V)');
         });
 
-        // --- 3. Итоговый расчет ---
+        // --- 3. Все диагонали слева направо (\) ---
+        for (let k = -(visibleSymbols - 1); k < reelCount; k++) {
+            const diagLine: string[] = [];
+            const diagCoords: [number, number][] = [];
+            for (let c = 0; c < reelCount; c++) {
+                const r = c - k;
+                if (r >= 0 && r < visibleSymbols) {
+                    diagLine.push(finalReels[c][r]);
+                    diagCoords.push([c, r]);
+                }
+            }
+            if (diagLine.length < 3) continue;
+
+            const diagSequences = findConsecutiveSequences(diagLine);
+            for (const seq of diagSequences) {
+                if (payouts[seq.symbol] && payouts[seq.symbol][seq.count] && seq.count >= 3) {
+                    totalMultiplier += payouts[seq.symbol][seq.count];
+                    winMessages.push(`${seq.count} x ${seq.symbol} (D)`);
+                    winningCombos++;
+                    for (let i = 0; i < seq.count; i++) {
+                        newWinningCoords.push(diagCoords[seq.startIndex + i]);
+                    }
+                }
+            }
+        }
+
+        // --- 4. Все диагонали справа налево (/) ---
+        for (let k = 0; k < reelCount + visibleSymbols - 1; k++) {
+            const antiDiagLine: string[] = [];
+            const antiDiagCoords: [number, number][] = [];
+            for (let c = 0; c < reelCount; c++) {
+                const r = k - c;
+                if (r >= 0 && r < visibleSymbols) {
+                    antiDiagLine.push(finalReels[c][r]);
+                    antiDiagCoords.push([c, r]);
+                }
+            }
+            if (antiDiagLine.length < 3) continue;
+
+            const antiDiagSequences = findConsecutiveSequences(antiDiagLine);
+            for (const seq of antiDiagSequences) {
+                if (payouts[seq.symbol] && payouts[seq.symbol][seq.count] && seq.count >= 3) {
+                    totalMultiplier += payouts[seq.symbol][seq.count];
+                    winMessages.push(`${seq.count} x ${seq.symbol} (D)`);
+                    winningCombos++;
+                    for (let i = 0; i < seq.count; i++) {
+                        newWinningCoords.push(antiDiagCoords[seq.startIndex + i]);
+                    }
+                }
+            }
+        }
+
+        // --- 5. Итоговый расчет ---
         if (winningCombos > 0) {
+            // Удаляем дубликаты координат, если символ участвует в нескольких комбо
+            const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
+            setWinningSymbols(uniqueCoords);
+
             const finalMultiplier = totalMultiplier - (winningCombos > 1 ? (winningCombos - 1) : 0);
             const winAmount = effectiveBet * finalMultiplier;
             const netWin = winAmount - effectiveBet;
@@ -213,7 +275,11 @@ const SlotsGame: React.FC = () => {
                         <div key={reelIndex} className="reel">
                             <div className={`reel-strip ${spinning ? 'spinning' : ''}`}>
                                 {reel.map((symbol, symbolIndex) => (
-                                    <div key={symbolIndex} className="symbol">
+                                    <div 
+                                        key={symbolIndex} 
+                                        // Добавляем класс 'highlight' если координаты символа есть в стейте
+                                        className={`symbol ${winningSymbols.some(coord => coord[0] === reelIndex && coord[1] === symbolIndex) ? 'highlight' : ''}`}
+                                    >
                                         {symbol}
                                     </div>
                                 ))}
