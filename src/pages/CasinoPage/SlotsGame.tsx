@@ -266,13 +266,15 @@ const SlotsGame: React.FC = () => {
     };
 
     const updateSuperGame = (winAmount: number, currentBet: number) => {
-        const progressToAdd = (winAmount / currentBet) / 2;
-        setSuperGameProgress(prev => {
-            const newProgress = prev + progressToAdd;
-            if (newProgress >= 100) {
-                setMessage("SUPER GAME! You won 10 Freespins!");
-                setFreeSpins(10);
-                return 0;
+    const baseWin = 85; // Adjust based on typical win amounts
+    const scaleFactor = 3.0; // Adjust to control progress speed
+    const progressToAdd = Math.min(65, (winAmount / baseWin) * scaleFactor);
+    setSuperGameProgress(prev => {
+        const newProgress = prev + progressToAdd;
+        if (newProgress >= 100) {
+            setMessage("SUPER GAME! You won 10 Freespins!");
+            setFreeSpins(10);
+            return 0;
             }
             return newProgress;
         });
