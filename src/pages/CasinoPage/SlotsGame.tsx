@@ -208,7 +208,8 @@ useEffect(() => {
             setCooldownSpins(prev => {
                 const newCooldown = prev - 1;
                 if (newCooldown > 0) {
-                    setMessage(`Cooldown active for ${newCooldown} more spin(s)...`);
+                    //! Сообщение о охлаждении отключено
+                    //setMessage(`Cooldown active for ${newCooldown} more spin(s)...`);
                 }
                 return newCooldown;
             });
