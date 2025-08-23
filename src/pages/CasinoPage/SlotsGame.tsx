@@ -3,20 +3,27 @@ import { useAuth } from '../../hooks/useAuth';
 import './SlotsGame.css';
 
 // --- Игровая логика и настройки ---
-// Шансы на победу снижены за счет добавления более частых символов
-const symbols = ['🍒', '🍋', '🍊', '🍇', '🍉', '⭐', '7️⃣', '🍒', '🍋', '🍊', '🍇', '🍒', '🍋'];
+// Шансы на победу изменены, частые символы сделаны реже
+const symbols = [
+    // Редкие
+    '7️⃣', '⭐', 
+    // Нечастые
+    '🍉', '🍇', '🍊', '🍉', '🍇', '🍊',
+    // Частые
+    '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊',
+];
 const reelCount = 7;
-const visibleSymbols = 5; // Теперь отображается 5 символов
+const visibleSymbols = 5; 
 
-// Таблица выплат: [символ]: { [количество_совпадений]: множитель_ставки }
+// Обновленная таблица выплат с максимальным множителем x15
 const payouts: { [key: string]: { [count: number]: number } } = {
-    '🍒': { 3: 2, 4: 5, 5: 10, 6: 20, 7: 50 },
-    '🍋': { 3: 2, 4: 5, 5: 10, 6: 20, 7: 50 },
-    '🍊': { 3: 3, 4: 8, 5: 15, 6: 30, 7: 75 },
-    '🍇': { 3: 3, 4: 8, 5: 15, 6: 30, 7: 75 },
-    '🍉': { 3: 5, 4: 10, 5: 25, 6: 50, 7: 100 },
-    '⭐': { 3: 10, 4: 25, 5: 50, 6: 100, 7: 250 },
-    '7️⃣': { 3: 20, 4: 50, 5: 100, 6: 250, 7: 500 },
+    '🍒': { 3: 1.1, 4: 1.2, 5: 1.3, 6: 1.4, 7: 1.5 },
+    '🍋': { 3: 1.2, 4: 1.4, 5: 1.6, 6: 1.8, 7: 2.0 },
+    '🍊': { 3: 1.3, 4: 1.6, 5: 1.9, 6: 2.2, 7: 2.5 },
+    '🍇': { 3: 1.5, 4: 2.0, 5: 2.5, 6: 3.0, 7: 3.5 },
+    '🍉': { 3: 1.8, 4: 2.6, 5: 3.2, 6: 3.8, 7: 4.4 },
+    '⭐': { 3: 2.0, 4: 2.8, 5: 3.6, 6: 4.4, 7: 5.2 },
+    '7️⃣': { 3: 3.0, 4: 4.0, 5: 5.0, 6: 6.0, 7: 10 },
 };
 
 // Создаем длинную ленту символов для анимации каждого барабана
@@ -33,10 +40,26 @@ const SlotsGame: React.FC = () => {
     const [message, setMessage] = useState('Place your bet and spin!');
     const [superGameProgress, setSuperGameProgress] = useState(0);
     const [freeSpins, setFreeSpins] = useState(0);
+    const [isAutoSpin, setIsAutoSpin] = useState(false);
+
+    // Логика для авто-спина
+    useEffect(() => {
+        let autoSpinTimeout: NodeJS.Timeout;
+        if (isAutoSpin && !spinning && freeSpins === 0) {
+            if (betAmount > balance) {
+                setMessage("Insufficient balance for Auto-Spin!");
+                setIsAutoSpin(false);
+            } else {
+                autoSpinTimeout = setTimeout(handleSpin, 4000); // Увеличена пауза для хаотичного спина
+            }
+        }
+        return () => clearTimeout(autoSpinTimeout);
+    }, [isAutoSpin, spinning, balance]);
 
     const handleSpin = () => {
         if (freeSpins === 0 && betAmount > balance) {
             setMessage("Insufficient balance!");
+            setIsAutoSpin(false); 
             return;
         }
 
@@ -50,25 +73,23 @@ const SlotsGame: React.FC = () => {
         setMessage('Spinning...');
 
         const reelStrips = Array.from({ length: reelCount }, () => createReelStrip());
-
-        // Устанавливаем начальное состояние для анимации
         setReels(reelStrips);
 
         setTimeout(() => {
             const finalReels: string[][] = [];
             for (let i = 0; i < reelCount; i++) {
-                // Последние 5 символов в ленте - это наш результат
                 const resultStrip = reelStrips[i].slice(-visibleSymbols);
                 finalReels.push(resultStrip);
             }
             setReels(finalReels);
             setSpinning(false);
             calculateWinnings(finalReels);
-        }, 3000); // Длительность анимации
+        }, 3000); 
     };
 
     const calculateWinnings = (finalReels: string[][]) => {
-        const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]); // Центральная линия для 5 символов (индекс 2)
+        const effectiveBet = freeSpins > 0 ? 5 : betAmount;
+        const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
         const counts: { [key: string]: number } = {};
         
         for (const symbol of centerLine) {
@@ -82,33 +103,30 @@ const SlotsGame: React.FC = () => {
             const count = counts[symbol];
             if (payouts[symbol] && payouts[symbol][count]) {
                 const multiplier = payouts[symbol][count];
-                winAmount = betAmount * multiplier;
-                winMessage = `Win! ${count} x ${symbol} pays ${winAmount} CPN!`;
-                break; // Выплачиваем только за одну выигрышную комбинацию
+                winAmount = effectiveBet * multiplier;
+                winMessage = `Win! ${count} x ${symbol} pays ${winAmount.toFixed(1)} CPN!`;
+                break;
             }
         }
 
         if (winAmount > 0) {
             setBalance(prev => prev + winAmount);
-            // Обновляем шкалу супер-игры только при выигрыше и если это не фриспин
             if (freeSpins <= 0) {
-                updateSuperGame(winAmount, betAmount);
+                updateSuperGame(winAmount, effectiveBet);
             }
         }
         setMessage(winMessage);
     };
 
     const updateSuperGame = (winAmount: number, currentBet: number) => {
-        // Прогресс зависит от множителя выигрыша. Выигрыш x10 дает 10% прогресса.
-        const progressToAdd = (winAmount / currentBet);
+        const progressToAdd = (winAmount / currentBet) / 2;
         
         setSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
             if (newProgress >= 100) {
-                // Запускаем супер-игру: даем 10 фриспинов
                 setMessage("SUPER GAME! You won 10 Freespins!");
                 setFreeSpins(10);
-                return 0; // Сбрасываем шкалу
+                return 0;
             }
             return newProgress;
         });
@@ -116,9 +134,17 @@ const SlotsGame: React.FC = () => {
 
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
-        const clampedValue = Math.max(1, Math.min(value, 500)); // Макс. ставка 500
+        const clampedValue = Math.max(1, Math.min(value, 100));
         setBetAmount(clampedValue);
     };
+
+    const toggleAutoSpin = () => {
+        if (!isAutoSpin && betAmount > balance) {
+            setMessage("Insufficient balance to start Auto-Spin!");
+            return;
+        }
+        setIsAutoSpin(!isAutoSpin);
+    }
 
     return (
         <div className="slots-game">
@@ -151,7 +177,7 @@ const SlotsGame: React.FC = () => {
 
             <div className="controls">
                 <div className="balance-info">
-                    <span>Balance: {balance} CPN</span>
+                    <span>Balance: {balance.toFixed(1)} CPN</span>
                     {freeSpins > 0 && <span className="freespins-info">Freespins: {freeSpins}</span>}
                 </div>
                 <div className="betting-controls">
@@ -159,10 +185,13 @@ const SlotsGame: React.FC = () => {
                         type="number"
                         value={betAmount}
                         onChange={handleBetAmountChange}
-                        disabled={spinning || freeSpins > 0}
+                        disabled={spinning || freeSpins > 0 || isAutoSpin}
                     />
-                    <button onClick={handleSpin} disabled={spinning}>
+                    <button onClick={handleSpin} disabled={spinning || isAutoSpin}>
                         {spinning ? 'Spinning...' : (freeSpins > 0 ? `Free Spin (${freeSpins})` : 'Spin')}
+                    </button>
+                    <button onClick={toggleAutoSpin} disabled={spinning || freeSpins > 0} className={isAutoSpin ? 'autospin-active' : ''}>
+                        {isAutoSpin ? 'Stop Auto' : 'Start Auto'}
                     </button>
                 </div>
             </div>
