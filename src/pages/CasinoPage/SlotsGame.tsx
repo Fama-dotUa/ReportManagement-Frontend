@@ -46,9 +46,11 @@ const SlotsGame: React.FC = () => {
     const [isWinning, setIsWinning] = useState(false);
     const [winningSymbols, setWinningSymbols] = useState<[number, number][]>([]);
 
-    // --- НОВЫЕ СОСТОЯНИЯ ДЛЯ ЛОГИКИ "ОХЛАЖДЕНИЯ" ---
+    // --- ОБНОВЛЕННЫЕ СОСТОЯНИЯ ДЛЯ ЛОГИКИ "ОХЛАЖДЕНИЯ" ---
     const [consecutiveWins, setConsecutiveWins] = useState(0);
     const [cooldownSpins, setCooldownSpins] = useState(0);
+    // НОВОЕ: Устанавливает, сколько побед нужно для активации "охлаждения"
+    const [winsNeededForCooldown, setWinsNeededForCooldown] = useState(() => Math.floor(Math.random() * 5) + 1); // 1 to 5
 
 
     useEffect(() => {
@@ -223,10 +225,13 @@ const SlotsGame: React.FC = () => {
             const newWinCount = consecutiveWins + 1;
             setConsecutiveWins(newWinCount);
 
-            if (newWinCount >= 3) {
+            // ИЗМЕНЕНИЕ: Проверяем на достижение СЛУЧАЙНОГО порога
+            if (newWinCount >= winsNeededForCooldown) {
                 const newCooldown = Math.floor(Math.random() * 5) + 1; // 1 to 5
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
+                // Устанавливаем НОВЫЙ порог для следующей серии побед
+                setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 1);
             }
 
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
@@ -238,7 +243,7 @@ const SlotsGame: React.FC = () => {
             const netWin = winAmount - effectiveBet;
 
             let finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
-            if (newWinCount >= 3) {
+            if (newWinCount >= winsNeededForCooldown) {
                 finalMessage += ` Cooldown for ${cooldownSpins} spins activated!`;
             }
             setMessage(finalMessage);
@@ -251,7 +256,9 @@ const SlotsGame: React.FC = () => {
 
             if (freeSpins <= 0) updateSuperGame(winAmount, effectiveBet);
         } else {
-            setConsecutiveWins(0); // Сбрасываем счетчик при проигрыше
+            // ИЗМЕНЕНИЕ: Сбрасываем счетчик и устанавливаем новый порог при проигрыше
+            setConsecutiveWins(0); 
+            setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 1);
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
