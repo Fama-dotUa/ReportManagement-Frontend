@@ -49,11 +49,12 @@ const SlotsGame: React.FC = () => {
     // --- ОБНОВЛЕННЫЕ СОСТОЯНИЯ ДЛЯ ЛОГИКИ "ОХЛАЖДЕНИЯ" ---
     const [consecutiveWins, setConsecutiveWins] = useState(0);
     const [cooldownSpins, setCooldownSpins] = useState(0);
-    // НОВОЕ: Устанавливает, сколько побед нужно для активации "охлаждения"
-    const [winsNeededForCooldown, setWinsNeededForCooldown] = useState(() => Math.floor(Math.random() * 5) + 1); // 1 to 5
+    // ИЗМЕНЕНИЕ: Диапазон побед теперь от 2 до 5
+    const [winsNeededForCooldown, setWinsNeededForCooldown] = useState(() => Math.floor(Math.random() * 4) + 2); // 2 to 5
 
 
-useEffect(() => {
+    // ИСПРАВЛЕНИЕ: Логика авто-спина теперь корректно работает с фриспинами
+    useEffect(() => {
         let autoSpinTimeout: NodeJS.Timeout;
         // Запускаем таймер, если авто-спин включен и барабаны не вращаются
         if (isAutoSpin && !spinning) {
@@ -73,7 +74,7 @@ useEffect(() => {
         }
         // Очистка таймера при размонтировании компонента или изменении зависимостей
         return () => clearTimeout(autoSpinTimeout);
-    }, [isAutoSpin, spinning, balance, freeSpins]);
+    }, [isAutoSpin, spinning, balance, freeSpins]); // Добавлен freeSpins в зависимости
 
     // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ГЕНЕРАЦИИ И АНАЛИЗА ---
     const findConsecutiveSequences = (line: string[]): { symbol: string, count: number, startIndex: number }[] => {
@@ -240,8 +241,8 @@ useEffect(() => {
                 const newCooldown = Math.floor(Math.random() * 5) + 1; // 1 to 5
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
-                // Устанавливаем НОВЫЙ порог для следующей серии побед
-                setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 1);
+                // ИЗМЕНЕНИЕ: Устанавливаем НОВЫЙ порог для следующей серии побед (2-5)
+                setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 2);
             }
 
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
@@ -266,9 +267,9 @@ useEffect(() => {
 
             if (freeSpins <= 0) updateSuperGame(winAmount, effectiveBet);
         } else {
-            // ИЗМЕНЕНИЕ: Сбрасываем счетчик и устанавливаем новый порог при проигрыше
+            // ИЗМЕНЕНИЕ: Сбрасываем счетчик и устанавливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
-            setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 1);
+            setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 2);
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
@@ -279,12 +280,12 @@ useEffect(() => {
     const baseWin = 85; // Adjust based on typical win amounts
     const scaleFactor = 3.0; // Adjust to control progress speed
     const progressToAdd = Math.min(65, (winAmount / baseWin) * scaleFactor);
-    setSuperGameProgress(prev => {
-        const newProgress = prev + progressToAdd;
-        if (newProgress >= 100) {
-            setMessage("SUPER GAME! You won 10 Freespins!");
-            setFreeSpins(10);
-            return 0;
+        setSuperGameProgress(prev => {
+            const newProgress = prev + progressToAdd;
+            if (newProgress >= 100) {
+                setMessage("SUPER GAME! You won 10 Freespins!");
+                setFreeSpins(10);
+                return 0;
             }
             return newProgress;
         });
@@ -296,6 +297,7 @@ useEffect(() => {
         setBetAmount(clampedValue);
     };
 
+    // ИСПРАВЛЕНИЕ: Позволяет включать авто-спин даже если есть фриспины, но нет денег на обычный спин
     const toggleAutoSpin = () => {
         if (!isAutoSpin && freeSpins === 0 && betAmount > balance) {
             setMessage("Insufficient balance to start Auto-Spin!");
@@ -351,6 +353,7 @@ useEffect(() => {
                     <button onClick={handleSpin} disabled={spinning || isAutoSpin}>
                         {spinning ? 'Spinning...' : (freeSpins > 0 ? `Free Spin (${freeSpins})` : 'Spin')}
                     </button>
+                    {/* ИСПРАВЛЕНИЕ: Кнопка больше не блокируется во время фриспинов, только во время вращения */}
                     <button onClick={toggleAutoSpin} disabled={spinning} className={isAutoSpin ? 'autospin-active' : ''}>
                         {isAutoSpin ? 'Stop Auto' : 'Start Auto'}
                     </button>
