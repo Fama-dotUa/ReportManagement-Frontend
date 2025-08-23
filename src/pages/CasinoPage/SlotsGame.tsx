@@ -17,6 +17,7 @@ const reelCount = 7;
 const visibleSymbols = 5; 
 
 // Обновленная таблица выплат с максимальным множителем x10
+// Эта таблица теперь используется и для вертикальных комбинаций
 const payouts: { [key: string]: { [count: number]: number } } = {
     '🍒': { 3: 1.1, 4: 1.2, 5: 1.3, 6: 1.4, 7: 1.5 },
     '🍋': { 3: 1.2, 4: 1.4, 5: 1.6, 6: 1.8, 7: 2.0 },
@@ -92,42 +93,74 @@ const SlotsGame: React.FC = () => {
         }, 2000); 
     };
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА РАСЧЕТА ВЫИГРЫШЕЙ ---
+    // --- НОВАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ---
+    // Находит все последовательные комбинации символов в линии или колонке
+    const findConsecutiveCounts = (line: string[]): { [key: string]: number[] } => {
+        if (line.length === 0) return {};
+
+        const allCounts: { [key: string]: number[] } = {};
+        let currentSymbol = line[0];
+        let currentCount = 1;
+
+        for (let i = 1; i < line.length; i++) {
+            if (line[i] === currentSymbol) {
+                currentCount++;
+            } else {
+                if (!allCounts[currentSymbol]) allCounts[currentSymbol] = [];
+                allCounts[currentSymbol].push(currentCount);
+                
+                currentSymbol = line[i];
+                currentCount = 1;
+            }
+        }
+        // Добавляем последнюю найденную последовательность
+        if (!allCounts[currentSymbol]) allCounts[currentSymbol] = [];
+        allCounts[currentSymbol].push(currentCount);
+
+        return allCounts;
+    };
+
+    // --- ОБНОВЛЕННАЯ ЛОГИКА РАСЧЕТА ВЫИГРЫШЕЙ С УЧЕТОМ СОСЕДНИХ СИМВОЛОВ ---
     const calculateWinnings = (finalReels: string[][]) => {
         const effectiveBet = freeSpins > 0 ? 5 : betAmount;
-        const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
-        const counts: { [key: string]: number } = {};
-
-        for (const symbol of centerLine) {
-            counts[symbol] = (counts[symbol] || 0) + 1;
-        }
-
         let totalMultiplier = 0;
         const winMessages: string[] = [];
         let winningCombos = 0;
 
-        // Итерируемся по всем символам, чтобы найти ВСЕ выигрышные комбинации
-        for (const symbol in counts) {
-            const count = counts[symbol];
-            if (payouts[symbol] && payouts[symbol][count]) {
-                const multiplier = payouts[symbol][count];
-                totalMultiplier += multiplier; // Суммируем множитель
-                winMessages.push(`${count} x ${symbol}`);
-                winningCombos++;
+        // Функция для обработки найденных комбинаций
+        const processCounts = (counts: { [key: string]: number[] }, type: '(H)' | '(V)') => {
+            for (const symbol in counts) {
+                for (const count of counts[symbol]) {
+                    if (payouts[symbol] && payouts[symbol][count]) {
+                        const multiplier = payouts[symbol][count];
+                        totalMultiplier += multiplier;
+                        winMessages.push(`${count} x ${symbol} ${type}`);
+                        winningCombos++;
+                    }
+                }
             }
-        }
+        };
 
+        // --- 1. Горизонтальная проверка (только соседние) ---
+        const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
+        const horizontalConsecutiveCounts = findConsecutiveCounts(centerLine);
+        processCounts(horizontalConsecutiveCounts, '(H)');
+
+        // --- 2. Вертикальная проверка (только соседние) ---
+        finalReels.forEach((reel) => {
+            const verticalConsecutiveCounts = findConsecutiveCounts(reel);
+            processCounts(verticalConsecutiveCounts, '(V)');
+        });
+
+        // --- 3. Итоговый расчет ---
         if (winningCombos > 0) {
-            // Корректируем множитель, чтобы не возвращать базовую ставку несколько раз.
-            // Формула: (Сумма множителей) - (Количество выигрышей - 1)
-            const finalMultiplier = totalMultiplier - (winningCombos - 1);
+            const finalMultiplier = totalMultiplier - (winningCombos > 1 ? (winningCombos - 1) : 0);
             const winAmount = effectiveBet * finalMultiplier;
-            const netWin = winAmount - effectiveBet; // Чистый выигрыш для начисления опыта
+            const netWin = winAmount - effectiveBet;
 
             const finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
             setMessage(finalMessage);
 
-            // ИЗМЕНЕНИЕ: Обновляем глобальный баланс и начисляем опыт
             updateBalance(balance - effectiveBet + winAmount);
             if (netWin > 0) {
                 addXp(netWin);
@@ -145,7 +178,7 @@ const SlotsGame: React.FC = () => {
     };
 
     const updateSuperGame = (winAmount: number, currentBet: number) => {
-        const progressToAdd = (winAmount / currentBet) * 1.2;
+        const progressToAdd = (winAmount / currentBet) * 2;
         
         setSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
