@@ -85,7 +85,7 @@ const wheelNumbers = Array.from({ length: 20 }).flatMap(() => rouletteNumbers); 
 
 const RouletteGame: React.FC = () => {
     const { user } = useAuth();
-    const [balance, setBalance] = useState(user?.CPN || 1000);
+    const [balance, setBalance] = useState(user?.CPN || 5000);
     const [betAmount, setBetAmount] = useState(10);
     const [bets, setBets] = useState<{ [key: string]: number }>({});
     const [spinResult, setSpinResult] = useState<{ number: number; color: string } | null>(null);
@@ -151,6 +151,14 @@ const RouletteGame: React.FC = () => {
             alert("Недостаточно средств для ставки!");
             return;
         }
+        
+        // Проверка на максимальную ОБЩУЮ ставку
+        const totalCurrentBet = Object.values(bets).reduce((sum, current) => sum + current, 0);
+        if (totalCurrentBet + betAmount > 1000) {
+            alert("Общая сумма ставок не может превышать 1000 CPN!");
+            return;
+        }
+
         setBalance(prev => prev - betAmount);
         setBets(prev => ({
             ...prev,
