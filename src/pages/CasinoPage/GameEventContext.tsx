@@ -9,12 +9,12 @@ interface GameEventContextType {
 const GameEventContext = createContext<GameEventContextType | undefined>(undefined);
 
 export const GameEventProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    // Этот стейт будет передан в EmojiAssistant, но нам не нужен сам gameEvent здесь
+    // Этот стейт напрямую не используется, но он необходим для работы провайдера
     const [_, setGameEvent] = useState<GameEventType>('idle');
 
     const triggerGameEvent = useCallback((event: GameEventType) => {
         setGameEvent(event);
-        // Создаем кастомное событие, которое будет слушать ассистент
+        // Создаем кастомное событие, которое будет "слушать" ассистент
         window.dispatchEvent(new CustomEvent('gameEvent', { detail: event }));
     }, []);
 

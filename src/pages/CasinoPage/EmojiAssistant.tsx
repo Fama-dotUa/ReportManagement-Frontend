@@ -1,47 +1,71 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { winPhrases, lossPhrases } from './phrases';
+import { winPhrases, lossPhrases, shakePhrases } from './phrases';
 import './EmojiAssistant.css';
 
 type GameEventType = 'win' | 'loss' | 'idle';
 
+const winEmojis = ['🥳', '🤩', '🎉', '🤑', '😎'];
+const lossEmojis = ['😢', '😭', '😥', '😩', '🤯'];
+const idleEmojis = ['😊', '🙂', '🤔', '😐', '🧐'];
+
 const EmojiAssistant: React.FC = () => {
     const [position, setPosition] = useState({ x: 50, y: window.innerHeight - 100 });
     const [isDragging, setIsDragging] = useState(false);
+    const [isShaking, setIsShaking] = useState(false);
     const [message, setMessage] = useState('');
-    const [emoji, setEmoji] = useState('😊'); // Нейтральный
+    const [emoji, setEmoji] = useState(() => idleEmojis[Math.floor(Math.random() * idleEmojis.length)]);
+    const [animationKey, setAnimationKey] = useState(0);
     const assistantRef = useRef<HTMLDivElement>(null);
     const offsetRef = useRef({ x: 0, y: 0 });
     const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    
+    const lastPosRef = useRef({ x: 0, y: 0, time: 0 });
+
+    useEffect(() => {
+        setAnimationKey(prevKey => prevKey + 1);
+    }, [emoji]);
+
+    const handleShake = () => {
+        if (isShaking) return;
+
+        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
+        
+        setIsShaking(true);
+        setEmoji('😵');
+        setMessage(shakePhrases[Math.floor(Math.random() * shakePhrases.length)]);
+
+        setTimeout(() => {
+            setIsShaking(false);
+            setEmoji(idleEmojis[Math.floor(Math.random() * idleEmojis.length)]);
+            setMessage('');
+        }, 4000);
+    };
 
     useEffect(() => {
         const handleGameEvent = (event: Event) => {
             const gameEvent = (event as CustomEvent<GameEventType>).detail;
             
-            if (messageTimeoutRef.current) {
-                clearTimeout(messageTimeoutRef.current);
-            }
+            if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
 
             if (gameEvent === 'win') {
-                setEmoji('🥳');
+                setEmoji(winEmojis[Math.floor(Math.random() * winEmojis.length)]);
                 setMessage(winPhrases[Math.floor(Math.random() * winPhrases.length)]);
             } else if (gameEvent === 'loss') {
-                setEmoji('😢');
+                setEmoji(lossEmojis[Math.floor(Math.random() * lossEmojis.length)]);
                 setMessage(lossPhrases[Math.floor(Math.random() * lossPhrases.length)]);
             }
 
             messageTimeoutRef.current = setTimeout(() => {
-                setEmoji('😊');
+                setEmoji(idleEmojis[Math.floor(Math.random() * idleEmojis.length)]);
                 setMessage('');
-            }, 4000); // Сообщение исчезнет через 4 секунды
+            }, 4000);
         };
 
         window.addEventListener('gameEvent', handleGameEvent);
 
         return () => {
             window.removeEventListener('gameEvent', handleGameEvent);
-            if (messageTimeoutRef.current) {
-                clearTimeout(messageTimeoutRef.current);
-            }
+            if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
         };
     }, []);
 
@@ -54,11 +78,28 @@ const EmojiAssistant: React.FC = () => {
                 x: e.clientX - rect.left,
                 y: e.clientY - rect.top,
             };
+            lastPosRef.current = { x: e.clientX, y: e.clientY, time: Date.now() };
         }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
         if (isDragging) {
+            const now = Date.now();
+            const deltaX = e.clientX - lastPosRef.current.x;
+            const deltaY = e.clientY - lastPosRef.current.y;
+            const deltaTime = now - lastPosRef.current.time;
+            
+            if (deltaTime > 0) {
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const velocity = distance / deltaTime;
+
+                if (velocity > 1.5) {
+                    handleShake();
+                }
+            }
+
+            lastPosRef.current = { x: e.clientX, y: e.clientY, time: now };
+            
             setPosition({
                 x: e.clientX - offsetRef.current.x,
                 y: e.clientY - offsetRef.current.y,
@@ -89,11 +130,11 @@ const EmojiAssistant: React.FC = () => {
         <div className="emoji-assistant-container">
             <div
                 ref={assistantRef}
-                className="emoji-assistant"
+                className={`emoji-assistant ${isShaking ? 'shaking' : ''}`}
                 style={{ left: `${position.x}px`, top: `${position.y}px` }}
                 onMouseDown={handleMouseDown}
             >
-                <div className="emoji-character">{emoji}</div>
+                <div key={animationKey} className="emoji-character">{emoji}</div>
                 {message && <div className="emoji-bubble">{message}</div>}
             </div>
         </div>
