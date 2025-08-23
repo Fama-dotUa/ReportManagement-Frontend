@@ -323,7 +323,8 @@ const SlotsGame: React.FC = () => {
 
     return (
         <div className="slots-game">
-            <div className={`slots-display ${isWinning ? 'win-animation' : ''}`}>
+            {/* ИЗМЕНЕНИЕ: Динамически добавляем класс для фона во время фриспинов */}
+            <div className={`slots-display ${isWinning ? 'win-animation' : ''} ${freeSpins > 0 ? 'super-game-active' : ''}`}>
                 <div className="reels-container">
                     {reels.map((reel, reelIndex) => (
                         <div key={reelIndex} className="reel">

@@ -194,3 +194,17 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
+/* ... ваши существующие стили ... */
+
+.slots-display.super-game-active {
+    background: linear-gradient(270deg, #ffd700, #f0c040, #ffec8b, #f0c040, #ffd700);
+    background-size: 400% 400%;
+    animation: gold-gradient 8s ease infinite;
+    border-color: #fff; /* Делаем рамку белой, чтобы она выделялась на золотом фоне */
+}
+
+@keyframes gold-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
