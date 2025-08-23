@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 // ИЗМЕНЕНИЕ: Используем глобальный контекст для статистики игрока вместо useAuth
 import { usePlayerStats } from './PlayerStatsContext'; 
 import './SlotsGame.css';
+import { useGameEvents } from './GameEventContext'; // <-- 1. ИМПОРТ
 
 // --- Игровая логика и настройки ---
 // Шансы на победу изменены, частые символы сделаны реже
@@ -49,6 +50,7 @@ const createReelStrip = (isFreeSpin: boolean, length = 50) => {
 
 const SlotsGame: React.FC = () => {
     const { balance, updateBalance, addXp } = usePlayerStats();
+    const { triggerGameEvent } = useGameEvents(); // <-- 2. ПОЛУЧЕНИЕ ФУНКЦИИ
     
     const [betAmount, setBetAmount] = useState(10);
     const [reels, setReels] = useState<string[][]>(() => Array(reelCount).fill(Array(visibleSymbols).fill('❓')));
@@ -248,6 +250,7 @@ const SlotsGame: React.FC = () => {
         const { winningCombos, totalMultiplier, winMessages, newWinningCoords } = analyzeWinnings(finalReels);
 
         if (winningCombos > 0) {
+            triggerGameEvent('win'); // <-- 3. ВЫЗОВ ПРИ ПОБЕДЕ
             const newWinCount = consecutiveWins + 1;
             setConsecutiveWins(newWinCount);
 
@@ -282,6 +285,7 @@ const SlotsGame: React.FC = () => {
 
             if (freeSpins <= 0) updateSuperGame(winAmount, effectiveBet);
         } else {
+            triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
             // ИЗМЕНЕНИЕ: Сбрасываем счетчик и устанавливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
             setWinsNeededForCooldown(Math.floor(Math.random() * 3) + 2);
