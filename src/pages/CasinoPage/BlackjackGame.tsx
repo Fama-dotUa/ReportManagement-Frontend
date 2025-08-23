@@ -168,7 +168,7 @@ const BlackjackGame: React.FC = () => {
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
         // Ограничиваем значение от 1 до 400
-        const clampedValue = Math.max(1, Math.min(value, 400));
+        const clampedValue = Math.max(1, Math.min(value, 200));
         setBetAmount(clampedValue);
     };
 
