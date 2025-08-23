@@ -90,7 +90,7 @@ const RouletteGame: React.FC = () => {
         if (betsAccepted) { alert("Ставки уже приняты, дождитесь следующего раунда."); return; }
         if (betAmount > balance) { alert("Недостаточно средств для ставки!"); return; }
         const totalCurrentBet = Object.values(bets).reduce((sum, current) => sum + current, 0);
-        if (totalCurrentBet + betAmount > 500) { alert("Общая сумма ставок не может превышать 500 CPN!"); return; }
+        if (totalCurrentBet + betAmount > 1500) { alert("Общая сумма ставок не может превышать 1500 CPN!"); return; }
 
         // --- ИЗМЕНЕНИЕ: Обновляем глобальный баланс ---
         updateBalance(balance - betAmount);
