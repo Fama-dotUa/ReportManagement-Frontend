@@ -7,7 +7,7 @@ import './SlotsGame.css';
 // Шансы на победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
-    '7️⃣', '⭐',
+    '7️⃣', '⭐', '7️⃣', '⭐',
     // Нечастые
     '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉', '🍇',
     // Частые
@@ -34,7 +34,6 @@ const createReelStrip = (length = 50) => {
 };
 
 const SlotsGame: React.FC = () => {
-    // ИЗМЕНЕНИЕ: Получаем данные из глобального контекста
     const { balance, updateBalance, addXp } = usePlayerStats();
     
     const [betAmount, setBetAmount] = useState(10);
@@ -45,10 +44,13 @@ const SlotsGame: React.FC = () => {
     const [freeSpins, setFreeSpins] = useState(0);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
     const [isWinning, setIsWinning] = useState(false);
-    // НОВОЕ СОСТОЯНИЕ: Хранит координаты [reelIndex, symbolIndex] выигрышных символов
     const [winningSymbols, setWinningSymbols] = useState<[number, number][]>([]);
 
-    // Логика для авто-спина
+    // --- НОВЫЕ СОСТОЯНИЯ ДЛЯ ЛОГИКИ "ОХЛАЖДЕНИЯ" ---
+    const [consecutiveWins, setConsecutiveWins] = useState(0);
+    const [cooldownSpins, setCooldownSpins] = useState(0);
+
+
     useEffect(() => {
         let autoSpinTimeout: NodeJS.Timeout;
         if (isAutoSpin && !spinning && freeSpins === 0) {
@@ -62,50 +64,13 @@ const SlotsGame: React.FC = () => {
         return () => clearTimeout(autoSpinTimeout);
     }, [isAutoSpin, spinning, balance]);
 
-    const handleSpin = () => {
-        if (spinning) return;
-        if (freeSpins === 0 && betAmount > balance) {
-            setMessage("Insufficient balance!");
-            setIsAutoSpin(false); 
-            return;
-        }
-
-        // Сбрасываем подсветку перед новым спином
-        setWinningSymbols([]);
-        if (freeSpins > 0) {
-            setFreeSpins(prev => prev - 1);
-        } else {
-            updateBalance(balance - betAmount);
-        }
-        
-        setSpinning(true);
-        setMessage('Spinning...');
-
-        const reelStrips = Array.from({ length: reelCount }, () => createReelStrip());
-        setReels(reelStrips);
-
-        setTimeout(() => {
-            const finalReels: string[][] = [];
-            for (let i = 0; i < reelCount; i++) {
-                const resultStrip = reelStrips[i].slice(-visibleSymbols);
-                finalReels.push(resultStrip);
-            }
-            setReels(finalReels);
-            setSpinning(false);
-            calculateWinnings(finalReels);
-        }, 2000); 
-    };
-
-    // --- ОБНОВЛЕННАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ---
-    // Теперь возвращает также и начальный индекс каждой последовательности
+    // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ГЕНЕРАЦИИ И АНАЛИЗА ---
     const findConsecutiveSequences = (line: string[]): { symbol: string, count: number, startIndex: number }[] => {
         if (line.length === 0) return [];
-
         const sequences: { symbol: string, count: number, startIndex: number }[] = [];
         let currentSymbol = line[0];
         let currentCount = 1;
         let startIndex = 0;
-
         for (let i = 1; i < line.length; i++) {
             if (line[i] === currentSymbol) {
                 currentCount++;
@@ -117,19 +82,16 @@ const SlotsGame: React.FC = () => {
             }
         }
         sequences.push({ symbol: currentSymbol, count: currentCount, startIndex });
-
         return sequences;
     };
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА РАСЧЕТА ВЫИГРЫШЕЙ СО ВСЕМИ ДИАГОНАЛЯМИ ---
-    const calculateWinnings = (finalReels: string[][]) => {
-        const effectiveBet = freeSpins > 0 ? 5 : betAmount;
+    const analyzeWinnings = (finalReels: string[][]) => {
         let totalMultiplier = 0;
         const winMessages: string[] = [];
         let winningCombos = 0;
         const newWinningCoords: [number, number][] = [];
 
-        // --- 1. Горизонтальная проверка ---
+        // Горизонтальная
         const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
         const horizontalSequences = findConsecutiveSequences(centerLine);
         for (const seq of horizontalSequences) {
@@ -137,13 +99,11 @@ const SlotsGame: React.FC = () => {
                 totalMultiplier += payouts[seq.symbol][seq.count];
                 winMessages.push(`${seq.count} x ${seq.symbol} (H)`);
                 winningCombos++;
-                for (let i = 0; i < seq.count; i++) {
-                    newWinningCoords.push([seq.startIndex + i, Math.floor(visibleSymbols / 2)]);
-                }
+                for (let i = 0; i < seq.count; i++) newWinningCoords.push([seq.startIndex + i, Math.floor(visibleSymbols / 2)]);
             }
         }
 
-        // --- 2. Вертикальная проверка ---
+        // Вертикальная
         finalReels.forEach((reel, reelIndex) => {
             const verticalSequences = findConsecutiveSequences(reel);
             for (const seq of verticalSequences) {
@@ -151,17 +111,14 @@ const SlotsGame: React.FC = () => {
                     totalMultiplier += payouts[seq.symbol][seq.count];
                     winMessages.push(`${seq.count} x ${seq.symbol} (V)`);
                     winningCombos++;
-                    for (let i = 0; i < seq.count; i++) {
-                        newWinningCoords.push([reelIndex, seq.startIndex + i]);
-                    }
+                    for (let i = 0; i < seq.count; i++) newWinningCoords.push([reelIndex, seq.startIndex + i]);
                 }
             }
         });
 
-        // --- 3. Все диагонали слева направо (\) ---
+        // Диагонали \
         for (let k = -(visibleSymbols - 1); k < reelCount; k++) {
-            const diagLine: string[] = [];
-            const diagCoords: [number, number][] = [];
+            const diagLine: string[] = [], diagCoords: [number, number][] = [];
             for (let c = 0; c < reelCount; c++) {
                 const r = c - k;
                 if (r >= 0 && r < visibleSymbols) {
@@ -170,24 +127,20 @@ const SlotsGame: React.FC = () => {
                 }
             }
             if (diagLine.length < 3) continue;
-
             const diagSequences = findConsecutiveSequences(diagLine);
             for (const seq of diagSequences) {
                 if (payouts[seq.symbol] && payouts[seq.symbol][seq.count] && seq.count >= 3) {
                     totalMultiplier += payouts[seq.symbol][seq.count];
                     winMessages.push(`${seq.count} x ${seq.symbol} (D)`);
                     winningCombos++;
-                    for (let i = 0; i < seq.count; i++) {
-                        newWinningCoords.push(diagCoords[seq.startIndex + i]);
-                    }
+                    for (let i = 0; i < seq.count; i++) newWinningCoords.push(diagCoords[seq.startIndex + i]);
                 }
             }
         }
 
-        // --- 4. Все диагонали справа налево (/) ---
+        // Диагонали /
         for (let k = 0; k < reelCount + visibleSymbols - 1; k++) {
-            const antiDiagLine: string[] = [];
-            const antiDiagCoords: [number, number][] = [];
+            const antiDiagLine: string[] = [], antiDiagCoords: [number, number][] = [];
             for (let c = 0; c < reelCount; c++) {
                 const r = k - c;
                 if (r >= 0 && r < visibleSymbols) {
@@ -196,52 +149,117 @@ const SlotsGame: React.FC = () => {
                 }
             }
             if (antiDiagLine.length < 3) continue;
-
             const antiDiagSequences = findConsecutiveSequences(antiDiagLine);
             for (const seq of antiDiagSequences) {
                 if (payouts[seq.symbol] && payouts[seq.symbol][seq.count] && seq.count >= 3) {
                     totalMultiplier += payouts[seq.symbol][seq.count];
                     winMessages.push(`${seq.count} x ${seq.symbol} (D)`);
                     winningCombos++;
-                    for (let i = 0; i < seq.count; i++) {
-                        newWinningCoords.push(antiDiagCoords[seq.startIndex + i]);
-                    }
+                    for (let i = 0; i < seq.count; i++) newWinningCoords.push(antiDiagCoords[seq.startIndex + i]);
                 }
             }
         }
+        
+        return { winningCombos, totalMultiplier, winMessages, newWinningCoords };
+    };
 
-        // --- 5. Итоговый расчет ---
+    // --- ОБНОВЛЕННЫЙ HANDLESPIN С ЛОГИКОЙ "ОХЛАЖДЕНИЯ" ---
+    const handleSpin = () => {
+        if (spinning) return;
+        if (freeSpins === 0 && betAmount > balance) {
+            setMessage("Insufficient balance!");
+            setIsAutoSpin(false); 
+            return;
+        }
+
+        setWinningSymbols([]);
+        if (freeSpins > 0) {
+            setFreeSpins(prev => prev - 1);
+        } else {
+            updateBalance(balance - betAmount);
+        }
+        
+        setSpinning(true);
+        setMessage('Spinning...');
+
+        let finalReels: string[][];
+        let animationReels: string[][];
+
+        if (cooldownSpins > 0) {
+            let hasWins;
+            do {
+                animationReels = Array.from({ length: reelCount }, () => createReelStrip());
+                finalReels = animationReels.map(strip => strip.slice(-visibleSymbols));
+                const analysis = analyzeWinnings(finalReels);
+                hasWins = analysis.winningCombos > 0;
+            } while (hasWins);
+            
+            setCooldownSpins(prev => {
+                const newCooldown = prev - 1;
+                if (newCooldown > 0) {
+                    setMessage(`Cooldown active for ${newCooldown} more spin(s)...`);
+                }
+                return newCooldown;
+            });
+        } else {
+            animationReels = Array.from({ length: reelCount }, () => createReelStrip());
+            finalReels = animationReels.map(strip => strip.slice(-visibleSymbols));
+        }
+
+        setReels(animationReels);
+
+        setTimeout(() => {
+            setReels(finalReels);
+            setSpinning(false);
+            calculateWinnings(finalReels);
+        }, 2000); 
+    };
+
+    // --- ОБНОВЛЕННЫЙ CALCULATEWINNINGS ДЛЯ ОТСЛЕЖИВАНИЯ ПОБЕД ---
+    const calculateWinnings = (finalReels: string[][]) => {
+        const { winningCombos, totalMultiplier, winMessages, newWinningCoords } = analyzeWinnings(finalReels);
+
         if (winningCombos > 0) {
-            // Удаляем дубликаты координат, если символ участвует в нескольких комбо
+            const newWinCount = consecutiveWins + 1;
+            setConsecutiveWins(newWinCount);
+
+            if (newWinCount >= 3) {
+                const newCooldown = Math.floor(Math.random() * 5) + 1; // 1 to 5
+                setCooldownSpins(newCooldown);
+                setConsecutiveWins(0); // Сбрасываем счетчик
+            }
+
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
             setWinningSymbols(uniqueCoords);
 
             const finalMultiplier = totalMultiplier - (winningCombos > 1 ? (winningCombos - 1) : 0);
+            const effectiveBet = freeSpins > 0 ? 5 : betAmount;
             const winAmount = effectiveBet * finalMultiplier;
             const netWin = winAmount - effectiveBet;
 
-            const finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
+            let finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
+            if (newWinCount >= 3) {
+                finalMessage += ` Cooldown for ${cooldownSpins} spins activated!`;
+            }
             setMessage(finalMessage);
 
             updateBalance(balance - effectiveBet + winAmount);
-            if (netWin > 0) {
-                addXp(netWin);
-            }
+            if (netWin > 0) addXp(netWin);
             
             setIsWinning(true);
             setTimeout(() => setIsWinning(false), 2000);
 
-            if (freeSpins <= 0) {
-                updateSuperGame(winAmount, effectiveBet);
-            }
+            if (freeSpins <= 0) updateSuperGame(winAmount, effectiveBet);
         } else {
-            setMessage('You lose. Try again!');
+            setConsecutiveWins(0); // Сбрасываем счетчик при проигрыше
+            if (cooldownSpins <= 0) {
+                setMessage('You lose. Try again!');
+            }
         }
     };
 
     const updateSuperGame = (winAmount: number, currentBet: number) => {
-        const progressToAdd = (winAmount / currentBet) * 2;
-        
+        const progressToAdd = (winAmount / currentBet) / 2;
         setSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
             if (newProgress >= 100) {
@@ -277,7 +295,6 @@ const SlotsGame: React.FC = () => {
                                 {reel.map((symbol, symbolIndex) => (
                                     <div 
                                         key={symbolIndex} 
-                                        // Добавляем класс 'highlight' если координаты символа есть в стейте
                                         className={`symbol ${winningSymbols.some(coord => coord[0] === reelIndex && coord[1] === symbolIndex) ? 'highlight' : ''}`}
                                     >
                                         {symbol}
@@ -302,7 +319,6 @@ const SlotsGame: React.FC = () => {
 
             <div className="controls">
                 <div className="balance-info">
-                    {/* ИЗМЕНЕНИЕ: Отображаем глобальный баланс */}
                     <span>Balance: {balance.toFixed(1)} CPN</span>
                     {freeSpins > 0 && <span className="freespins-info">Freespins: {freeSpins}</span>}
                 </div>
