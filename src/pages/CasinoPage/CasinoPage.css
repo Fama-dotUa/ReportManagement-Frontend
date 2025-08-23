@@ -193,3 +193,27 @@
 .history-number.red { background-color: #d9534f; }
 .history-number.black { background-color: #333; }
 .history-number.green { background-color: #5cb85c; }
+.casino-header h1.animated-gradient-text {
+    /* Создаем градиент от красного к сиреневому и обратно к красному */
+    background-image: linear-gradient(90deg, #ff0000, #8a2be2, #ff0000);
+    
+    /* Делаем фон в два раза шире текста для анимации */
+    background-size: 200% auto;
+    
+    /* Обрезаем фон по форме текста */
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* Запускаем анимацию */
+    animation: gradient-animation 4s linear infinite;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 200% 50%;
+    }
+}

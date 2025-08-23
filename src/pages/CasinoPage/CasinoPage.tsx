@@ -70,7 +70,7 @@ const CasinoPage: React.FC = () => {
                 )}
 
                 <div className="casino-header">
-                    <h1>Казино</h1>
+                    <h1 className="animated-gradient-text">Казино "НЕ бритые яйца"</h1>
                     {/* Кнопка возврата к выбору игр из активной игры */}
                     {view === 'game' && (
                         <button className="ingame-back-button" onClick={() => setView('menu')}>
