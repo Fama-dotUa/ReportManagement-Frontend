@@ -53,18 +53,27 @@ const SlotsGame: React.FC = () => {
     const [winsNeededForCooldown, setWinsNeededForCooldown] = useState(() => Math.floor(Math.random() * 5) + 1); // 1 to 5
 
 
-    useEffect(() => {
+useEffect(() => {
         let autoSpinTimeout: NodeJS.Timeout;
-        if (isAutoSpin && !spinning && freeSpins === 0) {
-            if (betAmount > balance) {
-                setMessage("Insufficient balance for Auto-Spin!");
-                setIsAutoSpin(false);
-            } else {
+        // Запускаем таймер, если авто-спин включен и барабаны не вращаются
+        if (isAutoSpin && !spinning) {
+            // Если есть фриспины, просто запускаем следующий спин
+            if (freeSpins > 0) {
                 autoSpinTimeout = setTimeout(handleSpin, 2300);
+            } 
+            // Иначе (если фриспинов нет), проверяем баланс
+            else {
+                if (betAmount > balance) {
+                    setMessage("Insufficient balance for Auto-Spin!");
+                    setIsAutoSpin(false); // Отключаем авто-спин
+                } else {
+                    autoSpinTimeout = setTimeout(handleSpin, 2300);
+                }
             }
         }
+        // Очистка таймера при размонтировании компонента или изменении зависимостей
         return () => clearTimeout(autoSpinTimeout);
-    }, [isAutoSpin, spinning, balance]);
+    }, [isAutoSpin, spinning, balance, freeSpins]);
 
     // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ГЕНЕРАЦИИ И АНАЛИЗА ---
     const findConsecutiveSequences = (line: string[]): { symbol: string, count: number, startIndex: number }[] => {
@@ -287,7 +296,7 @@ const SlotsGame: React.FC = () => {
     };
 
     const toggleAutoSpin = () => {
-        if (!isAutoSpin && betAmount > balance) {
+        if (!isAutoSpin && freeSpins === 0 && betAmount > balance) {
             setMessage("Insufficient balance to start Auto-Spin!");
             return;
         }
@@ -341,7 +350,7 @@ const SlotsGame: React.FC = () => {
                     <button onClick={handleSpin} disabled={spinning || isAutoSpin}>
                         {spinning ? 'Spinning...' : (freeSpins > 0 ? `Free Spin (${freeSpins})` : 'Spin')}
                     </button>
-                    <button onClick={toggleAutoSpin} disabled={spinning || freeSpins > 0} className={isAutoSpin ? 'autospin-active' : ''}>
+                    <button onClick={toggleAutoSpin} disabled={spinning} className={isAutoSpin ? 'autospin-active' : ''}>
                         {isAutoSpin ? 'Stop Auto' : 'Start Auto'}
                     </button>
                 </div>
