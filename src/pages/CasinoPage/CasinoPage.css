@@ -161,3 +161,35 @@
     width: 90%;
     padding: 10px;
 }
+.roulette-history {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    color: var(--text-color);
+    min-height: 40px;
+}
+
+.roulette-history span {
+    font-weight: 500;
+}
+
+.history-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.history-number.red { background-color: #d9534f; }
+.history-number.black { background-color: #333; }
+.history-number.green { background-color: #5cb85c; }

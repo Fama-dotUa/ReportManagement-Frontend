@@ -15,9 +15,10 @@ const numberColors: { [key: number]: string } = {
 // --- СИМУЛЯЦИЯ СЕРВЕРА ДЛЯ СИНХРОНИЗАЦИИ ---
 const rouletteService = {
     state: {
-        countdown: 20,
+        countdown: 7,
         isSpinning: false,
         winningNumber: null as number | null,
+        history: [] as number[], // Добавляем историю
     },
     subscribers: [] as ((state: any) => void)[],
     timerId: null as NodeJS.Timeout | null,
@@ -53,15 +54,20 @@ const rouletteService = {
 
     spin() {
         if (this.state.isSpinning) return;
+        const newWinningNumber = Math.floor(Math.random() * 37);
         this.state = {
             ...this.state,
             isSpinning: true,
-            winningNumber: Math.floor(Math.random() * 37)
+            winningNumber: newWinningNumber,
         };
         this.notify();
 
         setTimeout(() => {
-            this.state = { ...this.state, isSpinning: false, countdown: 20 };
+            // Обновляем историю: добавляем новое число в конец, удаляем старое из начала
+            const newHistory = [...this.state.history, newWinningNumber];
+            if (newHistory.length > 15) newHistory.shift(); // Оставляем только 5 последних чисел
+            
+            this.state = { ...this.state, isSpinning: false, countdown: 7, history: newHistory };
             this.notify();
         }, 7000); 
     }
@@ -85,7 +91,7 @@ const RouletteGame: React.FC = () => {
     const [betsAccepted, setBetsAccepted] = useState(false);
     
     const [gameState, setGameState] = useState(rouletteService.state);
-    const { isSpinning, countdown, winningNumber } = gameState;
+    const { isSpinning, countdown, winningNumber, history } = gameState;
 
     // Состояния для управления цикличной анимацией
     const [spinCount, setSpinCount] = useState(0);
@@ -104,7 +110,6 @@ const RouletteGame: React.FC = () => {
                 const finalTranslateX = -(finalTarget * 100 - centeringOffset);
                 setLastSpinTranslateX(finalTranslateX);
                 
-                // Логика для сброса анимации, чтобы она не уходила за экран
                 if (spinCount > 5) {
                     setTimeout(() => {
                         setIsResetting(true);
@@ -227,6 +232,14 @@ const RouletteGame: React.FC = () => {
 
     return (
         <div className="roulette-game">
+            <div className="roulette-history">
+                <span>Last:</span>
+                {history.map((num: number, index: number) => (
+                    <div key={index} className={`history-number ${numberColors[num]}`}>
+                        {num}
+                    </div>
+                ))}
+            </div>
             <div className="roulette-wheel-container">
                 <div className="roulette-pointer"></div>
                 <div className={`roulette-wheel ${isSpinning ? 'spinning' : ''} ${isResetting ? 'no-transition' : ''}`}
