@@ -92,8 +92,8 @@ const BlackjackGame: React.FC = () => {
             return;
         }
         // Ограничение максимальной ставки
-        if (betAmount > 400) {
-            setMessage("Maximum bet is 400 CPN!");
+        if (betAmount > 200) {
+            setMessage("Maximum bet is 200 CPN!");
             return;
         }
 
