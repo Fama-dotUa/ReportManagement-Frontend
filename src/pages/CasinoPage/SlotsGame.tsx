@@ -15,7 +15,7 @@ const symbols = [
 const reelCount = 7;
 const visibleSymbols = 5; 
 
-// Обновленная таблица выплат с максимальным множителем x15
+// Обновленная таблица выплат с максимальным множителем x10
 const payouts: { [key: string]: { [count: number]: number } } = {
     '🍒': { 3: 1.1, 4: 1.2, 5: 1.3, 6: 1.4, 7: 1.5 },
     '🍋': { 3: 1.2, 4: 1.4, 5: 1.6, 6: 1.8, 7: 2.0 },
@@ -41,6 +41,7 @@ const SlotsGame: React.FC = () => {
     const [superGameProgress, setSuperGameProgress] = useState(0);
     const [freeSpins, setFreeSpins] = useState(0);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
+    const [isWinning, setIsWinning] = useState(false); // Состояние для анимации выигрыша
 
     // Логика для авто-спина
     useEffect(() => {
@@ -50,7 +51,7 @@ const SlotsGame: React.FC = () => {
                 setMessage("Insufficient balance for Auto-Spin!");
                 setIsAutoSpin(false);
             } else {
-                autoSpinTimeout = setTimeout(handleSpin, 4000); // Увеличена пауза для хаотичного спина
+                autoSpinTimeout = setTimeout(handleSpin, 2000); // Пауза между авто-спинами
             }
         }
         return () => clearTimeout(autoSpinTimeout);
@@ -75,6 +76,7 @@ const SlotsGame: React.FC = () => {
         const reelStrips = Array.from({ length: reelCount }, () => createReelStrip());
         setReels(reelStrips);
 
+        // Уменьшено время анимации для более быстрой реакции кнопки
         setTimeout(() => {
             const finalReels: string[][] = [];
             for (let i = 0; i < reelCount; i++) {
@@ -84,7 +86,7 @@ const SlotsGame: React.FC = () => {
             setReels(finalReels);
             setSpinning(false);
             calculateWinnings(finalReels);
-        }, 3000); 
+        }, 2500); 
     };
 
     const calculateWinnings = (finalReels: string[][]) => {
@@ -111,6 +113,9 @@ const SlotsGame: React.FC = () => {
 
         if (winAmount > 0) {
             setBalance(prev => prev + winAmount);
+            setIsWinning(true); // Активируем анимацию
+            setTimeout(() => setIsWinning(false), 2000); // Отключаем анимацию через 2 секунды
+
             if (freeSpins <= 0) {
                 updateSuperGame(winAmount, effectiveBet);
             }
@@ -148,7 +153,7 @@ const SlotsGame: React.FC = () => {
 
     return (
         <div className="slots-game">
-            <div className="slots-display">
+            <div className={`slots-display ${isWinning ? 'win-animation' : ''}`}>
                 <div className="reels-container">
                     {reels.map((reel, reelIndex) => (
                         <div key={reelIndex} className="reel">
