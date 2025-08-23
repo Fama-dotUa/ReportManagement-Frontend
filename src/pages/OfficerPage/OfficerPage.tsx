@@ -84,6 +84,10 @@ const OfficerPage: React.FC = () => {
 					<button className='nav-button' onClick={() => navigate('/store')}>
 						Магазин
 					</button>
+										{/* Добавлена кнопка для перехода в казино */}
+					<button className='nav-button' onClick={() => navigate('/casino')}>
+						Казино
+					</button>
 				</div>
 
 				<div className='right-nav'>
