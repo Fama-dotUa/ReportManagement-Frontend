@@ -15,10 +15,10 @@ const numberColors: { [key: number]: string } = {
 // --- СИМУЛЯЦИЯ СЕРВЕРА ДЛЯ СИНХРОНИЗАЦИИ ---
 const rouletteService = {
     state: {
-        countdown: 7,
+        countdown: 20,
         isSpinning: false,
         winningNumber: null as number | null,
-        history: [] as number[], // Добавляем историю
+        history: [] as number[], 
     },
     subscribers: [] as ((state: any) => void)[],
     timerId: null as NodeJS.Timeout | null,
@@ -63,11 +63,10 @@ const rouletteService = {
         this.notify();
 
         setTimeout(() => {
-            // Обновляем историю: добавляем новое число в конец, удаляем старое из начала
             const newHistory = [...this.state.history, newWinningNumber];
-            if (newHistory.length > 15) newHistory.shift(); // Оставляем только 5 последних чисел
+            if (newHistory.length > 15) newHistory.shift(); 
             
-            this.state = { ...this.state, isSpinning: false, countdown: 7, history: newHistory };
+            this.state = { ...this.state, isSpinning: false, countdown: 20, history: newHistory };
             this.notify();
         }, 7000); 
     }
@@ -76,10 +75,13 @@ const rouletteService = {
 rouletteService.start();
 // ---------------------------------------------
 
+// Вспомогательная функция для получения случайного числа
+const getRandomNumber = (min: number, max: number) => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
-// Увеличиваем массив, чтобы избежать визуальных сбросов на длинной дистанции
 const rouletteNumbers = Array.from({ length: 37 }, (_, i) => i);
-const wheelNumbers = Array.from({ length: 10 }).flatMap(() => rouletteNumbers);
+const wheelNumbers = Array.from({ length: 20 }).flatMap(() => rouletteNumbers); // Увеличим длину ленты на всякий случай
 
 const RouletteGame: React.FC = () => {
     const { user } = useAuth();
@@ -93,28 +95,37 @@ const RouletteGame: React.FC = () => {
     const [gameState, setGameState] = useState(rouletteService.state);
     const { isSpinning, countdown, winningNumber, history } = gameState;
 
-    // Состояния для управления цикличной анимацией
     const [spinCount, setSpinCount] = useState(0);
     const [lastSpinTranslateX, setLastSpinTranslateX] = useState(-500);
     const [isResetting, setIsResetting] = useState(false);
+    // Новое состояние для случайных оборотов
+    const [randomRotations, setRandomRotations] = useState(() => getRandomNumber(3, 7));
 
     useEffect(() => {
         const handleStateUpdate = (newState: any) => {
+            // Когда начинается новый спин
+            if (!gameState.isSpinning && newState.isSpinning) {
+                setRandomRotations(getRandomNumber(3, 7)); // Генерируем новое случайное число
+            }
+
+            // Когда спин заканчивается
             if (gameState.isSpinning && !newState.isSpinning) {
                 calculateWinnings(newState.winningNumber);
                 setSpinResult({ number: newState.winningNumber, color: numberColors[newState.winningNumber] });
                 setBetsAccepted(false); 
 
                 const centeringOffset = 500;
-                const finalTarget = (37 * (2 + spinCount)) + (newState.winningNumber ?? 0);
+                // Используем `randomRotations` для расчета конечной точки
+                const finalTarget = (37 * (randomRotations + spinCount)) + (newState.winningNumber ?? 0);
                 const finalTranslateX = -(finalTarget * 100 - centeringOffset);
                 setLastSpinTranslateX(finalTranslateX);
                 
+                // Логика сброса, чтобы лента не уходила за экран
                 if (spinCount > 5) {
                     setTimeout(() => {
                         setIsResetting(true);
                         setSpinCount(1);
-                        const resetTarget = (37 * (2 + 1)) + (newState.winningNumber ?? 0);
+                        const resetTarget = (37 * (randomRotations + 1)) + (newState.winningNumber ?? 0);
                         const resetTranslateX = -(resetTarget * 100 - centeringOffset);
                         setLastSpinTranslateX(resetTranslateX);
                         
@@ -129,7 +140,7 @@ const RouletteGame: React.FC = () => {
 
         rouletteService.subscribe(handleStateUpdate);
         return () => rouletteService.unsubscribe(handleStateUpdate);
-    }, [gameState.isSpinning, bets, betsAccepted, spinCount]);
+    }, [gameState.isSpinning, bets, betsAccepted, spinCount, randomRotations]); // Добавляем randomRotations в зависимости
 
     const placeBet = (betType: string) => {
         if (betsAccepted) {
@@ -223,7 +234,7 @@ const RouletteGame: React.FC = () => {
         const centeringOffset = 500;
         
         if (isSpinning) {
-            const spinTarget = (37 * (2 + spinCount)) + (winningNumber ?? 0);
+            const spinTarget = (37 * (randomRotations + spinCount)) + (winningNumber ?? 0);
             return -(spinTarget * 100 - centeringOffset);
         } else {
             return lastSpinTranslateX;
@@ -233,7 +244,7 @@ const RouletteGame: React.FC = () => {
     return (
         <div className="roulette-game">
             <div className="roulette-history">
-                <span>Last:</span>
+                <span>Last 5:</span>
                 {history.map((num: number, index: number) => (
                     <div key={index} className={`history-number ${numberColors[num]}`}>
                         {num}
