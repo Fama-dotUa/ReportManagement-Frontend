@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+// ИЗМЕНЕНИЕ: Используем глобальный контекст для статистики игрока вместо useAuth
+import { usePlayerStats } from './PlayerStatsContext'; 
 import './SlotsGame.css';
 
 // --- Игровая логика и настройки ---
@@ -32,8 +33,9 @@ const createReelStrip = (length = 50) => {
 };
 
 const SlotsGame: React.FC = () => {
-    const { user } = useAuth();
-    const [balance, setBalance] = useState(user?.CPN || 1000);
+    // ИЗМЕНЕНИЕ: Получаем данные из глобального контекста
+    const { balance, updateBalance, addXp } = usePlayerStats();
+    
     const [betAmount, setBetAmount] = useState(10);
     const [reels, setReels] = useState<string[][]>(() => Array(reelCount).fill(Array(visibleSymbols).fill('❓')));
     const [spinning, setSpinning] = useState(false);
@@ -41,7 +43,7 @@ const SlotsGame: React.FC = () => {
     const [superGameProgress, setSuperGameProgress] = useState(0);
     const [freeSpins, setFreeSpins] = useState(0);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
-    const [isWinning, setIsWinning] = useState(false); // Состояние для анимации выигрыша
+    const [isWinning, setIsWinning] = useState(false);
 
     // Логика для авто-спина
     useEffect(() => {
@@ -51,13 +53,14 @@ const SlotsGame: React.FC = () => {
                 setMessage("Insufficient balance for Auto-Spin!");
                 setIsAutoSpin(false);
             } else {
-                autoSpinTimeout = setTimeout(handleSpin, 2300); // Пауза должна быть больше времени анимации
+                autoSpinTimeout = setTimeout(handleSpin, 2300);
             }
         }
         return () => clearTimeout(autoSpinTimeout);
     }, [isAutoSpin, spinning, balance]);
 
     const handleSpin = () => {
+        if (spinning) return;
         if (freeSpins === 0 && betAmount > balance) {
             setMessage("Insufficient balance!");
             setIsAutoSpin(false); 
@@ -67,7 +70,8 @@ const SlotsGame: React.FC = () => {
         if (freeSpins > 0) {
             setFreeSpins(prev => prev - 1);
         } else {
-            setBalance(prev => prev - betAmount);
+            // ИЗМЕНЕНИЕ: Обновляем глобальный баланс
+            updateBalance(balance - betAmount);
         }
         
         setSpinning(true);
@@ -76,7 +80,6 @@ const SlotsGame: React.FC = () => {
         const reelStrips = Array.from({ length: reelCount }, () => createReelStrip());
         setReels(reelStrips);
 
-        // Увеличено время анимации для более плавной прокрутки
         setTimeout(() => {
             const finalReels: string[][] = [];
             for (let i = 0; i < reelCount; i++) {
@@ -89,42 +92,60 @@ const SlotsGame: React.FC = () => {
         }, 2000); 
     };
 
+    // --- ОБНОВЛЕННАЯ ЛОГИКА РАСЧЕТА ВЫИГРЫШЕЙ ---
     const calculateWinnings = (finalReels: string[][]) => {
         const effectiveBet = freeSpins > 0 ? 5 : betAmount;
         const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
         const counts: { [key: string]: number } = {};
-        
+
         for (const symbol of centerLine) {
             counts[symbol] = (counts[symbol] || 0) + 1;
         }
 
-        let winAmount = 0;
-        let winMessage = 'You lose. Try again!';
+        let totalMultiplier = 0;
+        const winMessages: string[] = [];
+        let winningCombos = 0;
 
+        // Итерируемся по всем символам, чтобы найти ВСЕ выигрышные комбинации
         for (const symbol in counts) {
             const count = counts[symbol];
             if (payouts[symbol] && payouts[symbol][count]) {
                 const multiplier = payouts[symbol][count];
-                winAmount = effectiveBet * multiplier;
-                winMessage = `Win! ${count} x ${symbol} pays ${winAmount.toFixed(1)} CPN!`;
-                break;
+                totalMultiplier += multiplier; // Суммируем множитель
+                winMessages.push(`${count} x ${symbol}`);
+                winningCombos++;
             }
         }
 
-        if (winAmount > 0) {
-            setBalance(prev => prev + winAmount);
-            setIsWinning(true); // Активируем анимацию
-            setTimeout(() => setIsWinning(false), 2000); // Отключаем анимацию через 2 секунды
+        if (winningCombos > 0) {
+            // Корректируем множитель, чтобы не возвращать базовую ставку несколько раз.
+            // Формула: (Сумма множителей) - (Количество выигрышей - 1)
+            const finalMultiplier = totalMultiplier - (winningCombos - 1);
+            const winAmount = effectiveBet * finalMultiplier;
+            const netWin = winAmount - effectiveBet; // Чистый выигрыш для начисления опыта
+
+            const finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
+            setMessage(finalMessage);
+
+            // ИЗМЕНЕНИЕ: Обновляем глобальный баланс и начисляем опыт
+            updateBalance(balance - effectiveBet + winAmount);
+            if (netWin > 0) {
+                addXp(netWin);
+            }
+            
+            setIsWinning(true);
+            setTimeout(() => setIsWinning(false), 2000);
 
             if (freeSpins <= 0) {
                 updateSuperGame(winAmount, effectiveBet);
             }
+        } else {
+            setMessage('You lose. Try again!');
         }
-        setMessage(winMessage);
     };
 
     const updateSuperGame = (winAmount: number, currentBet: number) => {
-        const progressToAdd = (winAmount / currentBet) / 2;
+        const progressToAdd = (winAmount / currentBet) * 1.2;
         
         setSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
@@ -182,6 +203,7 @@ const SlotsGame: React.FC = () => {
 
             <div className="controls">
                 <div className="balance-info">
+                    {/* ИЗМЕНЕНИЕ: Отображаем глобальный баланс */}
                     <span>Balance: {balance.toFixed(1)} CPN</span>
                     {freeSpins > 0 && <span className="freespins-info">Freespins: {freeSpins}</span>}
                 </div>

@@ -175,7 +175,7 @@ const RouletteGame: React.FC = () => {
     return (
         <div className="roulette-game">
             <div className="roulette-history">
-                <span>Last 5:</span>
+                <span>Last:</span>
                 {history.map((num: number, index: number) => (
                     <div key={index} className={`history-number ${numberColors[num]}`}>{num}</div>
                 ))}
