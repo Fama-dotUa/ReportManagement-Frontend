@@ -9,21 +9,21 @@ const symbols = [
     // Редкие
     '7️⃣', '⭐', '7️⃣', '⭐', '⭐',
     // Нечастые
-    '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉', '🍇',
+    '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉', '🍇', '🍉', '🍇', '🍊',
     // Частые
-    '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊', '🍒', '🍊',
+    '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊', '🍒', '🍊', '🍋', '🍒', 
 ];
 
 // НОВОЕ: Настройки для Супер Игры (Фриспинов)
-const SUPER_GAME_LUCK_FACTOR = 10; // Регулирует частоту редких символов. Чем выше, тем чаще.
+const SUPER_GAME_LUCK_FACTOR = 12; // Регулирует частоту редких символов. Чем выше, тем чаще.
 
 const superGameSymbols = [
     ...symbols,
     // Добавляем больше редких символов в зависимости от фактора удачи
-    ...Array(SUPER_GAME_LUCK_FACTOR).fill('7️⃣'),
+    ...Array(SUPER_GAME_LUCK_FACTOR * 3).fill('7️⃣'), 
     ...Array(SUPER_GAME_LUCK_FACTOR).fill('⭐'),
-    ...Array(Math.floor(SUPER_GAME_LUCK_FACTOR / 2)).fill('🍉'),
-    ...Array(Math.floor(SUPER_GAME_LUCK_FACTOR / 3)).fill('🍇'),
+    ...Array(Math.floor(SUPER_GAME_LUCK_FACTOR / 3)).fill('🍉'),
+    ...Array(Math.floor(SUPER_GAME_LUCK_FACTOR / 4)).fill('🍇'),
 ];
 
 const reelCount = 7;
@@ -253,11 +253,11 @@ const SlotsGame: React.FC = () => {
 
             // ИЗМЕНЕНИЕ: Проверяем на достижение СЛУЧАЙНОГО порога
             if (newWinCount >= winsNeededForCooldown) {
-                const newCooldown = Math.floor(Math.random() * 5) + 1; // 1 to 5
+                const newCooldown = Math.floor(Math.random() * 8) + 2; // 2 to 8
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
                 // ИЗМЕНЕНИЕ: Устанавливаем НОВЫЙ порог для следующей серии побед (2-5)
-                setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 2);
+                setWinsNeededForCooldown(Math.floor(Math.random() * 3) + 2);
             }
 
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
@@ -284,7 +284,7 @@ const SlotsGame: React.FC = () => {
         } else {
             // ИЗМЕНЕНИЕ: Сбрасываем счетчик и устанавливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
-            setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 2);
+            setWinsNeededForCooldown(Math.floor(Math.random() * 3) + 2);
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
