@@ -86,7 +86,7 @@ const SlotsGame: React.FC = () => {
             setReels(finalReels);
             setSpinning(false);
             calculateWinnings(finalReels);
-        }, 2000); 
+        }, 2700); 
     };
 
     const calculateWinnings = (finalReels: string[][]) => {
