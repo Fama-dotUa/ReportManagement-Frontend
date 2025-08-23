@@ -7,30 +7,44 @@ import './SlotsGame.css';
 // Шансы на победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
-    '7️⃣', '⭐', '7️⃣', '⭐',
+    '7️⃣', '⭐', '7️⃣', '⭐', '⭐',
     // Нечастые
     '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉', '🍇',
     // Частые
     '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊', '🍒', '🍊',
 ];
+
+// НОВОЕ: Настройки для Супер Игры (Фриспинов)
+const SUPER_GAME_LUCK_FACTOR = 10; // Регулирует частоту редких символов. Чем выше, тем чаще.
+
+const superGameSymbols = [
+    ...symbols,
+    // Добавляем больше редких символов в зависимости от фактора удачи
+    ...Array(SUPER_GAME_LUCK_FACTOR).fill('7️⃣'),
+    ...Array(SUPER_GAME_LUCK_FACTOR).fill('⭐'),
+    ...Array(Math.floor(SUPER_GAME_LUCK_FACTOR / 2)).fill('🍉'),
+    ...Array(Math.floor(SUPER_GAME_LUCK_FACTOR / 3)).fill('🍇'),
+];
+
 const reelCount = 7;
 const visibleSymbols = 5; 
 
 // Обновленная таблица выплат с максимальным множителем x10
 // Эта таблица теперь используется и для вертикальных комбинаций
 const payouts: { [key: string]: { [count: number]: number } } = {
-    '🍒': { 3: 1.1, 4: 1.2, 5: 1.3, 6: 1.4, 7: 1.5 },
-    '🍋': { 3: 1.2, 4: 1.4, 5: 1.6, 6: 1.8, 7: 2.0 },
+    '🍒': { 3: 1.2, 4: 1.3, 5: 1.4, 6: 1.5, 7: 1.6 },
+    '🍋': { 3: 1.3, 4: 1.5, 5: 1.7, 6: 1.9, 7: 2.1 },
     '🍊': { 3: 1.3, 4: 1.6, 5: 1.9, 6: 2.2, 7: 2.5 },
-    '🍇': { 3: 1.5, 4: 2.0, 5: 2.5, 6: 3.0, 7: 3.5 },
-    '🍉': { 3: 1.8, 4: 2.6, 5: 3.2, 6: 3.8, 7: 4.4 },
-    '⭐': { 3: 2.0, 4: 2.8, 5: 3.6, 6: 4.4, 7: 5.2 },
-    '7️⃣': { 3: 3.0, 4: 4.0, 5: 5.0, 6: 6.0, 7: 10 },
+    '🍇': { 3: 1.6, 4: 2.0, 5: 2.5, 6: 3.0, 7: 5.0 },
+    '🍉': { 3: 1.8, 4: 2.6, 5: 3.2, 6: 3.8, 7: 7.0 },
+    '⭐': { 3: 2.0, 4: 2.8, 5: 3.6, 6: 4.4, 7: 10.0 },
+    '7️⃣': { 3: 3.2, 4: 4.2, 5: 5.2, 6: 6.2, 7: 17.0 },
 };
 
-// Создаем длинную ленту символов для анимации каждого барабана
-const createReelStrip = (length = 50) => {
-    return Array.from({ length }, () => symbols[Math.floor(Math.random() * symbols.length)]);
+// ИЗМЕНЕНИЕ: Функция теперь принимает флаг isFreeSpin для выбора набора символов
+const createReelStrip = (isFreeSpin: boolean, length = 50) => {
+    const sourceSymbols = isFreeSpin ? superGameSymbols : symbols;
+    return Array.from({ length }, () => sourceSymbols[Math.floor(Math.random() * sourceSymbols.length)]);
 };
 
 const SlotsGame: React.FC = () => {
@@ -185,7 +199,8 @@ const SlotsGame: React.FC = () => {
         }
 
         setWinningSymbols([]);
-        if (freeSpins > 0) {
+        const isSuperSpin = freeSpins > 0; // Определяем, является ли спин бесплатным ДО уменьшения счетчика
+        if (isSuperSpin) {
             setFreeSpins(prev => prev - 1);
         } else {
             updateBalance(balance - betAmount);
@@ -200,7 +215,7 @@ const SlotsGame: React.FC = () => {
         if (cooldownSpins > 0) {
             let hasWins;
             do {
-                animationReels = Array.from({ length: reelCount }, () => createReelStrip());
+                animationReels = Array.from({ length: reelCount }, () => createReelStrip(isSuperSpin));
                 finalReels = animationReels.map(strip => strip.slice(-visibleSymbols));
                 const analysis = analyzeWinnings(finalReels);
                 hasWins = analysis.winningCombos > 0;
@@ -215,7 +230,7 @@ const SlotsGame: React.FC = () => {
                 return newCooldown;
             });
         } else {
-            animationReels = Array.from({ length: reelCount }, () => createReelStrip());
+            animationReels = Array.from({ length: reelCount }, () => createReelStrip(isSuperSpin));
             finalReels = animationReels.map(strip => strip.slice(-visibleSymbols));
         }
 
@@ -249,13 +264,13 @@ const SlotsGame: React.FC = () => {
             setWinningSymbols(uniqueCoords);
 
             const finalMultiplier = totalMultiplier - (winningCombos > 1 ? (winningCombos - 1) : 0);
-            const effectiveBet = freeSpins > 0 ? 5 : betAmount;
+            const effectiveBet = freeSpins > 0 ? 55 : betAmount;
             const winAmount = effectiveBet * finalMultiplier;
             const netWin = winAmount - effectiveBet;
 
             let finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
             if (newWinCount >= winsNeededForCooldown) {
-                finalMessage += ` Cooldown for ${cooldownSpins} spins activated!`;
+                //! finalMessage += ` Cooldown for ${cooldownSpins} spins activated!`; УБРАЛ ПОЕБОТУ 
             }
             setMessage(finalMessage);
 
@@ -283,7 +298,7 @@ const SlotsGame: React.FC = () => {
         setSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
             if (newProgress >= 100) {
-                setMessage("SUPER GAME! You won 10 Freespins!");
+                setMessage(`Your win of ${winAmount.toFixed(1)} CPN triggered SUPER GAME! You won 10 Freespins!`);
                 setFreeSpins(10);
                 return 0;
             }
