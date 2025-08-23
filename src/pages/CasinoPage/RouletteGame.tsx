@@ -87,9 +87,10 @@ const RouletteGame: React.FC = () => {
     const [gameState, setGameState] = useState(rouletteService.state);
     const { isSpinning, countdown, winningNumber } = gameState;
 
-    // Новые состояния для управления непрерывным вращением
+    // Состояния для управления цикличной анимацией
     const [spinCount, setSpinCount] = useState(0);
-    const [lastSpinTranslateX, setLastSpinTranslateX] = useState(-500); // Начальное смещение
+    const [lastSpinTranslateX, setLastSpinTranslateX] = useState(-500);
+    const [isResetting, setIsResetting] = useState(false);
 
     useEffect(() => {
         const handleStateUpdate = (newState: any) => {
@@ -98,13 +99,25 @@ const RouletteGame: React.FC = () => {
                 setSpinResult({ number: newState.winningNumber, color: numberColors[newState.winningNumber] });
                 setBetsAccepted(false); 
 
-                // Рассчитываем и сохраняем конечное положение
                 const centeringOffset = 500;
                 const finalTarget = (37 * (2 + spinCount)) + (newState.winningNumber ?? 0);
                 const finalTranslateX = -(finalTarget * 100 - centeringOffset);
                 setLastSpinTranslateX(finalTranslateX);
                 
-                setSpinCount(prev => prev + 1);
+                // Логика для сброса анимации, чтобы она не уходила за экран
+                if (spinCount > 5) {
+                    setTimeout(() => {
+                        setIsResetting(true);
+                        setSpinCount(1);
+                        const resetTarget = (37 * (2 + 1)) + (newState.winningNumber ?? 0);
+                        const resetTranslateX = -(resetTarget * 100 - centeringOffset);
+                        setLastSpinTranslateX(resetTranslateX);
+                        
+                        setTimeout(() => setIsResetting(false), 50);
+                    }, 50);
+                } else {
+                    setSpinCount(prev => prev + 1);
+                }
             }
             setGameState(newState);
         };
@@ -205,11 +218,9 @@ const RouletteGame: React.FC = () => {
         const centeringOffset = 500;
         
         if (isSpinning) {
-            // Цель для анимации всегда находится впереди
             const spinTarget = (37 * (2 + spinCount)) + (winningNumber ?? 0);
             return -(spinTarget * 100 - centeringOffset);
         } else {
-            // В состоянии покоя остаемся на последней выигрышной позиции
             return lastSpinTranslateX;
         }
     };
@@ -218,7 +229,7 @@ const RouletteGame: React.FC = () => {
         <div className="roulette-game">
             <div className="roulette-wheel-container">
                 <div className="roulette-pointer"></div>
-                <div className={`roulette-wheel ${isSpinning ? 'spinning' : ''}`}
+                <div className={`roulette-wheel ${isSpinning ? 'spinning' : ''} ${isResetting ? 'no-transition' : ''}`}
                      style={{ transform: `translateX(${getTransformValue()}px)` }}>
                     {wheelNumbers.map((num, index) => (
                         <div key={index} className={`roulette-number ${numberColors[num]}`}>
@@ -279,7 +290,6 @@ const RouletteGame: React.FC = () => {
                     ))}
                 </div>
                 
-                {/* Блоки поменяны местами и обновлен текст */}
                 <div className="bet-columns">
                     <div className="bet-option wide" onClick={() => placeBet('1-12')}>1-12 {getBetDisplay('1-12')}</div>
                     <div className="bet-option wide" onClick={() => placeBet('13-24')}>13-24 {getBetDisplay('13-24')}</div>
