@@ -15,7 +15,7 @@ const numberColors: { [key: number]: string } = {
 // --- СИМУЛЯЦИЯ СЕРВЕРА ДЛЯ СИНХРОНИЗАЦИИ ---
 const rouletteService = {
     state: {
-        countdown: 20,
+        countdown: 60,
         isSpinning: false,
         winningNumber: null as number | null,
         history: [] as number[], 
@@ -66,7 +66,7 @@ const rouletteService = {
             const newHistory = [...this.state.history, newWinningNumber];
             if (newHistory.length > 15) newHistory.shift(); 
             
-            this.state = { ...this.state, isSpinning: false, countdown: 20, history: newHistory };
+            this.state = { ...this.state, isSpinning: false, countdown: 60, history: newHistory };
             this.notify();
         }, 7000); 
     }
@@ -154,8 +154,8 @@ const RouletteGame: React.FC = () => {
         
         // Проверка на максимальную ОБЩУЮ ставку
         const totalCurrentBet = Object.values(bets).reduce((sum, current) => sum + current, 0);
-        if (totalCurrentBet + betAmount > 1000) {
-            alert("Общая сумма ставок не может превышать 1000 CPN!");
+        if (totalCurrentBet + betAmount > 500) {
+            alert("Общая сумма ставок не может превышать 500 CPN!");
             return;
         }
 

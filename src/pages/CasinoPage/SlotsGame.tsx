@@ -51,7 +51,7 @@ const SlotsGame: React.FC = () => {
                 setMessage("Insufficient balance for Auto-Spin!");
                 setIsAutoSpin(false);
             } else {
-                autoSpinTimeout = setTimeout(handleSpin, 2500); // Пауза должна быть больше времени анимации
+                autoSpinTimeout = setTimeout(handleSpin, 2300); // Пауза должна быть больше времени анимации
             }
         }
         return () => clearTimeout(autoSpinTimeout);
@@ -86,7 +86,7 @@ const SlotsGame: React.FC = () => {
             setReels(finalReels);
             setSpinning(false);
             calculateWinnings(finalReels);
-        }, 2700); 
+        }, 2000); 
     };
 
     const calculateWinnings = (finalReels: string[][]) => {
