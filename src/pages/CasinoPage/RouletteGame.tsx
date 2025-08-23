@@ -15,7 +15,7 @@ const numberColors: { [key: number]: string } = {
 // --- СИМУЛЯЦИЯ СЕРВЕРА ДЛЯ СИНХРОНИЗАЦИИ (без изменений) ---
 const rouletteService = {
     state: {
-        countdown: 60,
+        countdown: 30,
         isSpinning: false,
         winningNumber: null as number | null,
         history: [] as number[], 
@@ -26,7 +26,7 @@ const rouletteService = {
     unsubscribe(callback: (state: any) => void) { this.subscribers = this.subscribers.filter(sub => sub !== callback); },
     notify() { this.subscribers.forEach(callback => callback(this.state)); },
     start() { if (this.timerId) return; this.timerId = setInterval(() => { if (!this.state.isSpinning) { const newCountdown = this.state.countdown - 1; this.state = { ...this.state, countdown: newCountdown }; if (newCountdown <= 0) { this.spin(); } else { this.notify(); } } }, 1000); },
-    spin() { if (this.state.isSpinning) return; const newWinningNumber = Math.floor(Math.random() * 37); this.state = { ...this.state, isSpinning: true, winningNumber: newWinningNumber, }; this.notify(); setTimeout(() => { const newHistory = [...this.state.history, newWinningNumber]; if (newHistory.length > 15) newHistory.shift(); this.state = { ...this.state, isSpinning: false, countdown: 60, history: newHistory }; this.notify(); }, 7000); }
+    spin() { if (this.state.isSpinning) return; const newWinningNumber = Math.floor(Math.random() * 37); this.state = { ...this.state, isSpinning: true, winningNumber: newWinningNumber, }; this.notify(); setTimeout(() => { const newHistory = [...this.state.history, newWinningNumber]; if (newHistory.length > 15) newHistory.shift(); this.state = { ...this.state, isSpinning: false, countdown: 30, history: newHistory }; this.notify(); }, 7000); }
 };
 rouletteService.start();
 // ---------------------------------------------
