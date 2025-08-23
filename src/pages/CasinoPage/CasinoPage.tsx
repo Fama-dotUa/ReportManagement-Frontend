@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './CasinoPage.css';
 
-// Импортируем компоненты и новый провайдер
+// Импортируем компоненты и новые провайдеры/компоненты
 import RouletteGame from './RouletteGame';
 import BlackjackGame from './BlackjackGame';
 import SlotsGame from './SlotsGame';
 import CouponConverter from './CouponConverter';
-import { PlayerStatsProvider } from './PlayerStatsContext'; // <-- Импорт провайдера
-import PlayerLevelBar from './PlayerLevelBar'; // <-- Импорт компонента уровня
+import { PlayerStatsProvider } from './PlayerStatsContext';
+import PlayerLevelBar from './PlayerLevelBar';
+import { GameEventProvider } from './GameEventContext'; // <-- 1. Импорт провайдера событий
+import EmojiAssistant from './EmojiAssistant'; // <-- 2. Импорт ассистента
 
 const CasinoPage: React.FC = () => {
     const [view, setView] = useState<'menu' | 'game' | 'converter'>('menu');
@@ -52,40 +54,45 @@ const CasinoPage: React.FC = () => {
     };
 
     return (
-        // Оборачиваем все в провайдер
+        // Оборачиваем все в оба провайдера
         <PlayerStatsProvider> 
-            <div className="casino-page">
-                <div className="blur-background"></div>
-                <div className="casino-panel">
-                    {view === 'menu' && (
-                        <button className="back-button" onClick={() => navigate('/officer')}>
-                            Назад
-                        </button>
-                    )}
-                    
-                    {view === 'menu' && (
-                        <button className="coupon-button" onClick={() => setView('converter')}>
-                            Перевести купоны
-                        </button>
-                    )}
+            <GameEventProvider>
+                {/* 3. Размещаем ассистента здесь, чтобы он был поверх всего */}
+                <EmojiAssistant />
 
-                    <div className="casino-header">
-                        <h1 className="animated-gradient-text">Казино "НЕ бритые яйца"</h1>
-                        {view === 'game' && (
-                            <button className="ingame-back-button" onClick={() => setView('menu')}>
-                                К выбору игр
+                <div className="casino-page">
+                    <div className="blur-background"></div>
+                    <div className="casino-panel">
+                        {view === 'menu' && (
+                            <button className="back-button" onClick={() => navigate('/officer')}>
+                                Назад
                             </button>
                         )}
-                    </div>
+                        
+                        {view === 'menu' && (
+                            <button className="coupon-button" onClick={() => setView('converter')}>
+                                Перевести купоны
+                            </button>
+                        )}
 
-                    <div className="casino-content">
-                        {renderContent()}
-                    </div>
+                        <div className="casino-header">
+                            <h1 className="animated-gradient-text">Казино "НЕ бритые яйца"</h1>
+                            {view === 'game' && (
+                                <button className="ingame-back-button" onClick={() => setView('menu')}>
+                                    К выбору игр
+                                </button>
+                            )}
+                        </div>
 
-                    {/* Добавляем компонент уровня, он будет виден всегда */}
-                    <PlayerLevelBar />
+                        <div className="casino-content">
+                            {renderContent()}
+                        </div>
+
+                        {/* Компонент уровня остается на своем месте */}
+                        <PlayerLevelBar />
+                    </div>
                 </div>
-            </div>
+            </GameEventProvider>
         </PlayerStatsProvider>
     );
 };

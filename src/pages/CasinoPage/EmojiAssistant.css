@@ -1,0 +1,72 @@
+.emoji-assistant-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none; /* Позволяет кликать "сквозь" контейнер */
+    z-index: 9999;
+}
+
+.emoji-assistant {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    cursor: grab;
+    user-select: none;
+    pointer-events: all; /* Включаем события для самого эмодзи */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease-out;
+}
+
+.emoji-assistant:active {
+    cursor: grabbing;
+    transform: scale(1.1);
+}
+
+.emoji-character {
+    font-size: 50px;
+    transition: transform 0.3s ease;
+    text-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.emoji-assistant:hover .emoji-character {
+    transform: scale(1.2);
+}
+
+.emoji-bubble {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 10px;
+    background-color: white;
+    color: black;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    opacity: 0;
+    animation: fadeIn 0.5s forwards;
+}
+
+.emoji-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: white transparent transparent transparent;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, 10px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+}
