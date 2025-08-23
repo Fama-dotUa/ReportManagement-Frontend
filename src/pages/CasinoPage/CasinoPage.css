@@ -220,6 +220,66 @@
     /* Запускаем анимацию */
     animation: gradient-animation 4s linear infinite;
 }
+/* ... ваши существующие стили ... */
+
+/* ЗАМЕНИТЕ СТАРЫЙ БЛОК СТИЛЕЙ .player-level-bar НА ЭТОТ.
+   Обновленные стили для минималистичной панели уровня игрока.
+*/
+.player-level-bar {
+    position: absolute;
+    top: -85px; /* Отрицательное значение, чтобы поднять бар НАД панелью */
+    right: 40px; /* Выравниваем по правому краю контента */
+    width: 280px; /* Фиксированная ширина для компактности */
+    display: flex;
+    flex-direction: column; /* Элементы в столбец */
+    align-items: flex-start; /* Выравнивание по левому краю */
+    gap: 5px; /* Уменьшенный отступ между элементами */
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px 12px; /* Уменьшенные внутренние отступы */
+    border-radius: 6px;
+    z-index: 100;
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Тонкая рамка для стиля */
+
+    border: 2px solid #ff0000;
+    animation: neon-border-glow 4s linear infinite;
+}
+
+.level-display {
+    font-size: 0.9rem; /* Уменьшенный шрифт */
+    font-weight: 500;
+    color: #ffc107;
+    margin: 0;
+    padding: 0;
+}
+
+.xp-bar-container {
+    width: 100%; /* На всю ширину нового контейнера */
+    height: 18px; /* Панель стала тоньше */
+    background-color: #16213e;
+    border-radius: 4px;
+    border: 1px solid #e94560;
+    overflow: hidden;
+    position: relative;
+}
+
+.xp-bar-progress {
+    height: 100%;
+    background: linear-gradient(to right, #5cb85c, #86e086);
+    border-radius: 4px;
+    transition: width 0.5s ease-in-out;
+}
+
+.xp-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.75rem; /* Уменьшенный шрифт для XP */
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+}
+
 
 @keyframes gradient-animation {
     0% {

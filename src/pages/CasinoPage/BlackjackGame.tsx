@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
+import { usePlayerStats } from './PlayerStatsContext'; 
 import './BlackjackGame.css';
 
 // Определяем типы для карт и рук
@@ -51,8 +51,8 @@ const calculateHandValue = (hand: Card[]): number => {
 
 
 const BlackjackGame: React.FC = () => {
-    const { user } = useAuth();
-    const [balance, setBalance] = useState(user?.CPN || 1000);
+    const { balance, updateBalance, addXp } = usePlayerStats(); 
+    
     const [bet, setBet] = useState(0);
     const [betAmount, setBetAmount] = useState(10);
     
@@ -66,7 +66,6 @@ const BlackjackGame: React.FC = () => {
     const playerScore = calculateHandValue(playerHand);
     const dealerScore = calculateHandValue(dealerHand);
 
-    // Эффект для управления ходом дилера
     useEffect(() => {
         if (gamePhase === 'dealerTurn') {
             const dealerInterval = setInterval(() => {
@@ -77,7 +76,7 @@ const BlackjackGame: React.FC = () => {
                     clearInterval(dealerInterval);
                     determineWinner();
                 }
-            }, 1000); // Дилер берет карту каждую секунду
+            }, 1000);
             return () => clearInterval(dealerInterval);
         }
     }, [gamePhase, dealerHand]);
@@ -91,13 +90,14 @@ const BlackjackGame: React.FC = () => {
             setMessage("Bet must be positive!");
             return;
         }
-        // Ограничение максимальной ставки
         if (betAmount > 200) {
             setMessage("Maximum bet is 200 CPN!");
             return;
         }
 
-        setBalance(prev => prev - betAmount);
+        // --- ИЗМЕНЕНИЕ: Опыт больше не начисляется за ставку ---
+        updateBalance(balance - betAmount);
+        // addXp(betAmount); // <-- ЭТА СТРОКА УДАЛЕНА
         setBet(betAmount);
         
         const newDeck = shuffleDeck(createDeck());
@@ -111,7 +111,6 @@ const BlackjackGame: React.FC = () => {
         setGamePhase('playerTurn');
         setMessage('Your turn. Hit or Stand?');
 
-        // Проверка на блекджек у игрока
         if (calculateHandValue(initialPlayerHand) === 21) {
             stand();
         }
@@ -144,16 +143,24 @@ const BlackjackGame: React.FC = () => {
     const determineWinner = () => {
         const finalPlayerScore = calculateHandValue(playerHand);
         const finalDealerScore = calculateHandValue(dealerHand.map(c => ({...c, hidden: false})));
+        let newBalance = balance;
 
-        if (finalDealerScore > 21 || finalPlayerScore > finalDealerScore) {
+        if (finalDealerScore > 21 || (finalPlayerScore <= 21 && finalPlayerScore > finalDealerScore)) {
+            const totalReturn = bet * 2;
+            const netWin = bet; // Чистый выигрыш равен ставке
             setMessage(`You win! 🎉 (${finalPlayerScore} vs ${finalDealerScore})`);
-            setBalance(prev => prev + bet * 2);
+            newBalance += totalReturn;
+            // --- ИЗМЕНЕНИЕ: Опыт начисляется за чистый выигрыш ---
+            addXp(netWin); 
         } else if (finalPlayerScore < finalDealerScore) {
             setMessage(`You lose. (${finalPlayerScore} vs ${finalDealerScore})`);
+            // Опыт за проигрыш не начисляется
         } else {
             setMessage(`Push. (${finalPlayerScore} vs ${finalDealerScore})`);
-            setBalance(prev => prev + bet);
+            newBalance += bet; // Возвращаем ставку
+            // Нет выигрыша - нет опыта
         }
+        updateBalance(newBalance);
         setGamePhase('gameOver');
     };
 
@@ -167,7 +174,6 @@ const BlackjackGame: React.FC = () => {
 
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
-        // Ограничиваем значение от 1 до 400
         const clampedValue = Math.max(1, Math.min(value, 150));
         setBetAmount(clampedValue);
     };
@@ -195,7 +201,7 @@ const BlackjackGame: React.FC = () => {
             </div>
 
             <div className="controls">
-                <div className="balance-info">Balance: {balance} CPN</div>
+                <div className="balance-info">Balance: {balance.toFixed(2)} CPN</div>
                 {gamePhase === 'betting' && (
                     <div className="betting-controls">
                         <input
