@@ -278,17 +278,19 @@ const RouletteGame: React.FC = () => {
                         </div>
                     ))}
                 </div>
-                {/* ИСПРАВЛЕННЫЙ ПОРЯДОК БЛОКОВ */}
-                <div className="bet-dozens">
+                
+                {/* Блоки поменяны местами и обновлен текст */}
+                <div className="bet-columns">
                     <div className="bet-option wide" onClick={() => placeBet('1-12')}>1-12 {getBetDisplay('1-12')}</div>
                     <div className="bet-option wide" onClick={() => placeBet('13-24')}>13-24 {getBetDisplay('13-24')}</div>
                     <div className="bet-option wide" onClick={() => placeBet('25-36')}>25-36 {getBetDisplay('25-36')}</div>
                 </div>
-                <div className="bet-columns">
+                <div className="bet-dozens">
                     <div className="bet-option" onClick={() => placeBet('col1')}>1st {getBetDisplay('col1')}</div>
                     <div className="bet-option" onClick={() => placeBet('col2')}>2nd {getBetDisplay('col2')}</div>
                     <div className="bet-option" onClick={() => placeBet('col3')}>3rd {getBetDisplay('col3')}</div>
                 </div>
+                
                 <div className="bet-outside">
                     <div className="bet-option" onClick={() => placeBet('1-18')}>1-18 {getBetDisplay('1-18')}</div>
                     <div className="bet-option" onClick={() => placeBet('even')}>Even {getBetDisplay('even')}</div>
