@@ -4,9 +4,9 @@ import './EmojiAssistant.css';
 
 type GameEventType = 'win' | 'loss' | 'idle';
 
-const winEmojis = ['🥳', '🤩', '🎉', '🤑', '😎'];
-const lossEmojis = ['😢', '😭', '😥', '😩', '🤯'];
-const idleEmojis = ['😊', '🙂', '🤔', '😐', '🧐'];
+const winEmojis = ['🥳', '🤩', '🎉', '🤑', '😎','😱','💲️'];
+const lossEmojis = ['😢', '☠️', '😥', '😩', '🤯','🥵','💢'];
+const idleEmojis = ['😊', '🙂', '🤔', '😐', '🧐','🤡','🌝','🌚','💛'];
 
 const EmojiAssistant: React.FC = () => {
     const [position, setPosition] = useState({ x: 50, y: window.innerHeight - 100 });
