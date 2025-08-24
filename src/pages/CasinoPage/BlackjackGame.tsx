@@ -92,8 +92,8 @@ const BlackjackGame: React.FC = () => {
             setMessage("Bet must be positive!");
             return;
         }
-        if (betAmount > 200) {
-            setMessage("Maximum bet is 200 CPN!");
+        if (betAmount > 251) {
+            setMessage("Maximum bet is 250 CPN!");
             return;
         }
 
@@ -179,7 +179,7 @@ const BlackjackGame: React.FC = () => {
 
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
-        const clampedValue = Math.max(1, Math.min(value, 150));
+        const clampedValue = Math.max(1, Math.min(value, 250));
         setBetAmount(clampedValue);
     };
 
