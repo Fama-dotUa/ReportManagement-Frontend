@@ -15,10 +15,13 @@ const EmojiAssistant: React.FC = () => {
     const [message, setMessage] = useState('');
     const [emoji, setEmoji] = useState(() => idleEmojis[Math.floor(Math.random() * idleEmojis.length)]);
     const [animationKey, setAnimationKey] = useState(0);
+    
+    // --- ИЗМЕНЕНИЯ ДЛЯ КУЛДАУНА ТРЯСКИ ---
+    const [canShake, setCanShake] = useState(true); 
+
     const assistantRef = useRef<HTMLDivElement>(null);
     const offsetRef = useRef({ x: 0, y: 0 });
     const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    
     const lastPosRef = useRef({ x: 0, y: 0, time: 0 });
 
     useEffect(() => {
@@ -26,19 +29,27 @@ const EmojiAssistant: React.FC = () => {
     }, [emoji]);
 
     const handleShake = () => {
-        if (isShaking) return;
+        // Проверяем, можно ли сейчас трясти
+        if (isShaking || !canShake) return;
 
         if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
         
+        setCanShake(false); // Активируем кулдаун
         setIsShaking(true);
         setEmoji('😵');
         setMessage(shakePhrases[Math.floor(Math.random() * shakePhrases.length)]);
 
+        // Сбрасываем состояние после анимации
         setTimeout(() => {
             setIsShaking(false);
             setEmoji(idleEmojis[Math.floor(Math.random() * idleEmojis.length)]);
             setMessage('');
         }, 4000);
+
+        // Сбрасываем кулдаун через 10 секунд
+        setTimeout(() => {
+            setCanShake(true);
+        }, 7000);
     };
 
     useEffect(() => {
@@ -93,7 +104,8 @@ const EmojiAssistant: React.FC = () => {
                 const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
                 const velocity = distance / deltaTime;
 
-                if (velocity > 1.5) {
+                // ИЗМЕНЕНИЕ: Увеличиваем порог скорости для меньшей чувствительности
+                if (velocity > 5.8) {
                     handleShake();
                 }
             }
@@ -110,6 +122,8 @@ const EmojiAssistant: React.FC = () => {
     const handleMouseUp = () => {
         setIsDragging(false);
     };
+
+
 
     useEffect(() => {
         if (isDragging) {
