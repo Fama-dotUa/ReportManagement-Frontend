@@ -209,11 +209,24 @@ const BlackjackGame: React.FC = () => {
                 <div className="balance-info">Balance: {balance.toFixed(2)} CPN</div>
                 {gamePhase === 'betting' && (
                     <div className="betting-controls">
-                        <input
-                            type="number"
-                            value={betAmount}
-                            onChange={handleBetAmountChange}
-                        />
+                        <div className="bet-input-group">
+                            <input
+                                type="number"
+                                value={betAmount}
+                                onChange={handleBetAmountChange}
+                                min="1"
+                                max="250"
+                            />
+                            <input
+                                type="range"
+                                min="25"
+                                max="250"
+                                step="25"
+                                value={betAmount}
+                                onChange={handleBetAmountChange}
+                                className="bet-slider"
+                            />
+                        </div>
                         <button onClick={placeBetAndDeal}>Place Bet</button>
                     </div>
                 )}
