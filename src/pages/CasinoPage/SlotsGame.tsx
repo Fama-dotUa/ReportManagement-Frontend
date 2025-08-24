@@ -49,15 +49,16 @@ const createReelStrip = (isFreeSpin: boolean, length = 50) => {
 };
 
 const SlotsGame: React.FC = () => {
-    // ИЗМЕНЕНИЕ: Добавляем initialBalance для отслеживания прогресса
-    const { balance, initialBalance, updateBalance, addXp } = usePlayerStats();
+    // --- ИЗМЕНЕНИЕ: Получаем superGameProgress и функцию для его обновления из контекста ---
+    const { balance, initialBalance, updateBalance, addXp, superGameProgress, updateSuperGameProgress } = usePlayerStats();
     const { triggerGameEvent } = useGameEvents();
     
     const [betAmount, setBetAmount] = useState(10);
     const [reels, setReels] = useState<string[][]>(() => Array(reelCount).fill(Array(visibleSymbols).fill('❓')));
     const [spinning, setSpinning] = useState(false);
     const [message, setMessage] = useState('Place your bet and spin!');
-    const [superGameProgress, setSuperGameProgress] = useState(0);
+    // --- ИЗМЕНЕНИЕ: Удаляем локальное состояние для прогресса ---
+    // const [superGameProgress, setSuperGameProgress] = useState(0); 
     const [freeSpins, setFreeSpins] = useState(0);
     const [isAutoSpin, setIsAutoSpin] = useState(false);
     const [isWinning, setIsWinning] = useState(false);
@@ -334,7 +335,7 @@ const SlotsGame: React.FC = () => {
     const baseWin = 85; // Adjust based on typical win amounts
     const scaleFactor = 1.3; // Adjust to control progress speed
         const progressToAdd = Math.min(65, (winAmount / baseWin) * scaleFactor);
-        setSuperGameProgress(prev => {
+        updateSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
             if (newProgress >= 100) {
                 setMessage(`Your win of ${winAmount.toFixed(1)} CPN triggered SUPER GAME! You won 10 Freespins!`);

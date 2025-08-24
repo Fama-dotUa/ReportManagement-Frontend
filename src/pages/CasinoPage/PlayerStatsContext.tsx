@@ -8,14 +8,17 @@ const getXpForNextLevel = (level: number): number => {
     return 1500 * (level + 1.5);
 };
 
-// --- Типы для контекста ---
+// --- ИЗМЕНЕНИЕ: Добавляем поля для прогресса Супер Игры ---
 interface PlayerStats {
     level: number;
     xp: number;
     xpToNextLevel: number;
     balance: number;
-    addXp: (cpnWon: number) => void; // Теперь принимает выигранные CPN
+    initialBalance: number;
+    superGameProgress: number; // <-- НОВОЕ
+    addXp: (cpnWon: number) => void;
     updateBalance: (newBalance: number) => void;
+    updateSuperGameProgress: (progress: number | ((prevProgress: number) => number)) => void; // <-- НОВОЕ
     getCommission: () => number;
 }
 
@@ -33,8 +36,10 @@ export const PlayerStatsProvider: React.FC<{ children: ReactNode }> = ({ childre
     const [level, setLevel] = useState(0);
     const [xp, setXp] = useState(0);
     const [xpToNextLevel, setXpToNextLevel] = useState(getXpForNextLevel(0));
+    
+    // --- ИЗМЕНЕНИЕ: Добавляем состояние для прогресса в контекст ---
+    const [superGameProgress, setSuperGameProgress] = useState(0);
 
-    // --- ОБНОВЛЕННАЯ ЛОГИКА НАЧИСЛЕНИЯ ОПЫТА ---
     const addXp = (cpnWon: number) => {
         // Опыт начисляется только за выигрыш (cpnWon > 0) и если уровень не максимальный
         if (level >= MAX_LEVEL || cpnWon <= 0) return;
@@ -62,6 +67,11 @@ export const PlayerStatsProvider: React.FC<{ children: ReactNode }> = ({ childre
     const updateBalance = (newBalance: number) => {
         setBalance(newBalance);
     };
+    
+    // --- ИЗМЕНЕНИЕ: Новая функция для обновления прогресса ---
+    const updateSuperGameProgress = (progress: number | ((prevProgress: number) => number)) => {
+        setSuperGameProgress(progress);
+    };
 
     const getCommission = () => {
         const baseCommission = 30;
@@ -75,9 +85,11 @@ export const PlayerStatsProvider: React.FC<{ children: ReactNode }> = ({ childre
         xp,
         xpToNextLevel,
         balance,
-        initialBalance, // <-- ПЕРЕДАЕМ В КОНТЕКСТ
+        initialBalance,
+        superGameProgress, // <-- Передаем
         addXp,
         updateBalance,
+        updateSuperGameProgress, // <-- Передаем
         getCommission
     };
 
