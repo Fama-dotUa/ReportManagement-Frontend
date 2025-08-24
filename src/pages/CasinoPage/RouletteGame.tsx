@@ -41,7 +41,7 @@ const RouletteGame: React.FC = () => {
     const { balance, updateBalance, addXp } = usePlayerStats();
     const { triggerGameEvent } = useGameEvents(); // <-- 2. ПОЛУЧЕНИЕ ФУНКЦИИ
     
-    const [betAmount, setBetAmount] = useState(10);
+    const [betAmount, setBetAmount] = useState(250);
     const [bets, setBets] = useState<{ [key: string]: number }>({});
     const [spinResult, setSpinResult] = useState<{ number: number; color: string } | null>(null);
     const [totalWin, setTotalWin] = useState(0);

@@ -56,7 +56,7 @@ const BlackjackGame: React.FC = () => {
     const { triggerGameEvent } = useGameEvents(); // <-- 2. ПОЛУЧЕНИЕ ФУНКЦИИ
     
     const [bet, setBet] = useState(0);
-    const [betAmount, setBetAmount] = useState(10);
+    const [betAmount, setBetAmount] = useState(25);
     
     const [deck, setDeck] = useState<Card[]>([]);
     const [playerHand, setPlayerHand] = useState<Card[]>([]);

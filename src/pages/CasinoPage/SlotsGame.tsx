@@ -53,7 +53,7 @@ const SlotsGame: React.FC = () => {
     const { balance, initialBalance, updateBalance, addXp, superGameProgress, updateSuperGameProgress } = usePlayerStats();
     const { triggerGameEvent } = useGameEvents();
     
-    const [betAmount, setBetAmount] = useState(10);
+    const [betAmount, setBetAmount] = useState(25);
     const [reels, setReels] = useState<string[][]>(() => Array(reelCount).fill(Array(visibleSymbols).fill('❓')));
     const [spinning, setSpinning] = useState(false);
     const [message, setMessage] = useState('Place your bet and spin!');
