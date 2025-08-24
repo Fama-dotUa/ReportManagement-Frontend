@@ -261,10 +261,10 @@ const SlotsGame: React.FC = () => {
             } while (hasWins);
         }
         // Приоритет 3: Режим "Помощи"
-        else if (balance < initialBalance * 0.5 && Math.random() < 0.45) {
+        else if (balance < initialBalance * 0.5 && Math.random() < 0.25) {
             finalReels = generateGuaranteedWinReels(isSuperSpin);
             animationReels = finalReels.map((reelColumn) => {
-                const randomStrip = createReelStrip(isSuperSpin, 45);
+                const randomStrip = createReelStrip(isSuperSpin, 45); // Хуйня создает ленту с фейковыми 45 и добавляет подкрут 5 шт своих.
                 return [...randomStrip, ...reelColumn];
             });
         }
