@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePlayerStats } from './PlayerStatsContext'; // <-- Импортируем хук
+import { useGameEvents } from './GameEventContext'; // <-- 1. ИМПОРТ
 import './RouletteGame.css';
 
 // Определяем цвета для номеров по принципу: нечетные - красные, четные - черные
@@ -38,6 +39,7 @@ const wheelNumbers = Array.from({ length: 20 }).flatMap(() => rouletteNumbers);
 const RouletteGame: React.FC = () => {
     // --- ИЗМЕНЕНИЕ: Используем глобальное состояние ---
     const { balance, updateBalance, addXp } = usePlayerStats();
+    const { triggerGameEvent } = useGameEvents(); // <-- 2. ПОЛУЧЕНИЕ ФУНКЦИИ
     
     const [betAmount, setBetAmount] = useState(10);
     const [bets, setBets] = useState<{ [key: string]: number }>({});
@@ -149,7 +151,11 @@ const RouletteGame: React.FC = () => {
         const netWin = winnings - totalBetAmount;
         if (netWin > 0) {
             addXp(netWin);
+            triggerGameEvent('win'); // <-- 3. ВЫЗОВ ПРИ ПОБЕДЕ
+        } else if (totalBetAmount > 0) {
+            triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
         }
+
         
         // Баланс уже был уменьшен при ставках, поэтому просто добавляем общий выигрыш
         updateBalance(balance + winnings);
