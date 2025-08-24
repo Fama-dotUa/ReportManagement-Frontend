@@ -162,6 +162,12 @@ const RouletteGame: React.FC = () => {
         setTotalWin(winnings);
         setBets({});
     };
+    
+    const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(e.target.value) || 1;
+        const clampedValue = Math.max(1, Math.min(value, 1500));
+        setBetAmount(clampedValue);
+    };
 
     const getBetDisplay = (betType: string) => {
         if (bets[betType]) { return <div className="bet-chip">{bets[betType]}</div>; }
@@ -212,12 +218,26 @@ const RouletteGame: React.FC = () => {
             <div className="roulette-controls">
                 {/* --- ИЗМЕНЕНИЕ: Отображаем глобальный баланс --- */}
                 <span>Баланс: {balance.toFixed(2)} CPN</span>
-                <input
-                    type="number"
-                    value={betAmount}
-                    onChange={(e) => setBetAmount(Math.max(1, parseInt(e.target.value) || 1))}
-                    disabled={isSpinning || betsAccepted}
-                />
+                <div className="bet-input-group">
+                    <input
+                        type="number"
+                        value={betAmount}
+                        onChange={handleBetAmountChange}
+                        disabled={isSpinning || betsAccepted}
+                        min="1"
+                        max="500"
+                    />
+                    <input
+                        type="range"
+                        min="25"
+                        max="1500"
+                        step="25"
+                        value={betAmount}
+                        onChange={handleBetAmountChange}
+                        disabled={isSpinning || betsAccepted}
+                        className="bet-slider"
+                    />
+                </div>
                 <button onClick={handleAcceptBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Принять ставки</button>
                 <button onClick={handleCancelBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Отменить ставки</button>
             </div>
