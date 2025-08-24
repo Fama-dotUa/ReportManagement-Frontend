@@ -4,8 +4,8 @@ import { usePlayerStats } from './PlayerStatsContext';
 import './SlotsGame.css';
 import { useGameEvents } from './GameEventContext'; // <-- 1. ИМПОРТ
 
-// --- Игровая логика и настройки ---
-// Шансы на победу изменены, частые символы сделаны реже
+// --- Игровая логика и стройки ---
+// Шансы  победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
     '7️⃣', '⭐', '7️⃣', '⭐', '⭐','⭐',
@@ -15,7 +15,7 @@ const symbols = [
     '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊', '🍒', '🍊', '🍋', '🍒', 
 ];
 
-// НОВОЕ: Настройки для Супер Игры (Фриспинов)
+// НОВОЕ: стройки для Супер Игры (Фриспинов)
 const SUPER_GAME_LUCK_FACTOR = 12; // Регулирует частоту редких символов. Чем выше, тем чаще.
 
 const superGameSymbols = [
@@ -30,8 +30,8 @@ const superGameSymbols = [
 const reelCount = 7;
 const visibleSymbols = 5; 
 
-// Обновленная таблица выплат с максимальным множителем x10
-// Эта таблица теперь используется и для вертикальных комбинаций
+// Обновленя таблица выплат с максимальным множителем x10
+// Эта таблица теперь используется и для вертикальных комбиций
 const payouts: { [key: string]: { [count: number]: number } } = {
     '🍒': { 3: 1.2, 4: 1.3, 5: 1.4, 6: 1.5, 7: 1.6 },
     '🍋': { 3: 1.3, 4: 1.5, 5: 1.7, 6: 1.9, 7: 2.1 },
@@ -42,7 +42,7 @@ const payouts: { [key: string]: { [count: number]: number } } = {
     '7️⃣': { 3: 3.2, 4: 4.2, 5: 5.2, 6: 6.2, 7: 17.0 },
 };
 
-// ИЗМЕНЕНИЕ: Функция теперь принимает флаг isFreeSpin для выбора набора символов
+// ИЗМЕНЕНИЕ: Функция теперь принимает флаг isFreeSpin для выбора бора символов
 const createReelStrip = (isFreeSpin: boolean, length = 50) => {
     const sourceSymbols = isFreeSpin ? superGameSymbols : symbols;
     return Array.from({ length }, () => sourceSymbols[Math.floor(Math.random() * sourceSymbols.length)]);
@@ -70,7 +70,7 @@ const SlotsGame: React.FC = () => {
     const [winsNeededForCooldown, setWinsNeededForCooldown] = useState(() => Math.floor(Math.random() * 4) + 2); // 2 to 5
 
 
-    // ИСПРАВЛЕНИЕ: Логика авто-спина теперь корректно работает с фриспинами
+    // ИСПРАВЛЕНИЕ: Логика авто-спи теперь корректно работает с фриспими
     useEffect(() => {
         let autoSpinTimeout: NodeJS.Timeout;
         // Запускаем таймер, если авто-спин включен и барабаны не вращаются
@@ -79,7 +79,7 @@ const SlotsGame: React.FC = () => {
             if (freeSpins > 0) {
                 autoSpinTimeout = setTimeout(handleSpin, 2300);
             } 
-            // Иначе (если фриспинов нет), проверяем баланс
+            // Иче (если фриспинов нет), проверяем баланс
             else {
                 if (betAmount > balance) {
                     setMessage("Insufficient balance for Auto-Spin!");
@@ -93,7 +93,7 @@ const SlotsGame: React.FC = () => {
         return () => clearTimeout(autoSpinTimeout);
     }, [isAutoSpin, spinning, balance, freeSpins]); // Добавлен freeSpins в зависимости
 
-    // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ГЕНЕРАЦИИ И АНАЛИЗА ---
+    // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ГЕНЕРАЦИИ И АЛИЗА ---
     const findConsecutiveSequences = (line: string[]): { symbol: string, count: number, startIndex: number }[] => {
         if (line.length === 0) return [];
         const sequences: { symbol: string, count: number, startIndex: number }[] = [];
@@ -120,7 +120,7 @@ const SlotsGame: React.FC = () => {
         let winningCombos = 0;
         const newWinningCoords: [number, number][] = [];
 
-        // Горизонтальная
+        // Горизонталья
         const centerLine = finalReels.map(reel => reel[Math.floor(visibleSymbols / 2)]);
         const horizontalSequences = findConsecutiveSequences(centerLine);
         for (const seq of horizontalSequences) {
@@ -132,7 +132,7 @@ const SlotsGame: React.FC = () => {
             }
         }
 
-        // Вертикальная
+        // Вертикалья
         finalReels.forEach((reel, reelIndex) => {
             const verticalSequences = findConsecutiveSequences(reel);
             for (const seq of verticalSequences) {
@@ -145,7 +145,7 @@ const SlotsGame: React.FC = () => {
             }
         });
 
-        // Диагонали \
+        // Диаголи \
         for (let k = -(visibleSymbols - 1); k < reelCount; k++) {
             const diagLine: string[] = [], diagCoords: [number, number][] = [];
             for (let c = 0; c < reelCount; c++) {
@@ -167,7 +167,7 @@ const SlotsGame: React.FC = () => {
             }
         }
 
-        // Диагонали /
+        // Диаголи /
         for (let k = 0; k < reelCount + visibleSymbols - 1; k++) {
             const antiDiagLine: string[] = [], antiDiagCoords: [number, number][] = [];
             for (let c = 0; c < reelCount; c++) {
@@ -191,18 +191,18 @@ const SlotsGame: React.FC = () => {
         return { winningCombos, totalMultiplier, winMessages, newWinningCoords };
     };
 
-    //? --- НОВАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ГАРАНТИРОВАННОГО ВЫИГРЫША ---
+    //? --- НОВАЯ ВСПОМОГАТЕЛЬЯ ФУНКЦИЯ ДЛЯ ГАРАНТИРОВАННОГО ВЫИГРЫША ---
     //? НУЖНО СДЕЛАТЬ ТАК, ЧТОБЫ СЧЕТ ИГРОКА ОБНОВЛЯЛСЯ КАЖДЫЕ 60 МИНУТ
     const generateGuaranteedWinReels = (isSuperSpin: boolean): string[][] => {
         const reels: string[][] = Array(reelCount).fill(null).map(() => Array(visibleSymbols).fill(''));
         const sourceSymbols = isSuperSpin ? superGameSymbols : symbols;
         const winningSymbols = ['7️⃣', '⭐',];
         const winSymbol = winningSymbols[Math.floor(Math.random() * winningSymbols.length)];
-        const winLength = Math.random() < 0.7 ? 4 : 4; // 70% шанс на 3, 30% на 4
+        const winLength = Math.random() < 0.7 ? 4 : 4; // 70% шанс  3, 30%  4
         const startPos = Math.floor(Math.random() * (reelCount - winLength));
         const centerRow = Math.floor(visibleSymbols / 2);
 
-        // Размещаем выигрышную комбинацию
+        // Размещаем выигрышную комбицию
         for (let i = 0; i < winLength; i++) {
             reels[startPos + i][centerRow] = winSymbol;
         }
@@ -264,7 +264,7 @@ const SlotsGame: React.FC = () => {
         else if (balance < initialBalance * 0.5 && Math.random() < 0.25) {
             finalReels = generateGuaranteedWinReels(isSuperSpin);
             animationReels = finalReels.map((reelColumn) => {
-                const randomStrip = createReelStrip(isSuperSpin, 45); // Хуйня создает ленту с фейковыми 45 и добавляет подкрут 5 шт своих.
+                const randomStrip = createReelStrip(isSuperSpin, 45); //! Хуйня создает ленту с фейковыми 45 и добавляет подкрут 5 шт своих.
                 return [...randomStrip, ...reelColumn];
             });
         }
@@ -292,12 +292,12 @@ const SlotsGame: React.FC = () => {
             const newWinCount = consecutiveWins + 1;
             setConsecutiveWins(newWinCount);
 
-            // ИЗМЕНЕНИЕ: Проверяем на достижение СЛУЧАЙНОГО порога
+            // ИЗМЕНЕНИЕ: Проверяем  достижение СЛУЧАЙНОГО порога
             if (newWinCount >= winsNeededForCooldown) {
-                const newCooldown = Math.floor(Math.random() * 5) + 2; // 2 to 8
+                const newCooldown = Math.floor(Math.random() * 5) + 3; //! 2 to 8
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
-                // ИЗМЕНЕНИЕ: Устанавливаем НОВЫЙ порог для следующей серии побед (2-5)
+                // ИЗМЕНЕНИЕ: Уставливаем НОВЫЙ порог для следующей серии побед (2-5)
                 setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 3);
             }
 
@@ -321,9 +321,9 @@ const SlotsGame: React.FC = () => {
             if (freeSpins <= 0) updateSuperGame(winAmount, effectiveBet);
         } else {
             triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
-            // ИЗМЕНЕНИЕ: Сбрасываем счетчик и устанавливаем новый порог при проигрыше (2-5)
+            // ИЗМЕНЕНИЕ: Сбрасываем счетчик и уставливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
-            setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 3);
+            setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 3); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
@@ -351,7 +351,7 @@ const SlotsGame: React.FC = () => {
         setBetAmount(clampedValue);
     };
 
-    // ИСПРАВЛЕНИЕ: Позволяет включать авто-спин даже если есть фриспины, но нет денег на обычный спин
+    // ИСПРАВЛЕНИЕ: Позволяет включать авто-спин даже если есть фриспины, но нет денег  обычный спин
     const toggleAutoSpin = () => {
         if (!isAutoSpin && freeSpins === 0 && betAmount > balance) {
             setMessage("Insufficient balance to start Auto-Spin!");
@@ -362,7 +362,7 @@ const SlotsGame: React.FC = () => {
 
     return (
         <div className="slots-game">
-            {/* ИЗМЕНЕНИЕ: Динамически добавляем класс для фона во время фриспинов */}
+            {/* ИЗМЕНЕНИЕ: Димически добавляем класс для фо во время фриспинов */}
             <div className={`slots-display ${isWinning ? 'win-animation' : ''} ${freeSpins > 0 ? 'super-game-active' : ''}`}>
                 <div className="reels-container">
                     {reels.map((reel, reelIndex) => (
