@@ -1,0 +1,125 @@
+.donation-page {
+    position: relative;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-color);
+}
+
+.donation-panel {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 900px;
+    height: auto;
+    background: var(--panel-background);
+    border-radius: 8px;
+    padding: 20px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    border: 2px solid #ff0000;
+    animation: neon-border-glow 4s linear infinite;
+}
+
+.donation-header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.donation-header h1 {
+    margin: 0;
+    font-size: 2.5rem;
+}
+
+.donation-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+}
+
+.instructions {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    max-width: 600px;
+}
+
+.instructions.important {
+    font-weight: 500;
+    color: #ffc107; /* Яркий цвет для акцента */
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 6px;
+}
+
+.mono-link {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #000;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.mono-link:hover {
+    background-color: #333;
+    transform: scale(1.05);
+}
+
+.donation-code-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background-color: var(--background-color);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.donation-code {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--text-color);
+    letter-spacing: 4px;
+}
+
+.copy-button {
+    font-size: 1.8rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: transform 0.2s ease;
+    padding: 5px;
+}
+
+.copy-button:hover {
+    transform: scale(1.2);
+    color: rgba(138, 183, 107, 0.9);
+}
+
+.back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    background: var(--report-background);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 10;
+}
