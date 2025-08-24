@@ -92,7 +92,7 @@ const RouletteGame: React.FC = () => {
         if (betsAccepted) { alert("Ставки уже приняты, дождитесь следующего раунда."); return; }
         if (betAmount > balance) { alert("Недостаточно средств для ставки!"); return; }
         const totalCurrentBet = Object.values(bets).reduce((sum, current) => sum + current, 0);
-        if (totalCurrentBet + betAmount > 1500) { alert("Общая сумма ставок не может превышать 1500 CPN!"); return; }
+        if (totalCurrentBet + betAmount > 5000) { alert("Общая сумма ставок не может превышать 5000 CPN!"); return; }
 
         // --- ИЗМЕНЕНИЕ: Обновляем глобальный баланс ---
         updateBalance(balance - betAmount);
@@ -165,7 +165,7 @@ const RouletteGame: React.FC = () => {
     
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
-        const clampedValue = Math.max(1, Math.min(value, 1500));
+        const clampedValue = Math.max(250, Math.min(value, 5000));
         setBetAmount(clampedValue);
     };
 
@@ -208,12 +208,10 @@ const RouletteGame: React.FC = () => {
                                 ( <div className="info-text">Следующий спин через: {countdown} сек</div> )}
             </div>
 
-            {spinResult && (
                 <div className="result-display">
-                    Выпало число: <span className={spinResult.color}>{spinResult.number}</span>
+                    Выпало число: <span className={spinResult?.color}>{spinResult?.number}</span>
                     {totalWin > 0 ? ` Ваш выигрыш: ${totalWin} CPN!` : (betsAccepted ? ' Ставка проиграла.' : '')}
                 </div>
-            )}
 
             <div className="roulette-controls">
                 {/* --- ИЗМЕНЕНИЕ: Отображаем глобальный баланс --- */}
@@ -224,14 +222,14 @@ const RouletteGame: React.FC = () => {
                         value={betAmount}
                         onChange={handleBetAmountChange}
                         disabled={isSpinning || betsAccepted}
-                        min="1"
-                        max="500"
+                        min="250"
+                        max="5000"
                     />
                     <input
                         type="range"
-                        min="25"
-                        max="1500"
-                        step="25"
+                        min="250"
+                        max="5000"
+                        step="250"
                         value={betAmount}
                         onChange={handleBetAmountChange}
                         disabled={isSpinning || betsAccepted}

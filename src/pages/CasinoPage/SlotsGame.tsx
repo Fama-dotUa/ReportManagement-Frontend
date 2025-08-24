@@ -262,7 +262,7 @@ const SlotsGame: React.FC = () => {
             } while (hasWins);
         }
         // Приоритет 3: Режим "Помощи"
-        else if (balance < initialBalance * 0.5 && Math.random() < 0.25) {
+        else if (balance < initialBalance * 0.5 && Math.random() < 0.15) {
             finalReels = generateGuaranteedWinReels(isSuperSpin);
             animationReels = finalReels.map((reelColumn) => {
                 const randomStrip = createReelStrip(isSuperSpin, 45); //! Хуйня создает ленту с фейковыми 45 и добавляет подкрут 5 шт своих.
@@ -295,11 +295,11 @@ const SlotsGame: React.FC = () => {
 
             // ИЗМЕНЕНИЕ: Проверяем  достижение СЛУЧАЙНОГО порога
             if (newWinCount >= winsNeededForCooldown) {
-                const newCooldown = Math.floor(Math.random() * 5) + 3; //! 2 to 8
+                const newCooldown = Math.floor(Math.random() * 6) + 3; //! 2 to 8
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
                 // ИЗМЕНЕНИЕ: Уставливаем НОВЫЙ порог для следующей серии побед (2-5)
-                setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 3);
+                setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 2);
             }
 
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
@@ -324,7 +324,7 @@ const SlotsGame: React.FC = () => {
             triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
             // ИЗМЕНЕНИЕ: Сбрасываем счетчик и уставливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
-            setWinsNeededForCooldown(Math.floor(Math.random() * 4) + 3); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
+            setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 2); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
@@ -348,7 +348,7 @@ const SlotsGame: React.FC = () => {
 
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
-        const clampedValue = Math.max(1, Math.min(value, 400));
+        const clampedValue = Math.max(25, Math.min(value, 400));
         setBetAmount(clampedValue);
     };
 
