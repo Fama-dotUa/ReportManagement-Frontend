@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePlayerStats } from './PlayerStatsContext'; 
+import { useGameEvents } from './GameEventContext'; // <-- 1. ИМПОРТ
 import './BlackjackGame.css';
 
 // Определяем типы для карт и рук
@@ -52,6 +53,7 @@ const calculateHandValue = (hand: Card[]): number => {
 
 const BlackjackGame: React.FC = () => {
     const { balance, updateBalance, addXp } = usePlayerStats(); 
+    const { triggerGameEvent } = useGameEvents(); // <-- 2. ПОЛУЧЕНИЕ ФУНКЦИИ
     
     const [bet, setBet] = useState(0);
     const [betAmount, setBetAmount] = useState(10);
@@ -126,6 +128,7 @@ const BlackjackGame: React.FC = () => {
             setPlayerHand(newHand);
             if (calculateHandValue(newHand) > 21) {
                 setMessage('Bust! You lose.');
+                triggerGameEvent('loss'); // <-- 3. ВЫЗОВ ПРИ ПРОИГРЫШЕ (перебор)
                 setGamePhase('gameOver');
             }
         } else {
@@ -149,11 +152,13 @@ const BlackjackGame: React.FC = () => {
             const totalReturn = bet * 2;
             const netWin = bet; // Чистый выигрыш равен ставке
             setMessage(`You win! 🎉 (${finalPlayerScore} vs ${finalDealerScore})`);
+            triggerGameEvent('win'); // <-- 4. ВЫЗОВ ПРИ ПОБЕДЕ
             newBalance += totalReturn;
             // --- ИЗМЕНЕНИЕ: Опыт начисляется за чистый выигрыш ---
             addXp(netWin); 
         } else if (finalPlayerScore < finalDealerScore) {
             setMessage(`You lose. (${finalPlayerScore} vs ${finalDealerScore})`);
+            triggerGameEvent('loss'); // <-- 5. ВЫЗОВ ПРИ ПРОИГРЫШЕ
             // Опыт за проигрыш не начисляется
         } else {
             setMessage(`Push. (${finalPlayerScore} vs ${finalDealerScore})`);
