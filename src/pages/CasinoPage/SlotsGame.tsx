@@ -398,20 +398,37 @@ const SlotsGame: React.FC = () => {
                     <span>Balance: {balance.toFixed(1)} CPN</span>
                     {freeSpins > 0 && <span className="freespins-info">Freespins: {freeSpins}</span>}
                 </div>
+                
+                {/* --- ИЗМЕНЕНИЕ: Новый блок управления ставками --- */}
                 <div className="betting-controls">
-                    <input
-                        type="number"
-                        value={betAmount}
-                        onChange={handleBetAmountChange}
-                        disabled={spinning || freeSpins > 0 || isAutoSpin}
-                    />
-                    <button onClick={handleSpin} disabled={spinning || isAutoSpin}>
-                        {spinning ? 'Spinning...' : (freeSpins > 0 ? `Free Spin (${freeSpins})` : 'Spin')}
-                    </button>
-                    {/* ИСПРАВЛЕНИЕ: Кнопка больше не блокируется во время фриспинов, только во время вращения */}
-                    <button onClick={toggleAutoSpin} disabled={spinning} className={isAutoSpin ? 'autospin-active' : ''}>
-                        {isAutoSpin ? 'Stop Auto' : 'Start Auto'}
-                    </button>
+                    <div className="bet-input-group">
+                        <input
+                            type="number"
+                            value={betAmount}
+                            onChange={handleBetAmountChange}
+                            disabled={spinning || freeSpins > 0 || isAutoSpin}
+                            min="25"
+                            max="400"
+                        />
+                        <input
+                            type="range"
+                            min="25"
+                            max="400"
+                            step="25"
+                            value={betAmount}
+                            onChange={handleBetAmountChange}
+                            disabled={spinning || freeSpins > 0 || isAutoSpin}
+                            className="bet-slider"
+                        />
+                    </div>
+                    <div className="action-buttons">
+                        <button onClick={handleSpin} disabled={spinning || isAutoSpin}>
+                            {spinning ? 'Spinning...' : (freeSpins > 0 ? `Free Spin (${freeSpins})` : 'Spin')}
+                        </button>
+                        <button onClick={toggleAutoSpin} disabled={spinning} className={isAutoSpin ? 'autospin-active' : ''}>
+                            {isAutoSpin ? 'Stop Auto' : 'Start Auto'}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

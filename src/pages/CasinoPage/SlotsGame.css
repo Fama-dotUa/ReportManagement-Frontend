@@ -131,11 +131,69 @@
 
 .betting-controls {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 500px;
+}
+.bet-input-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.bet-input-group input[type="number"] {
+    width: 65px;
+    flex-shrink: 0;
+}
+
+.bet-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: #0f3460;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+    border: 1px solid #e94560;
+}
+
+.bet-slider:hover {
+    opacity: 1;
+}
+
+.bet-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: #e94560;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.bet-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #e94560;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.action-buttons {
+    display: flex;
     gap: 15px;
 }
 
+
 .controls input {
-    width: 120px;
+    width: 280px;
     padding: 10px;
     font-size: 1.1rem;
     border-radius: 4px;
