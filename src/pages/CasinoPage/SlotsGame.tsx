@@ -197,7 +197,7 @@ const SlotsGame: React.FC = () => {
     const generateGuaranteedWinReels = (isSuperSpin: boolean): string[][] => {
         const reels: string[][] = Array(reelCount).fill(null).map(() => Array(visibleSymbols).fill(''));
         const sourceSymbols = isSuperSpin ? superGameSymbols : symbols;
-        const winningSymbols = ['7️⃣', '⭐',];
+        const winningSymbols = ['7️⃣', '⭐','🍉',];
         const winSymbol = winningSymbols[Math.floor(Math.random() * winningSymbols.length)];
         const winLength = Math.random() < 0.7 ? 4 : 4; // 70% шанс  3, 30%  4
         const startPos = Math.floor(Math.random() * (reelCount - winLength));
@@ -262,7 +262,7 @@ const SlotsGame: React.FC = () => {
             } while (hasWins);
         }
         // Приоритет 3: Режим "Помощи"
-        else if (balance < initialBalance * 0.5 && Math.random() < 0.15) {
+        else if (balance < initialBalance * 0.45 && Math.random() < 0.25) {
             finalReels = generateGuaranteedWinReels(isSuperSpin);
             animationReels = finalReels.map((reelColumn) => {
                 const randomStrip = createReelStrip(isSuperSpin, 45); //! Хуйня создает ленту с фейковыми 45 и добавляет подкрут 5 шт своих.
