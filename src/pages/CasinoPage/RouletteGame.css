@@ -95,20 +95,20 @@
 }
 
 .result-display {
-    font-size: 1.5rem;
+    font-size: 1.0rem;
     font-weight: bold;
-    margin-bottom: 10px;
-    padding: 10px;
+    margin-bottom: 5px;
+    padding: 5px;
     background: var(--panel-background);
     border-radius: 4px;
-    min-height: 50px;
+    min-height: 25px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.result-display .red { color: #d9534f; }
+/*.result-display .red { color: #d9534f; }
 .result-display .black { color: #333; }
-.result-display .green { color: #5cb85c; }
+.result-display .green { color: #5cb85c; }*/
 
 
 /* Betting Grid */

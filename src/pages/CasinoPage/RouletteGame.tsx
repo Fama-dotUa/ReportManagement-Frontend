@@ -62,7 +62,7 @@ const RouletteGame: React.FC = () => {
             }
             if (gameState.isSpinning && !newState.isSpinning) {
                 calculateWinnings(newState.winningNumber);
-                setSpinResult({ number: newState.winningNumber, color: numberColors[newState.winningNumber] });
+                setSpinResult({ number: newState.winningNumber, color: `history-number ${numberColors[newState.winningNumber]}` });
                 setBetsAccepted(false); 
                 const centeringOffset = 500;
                 const finalTarget = (37 * (randomRotations + spinCount)) + (newState.winningNumber ?? 0);
@@ -205,12 +205,12 @@ const RouletteGame: React.FC = () => {
             <div className="roulette-info-bar">
                 {isSpinning ? ( <div className="info-text">Вращение...</div> ) : 
                  betsAccepted ? ( <div className="info-text accepted">Ставки приняты! Спин через: {countdown} сек.</div> ) : 
-                                ( <div className="info-text">Следующий спин через: {countdown} сек.</div> )}
+                                ( <div className="info-text">Следующий спин через: {countdown} сек</div> )}
             </div>
 
             {spinResult && (
                 <div className="result-display">
-                    Выпало число: <span className={spinResult.color}>{spinResult.number}</span>.
+                    Выпало число: <span className={spinResult.color}>{spinResult.number}</span>
                     {totalWin > 0 ? ` Ваш выигрыш: ${totalWin} CPN!` : (betsAccepted ? ' Ставка проиграла.' : '')}
                 </div>
             )}
