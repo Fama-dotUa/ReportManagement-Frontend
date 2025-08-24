@@ -49,8 +49,9 @@ const createReelStrip = (isFreeSpin: boolean, length = 50) => {
 };
 
 const SlotsGame: React.FC = () => {
-    const { balance, updateBalance, addXp } = usePlayerStats();
-    const { triggerGameEvent } = useGameEvents(); // <-- 2. ПОЛУЧЕНИЕ ФУНКЦИИ
+    // ИЗМЕНЕНИЕ: Добавляем initialBalance для отслеживания прогресса
+    const { balance, initialBalance, updateBalance, addXp } = usePlayerStats();
+    const { triggerGameEvent } = useGameEvents();
     
     const [betAmount, setBetAmount] = useState(10);
     const [reels, setReels] = useState<string[][]>(() => Array(reelCount).fill(Array(visibleSymbols).fill('❓')));
@@ -187,11 +188,36 @@ const SlotsGame: React.FC = () => {
                 }
             }
         }
-        
         return { winningCombos, totalMultiplier, winMessages, newWinningCoords };
     };
 
-    // --- ОБНОВЛЕННЫЙ HANDLESPIN С ЛОГИКОЙ "ОХЛАЖДЕНИЯ" ---
+    //? --- НОВАЯ ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ ДЛЯ ГАРАНТИРОВАННОГО ВЫИГРЫША ---
+    //? НУЖНО СДЕЛАТЬ ТАК, ЧТОБЫ СЧЕТ ИГРОКА ОБНОВЛЯЛСЯ КАЖДЫЕ 60 МИНУТ
+    const generateGuaranteedWinReels = (isSuperSpin: boolean): string[][] => {
+        const reels: string[][] = Array(reelCount).fill(null).map(() => Array(visibleSymbols).fill(''));
+        const sourceSymbols = isSuperSpin ? superGameSymbols : symbols;
+        const winningSymbols = ['7️⃣', '⭐',];
+        const winSymbol = winningSymbols[Math.floor(Math.random() * winningSymbols.length)];
+        const winLength = Math.random() < 0.7 ? 4 : 4; // 70% шанс на 3, 30% на 4
+        const startPos = Math.floor(Math.random() * (reelCount - winLength));
+        const centerRow = Math.floor(visibleSymbols / 2);
+
+        // Размещаем выигрышную комбинацию
+        for (let i = 0; i < winLength; i++) {
+            reels[startPos + i][centerRow] = winSymbol;
+        }
+
+        // Заполняем остальные ячейки случайными символами
+        for (let c = 0; c < reelCount; c++) {
+            for (let r = 0; r < visibleSymbols; r++) {
+                if (reels[c][r] === '') {
+                    reels[c][r] = sourceSymbols[Math.floor(Math.random() * sourceSymbols.length)];
+                }
+            }
+        }
+        return reels;
+    };
+
     const handleSpin = () => {
         if (spinning) return;
         if (freeSpins === 0 && betAmount > balance) {
@@ -213,25 +239,37 @@ const SlotsGame: React.FC = () => {
 
         let finalReels: string[][];
         let animationReels: string[][];
+        const profitPercentage = (balance - initialBalance) / initialBalance;
 
+        // Приоритет 1: Кулдаун после серии побед
         if (cooldownSpins > 0) {
             let hasWins;
             do {
                 animationReels = Array.from({ length: reelCount }, () => createReelStrip(isSuperSpin));
                 finalReels = animationReels.map(strip => strip.slice(-visibleSymbols));
-                const analysis = analyzeWinnings(finalReels);
-                hasWins = analysis.winningCombos > 0;
+                hasWins = analyzeWinnings(finalReels).winningCombos > 0;
             } while (hasWins);
-            
-            setCooldownSpins(prev => {
-                const newCooldown = prev - 1;
-                if (newCooldown > 0) {
-                    //! Сообщение о охлаждении отключено
-                    //setMessage(`Cooldown active for ${newCooldown} more spin(s)...`);
-                }
-                return newCooldown;
+            setCooldownSpins(prev => prev - 1);
+        } 
+        // Приоритет 2: Режим "Неудачи"
+        else if (profitPercentage > 0.25 && Math.random() < 0.35) {
+            let hasWins;
+            do {
+                animationReels = Array.from({ length: reelCount }, () => createReelStrip(isSuperSpin));
+                finalReels = animationReels.map(strip => strip.slice(-visibleSymbols));
+                hasWins = analyzeWinnings(finalReels).winningCombos > 0;
+            } while (hasWins);
+        }
+        // Приоритет 3: Режим "Помощи"
+        else if (balance < initialBalance * 0.5 && Math.random() < 0.45) {
+            finalReels = generateGuaranteedWinReels(isSuperSpin);
+            animationReels = finalReels.map((reelColumn) => {
+                const randomStrip = createReelStrip(isSuperSpin, 45);
+                return [...randomStrip, ...reelColumn];
             });
-        } else {
+        }
+        // Обычный спин
+        else {
             animationReels = Array.from({ length: reelCount }, () => createReelStrip(isSuperSpin));
             finalReels = animationReels.map(strip => strip.slice(-visibleSymbols));
         }
@@ -256,7 +294,7 @@ const SlotsGame: React.FC = () => {
 
             // ИЗМЕНЕНИЕ: Проверяем на достижение СЛУЧАЙНОГО порога
             if (newWinCount >= winsNeededForCooldown) {
-                const newCooldown = Math.floor(Math.random() * 8) + 4; // 2 to 8
+                const newCooldown = Math.floor(Math.random() * 5) + 2; // 2 to 8
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
                 // ИЗМЕНЕНИЕ: Устанавливаем НОВЫЙ порог для следующей серии побед (2-5)
@@ -272,9 +310,6 @@ const SlotsGame: React.FC = () => {
             const netWin = winAmount - effectiveBet;
 
             let finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
-            if (newWinCount >= winsNeededForCooldown) {
-                //! finalMessage += ` Cooldown for ${cooldownSpins} spins activated!`; УБРАЛ ПОЕБОТУ 
-            }
             setMessage(finalMessage);
 
             updateBalance(balance - effectiveBet + winAmount);
@@ -298,7 +333,7 @@ const SlotsGame: React.FC = () => {
     const updateSuperGame = (winAmount: number, currentBet: number) => {
     const baseWin = 85; // Adjust based on typical win amounts
     const scaleFactor = 1.3; // Adjust to control progress speed
-    const progressToAdd = Math.min(65, (winAmount / baseWin) * scaleFactor);
+        const progressToAdd = Math.min(65, (winAmount / baseWin) * scaleFactor);
         setSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
             if (newProgress >= 100) {

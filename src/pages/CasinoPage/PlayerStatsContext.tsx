@@ -26,10 +26,13 @@ const PlayerStatsContext = createContext<PlayerStats | undefined>(undefined);
 export const PlayerStatsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { user } = useAuth();
 
+    // Используем функцию в useState, чтобы начальное значение было установлено только один раз
+    const [initialBalance] = useState(() => user?.CPN || 5000);
+    const [balance, setBalance] = useState(initialBalance);
+    
     const [level, setLevel] = useState(0);
     const [xp, setXp] = useState(0);
     const [xpToNextLevel, setXpToNextLevel] = useState(getXpForNextLevel(0));
-    const [balance, setBalance] = useState(user?.CPN || 5000);
 
     // --- ОБНОВЛЕННАЯ ЛОГИКА НАЧИСЛЕНИЯ ОПЫТА ---
     const addXp = (cpnWon: number) => {
@@ -72,6 +75,7 @@ export const PlayerStatsProvider: React.FC<{ children: ReactNode }> = ({ childre
         xp,
         xpToNextLevel,
         balance,
+        initialBalance, // <-- ПЕРЕДАЕМ В КОНТЕКСТ
         addXp,
         updateBalance,
         getCommission
