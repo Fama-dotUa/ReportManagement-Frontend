@@ -34,7 +34,7 @@ const CouponConverter: React.FC<CouponConverterProps> = ({ onBack }) => {
 
     return (
         <div className="coupon-converter">
-            <button className="ingame-back-button" onClick={onBack}>
+            <button className="ingame-back-button back-to-main" onClick={onBack}>
                 Назад в казино
             </button>
             <h2>Обмен валют</h2>

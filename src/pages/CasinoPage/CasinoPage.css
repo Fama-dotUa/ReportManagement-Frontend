@@ -118,10 +118,12 @@
 
 .ingame-back-button {
     position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 0;
     right: 0;
     left: auto;
+}
+.ingame-back-button.back-to-main {
+    top: -72px;
 }
 
 /* Стили для конвертера */
