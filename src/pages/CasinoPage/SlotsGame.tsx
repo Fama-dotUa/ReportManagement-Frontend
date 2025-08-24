@@ -297,7 +297,7 @@ const SlotsGame: React.FC = () => {
 
     const updateSuperGame = (winAmount: number, currentBet: number) => {
     const baseWin = 85; // Adjust based on typical win amounts
-    const scaleFactor = 3.0; // Adjust to control progress speed
+    const scaleFactor = 1.3; // Adjust to control progress speed
     const progressToAdd = Math.min(65, (winAmount / baseWin) * scaleFactor);
         setSuperGameProgress(prev => {
             const newProgress = prev + progressToAdd;
@@ -312,7 +312,7 @@ const SlotsGame: React.FC = () => {
 
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
-        const clampedValue = Math.max(1, Math.min(value, 250));
+        const clampedValue = Math.max(1, Math.min(value, 400));
         setBetAmount(clampedValue);
     };
 
