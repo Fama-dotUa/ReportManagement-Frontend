@@ -252,7 +252,7 @@ const SlotsGame: React.FC = () => {
             setCooldownSpins(prev => prev - 1);
         } 
         // Приоритет 2: Режим "Неудачи"
-        else if (profitPercentage > 0.25 && Math.random() < 0.75) {
+        else if (profitPercentage > 0.25 && Math.random() < 0.65) {
             let hasWins;
             do {
                 animationReels = Array.from({ length: reelCount }, () => createReelStrip(isSuperSpin));
