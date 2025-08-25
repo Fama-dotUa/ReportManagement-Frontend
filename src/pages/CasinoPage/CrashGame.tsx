@@ -90,12 +90,31 @@ const crashService = {
         const startTime = Date.now();
         const animate = () => {
             const elapsedTime = (Date.now() - startTime) / 1000;
-            const newMultiplier = parseFloat((Math.pow(1.05, elapsedTime)).toFixed(2));
+            let newMultiplier;
 
-            if (newMultiplier >= this.state.crashPoint) {
+            // --- ИЗМЕНЕНИЕ: Ускоренный рост множителя ---
+            const initialBase = 1.09; // Базовая скорость роста (быстрее, чем 1.05)
+            const acceleratedBase = 1.22; // Ускоренная скорость роста после 10x
+            const accelerationPoint = 10.0; // Точка, после которой рост ускоряется
+
+            // Рассчитываем время, необходимое для достижения точки ускорения
+            const timeToAccelerationPoint = Math.log(accelerationPoint) / Math.log(initialBase);
+
+            if (elapsedTime < timeToAccelerationPoint) {
+                // До 10x используем базовую скорость
+                newMultiplier = Math.pow(initialBase, elapsedTime);
+            } else {
+                // После 10x используем ускоренную скорость
+                const timeAfterAcceleration = elapsedTime - timeToAccelerationPoint;
+                newMultiplier = accelerationPoint * Math.pow(acceleratedBase, timeAfterAcceleration);
+            }
+
+            const finalMultiplier = parseFloat(newMultiplier.toFixed(2));
+
+            if (finalMultiplier >= this.state.crashPoint) {
                 this.endGame(this.state.crashPoint);
             } else {
-                this.state = { ...this.state, multiplier: newMultiplier };
+                this.state = { ...this.state, multiplier: finalMultiplier };
                 this.notify();
                 this.animationFrameId = requestAnimationFrame(animate);
             }
