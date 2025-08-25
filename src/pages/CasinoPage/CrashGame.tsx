@@ -233,7 +233,6 @@ const CrashGame: React.FC = () => {
         };
     };
 
-    // --- НОВОЕ: Фильтруем активные ставки для отображения доп. ракет ---
     const activeBets = bets.filter(bet => bet.playerBet !== null);
 
     return (
@@ -269,26 +268,56 @@ const CrashGame: React.FC = () => {
                         </div>
                     )}
 
-                    {/* --- ИЗМЕНЕНИЕ: Отображаем главную и дополнительные ракеты --- */}
-                    {currentPhase === 'running' && activeBets.map((bet, index) => (
+                    {/* --- ИЗМЕНЕНИЕ: Логика отображения ракет --- */}
+                    
+                    {/* Основная ракета, которая летит всегда, когда игра запущена */}
+                    {currentPhase === 'running' && (
                         <div 
-                            key={bet.id}
-                            className={`rocket ${index > 0 ? 'ghost-rocket' : ''} ${currentPhase === 'running' ? 'flying' : ''} ${isCruising ? 'cruising' : ''}`}
-                            style={{
-                                ...getRocketPosition(),
-                                // Смещаем "призрачные" ракеты, чтобы они не накладывались
-                                transform: index > 0 ? `translate(${index * -35}px, ${index * 20}px)` : 'none'
-                            }}
+                            className={`rocket flying ${isCruising ? 'cruising' : ''}`}
+                            style={getRocketPosition()}
                         >
                             🚀
                         </div>
-                    ))}
+                    )}
+
+                    {/* Ракеты, представляющие ставки игроков */}
+                    {currentPhase === 'running' && activeBets.map((bet, index) => {
+                        // Ракета-призрак игрока, который забрал ставку
+                        if (bet.cashedOut) {
+                            return (
+                                <div 
+                                    key={bet.id}
+                                    className="rocket cashed-out-rocket"
+                                    style={{
+                                        ...getRocketPosition(),
+                                        transform: `translate(${(index + 1) * -35}px, ${(index + 1) * 20}px)`
+                                    }}
+                                >
+                                    💲
+                                </div>
+                            );
+                        }
+
+                        // Ракета-призрак игрока, который еще в игре
+                        return (
+                            <div 
+                                key={bet.id}
+                                className={`rocket ghost-rocket flying ${isCruising ? 'cruising' : ''}`}
+                                style={{
+                                    ...getRocketPosition(),
+                                    transform: `translate(${(index + 1) * -35}px, ${(index + 1) * 20}px)`
+                                }}
+                            >
+                                🚀
+                            </div>
+                        );
+                    })}
                     
-                    {/* Основная ракета в состоянии "краш" */}
+                    {/* Взрыв на месте крушения */}
                     {currentPhase === 'crashed' && (
                          <div 
-                            className={`rocket crashed`}
-                            style={getRocketPosition()}
+                            className="rocket crashed"
+                            style={crashPosition}
                         >
                             💥
                         </div>

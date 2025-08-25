@@ -119,7 +119,6 @@
     font-weight: bold;
     color: white;
     z-index: 2;
-    /* --- ИЗМЕНЕНИЕ: Добавляем transition для плавного перехода цвета и тени --- */
     transition: text-shadow 0.5s ease, color 0.5s ease;
 }
 
@@ -158,6 +157,24 @@
     z-index: 9;
     opacity: 0.5;
     transform: scale(0.8);
+}
+
+/* --- НОВЫЙ СТИЛЬ: для ракет, которые забрали ставку --- */
+.cashed-out-rocket {
+    font-size: 2.5rem;
+    z-index: 11;
+    animation: cash-out-effect 0.8s ease-out forwards;
+}
+
+@keyframes cash-out-effect {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.5);
+    }
 }
 
 
