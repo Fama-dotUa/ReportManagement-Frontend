@@ -53,14 +53,21 @@ const SlotsGame: React.FC = () => {
     const { balance, initialBalance, updateBalance, addXp, superGameProgress, updateSuperGameProgress } = usePlayerStats();
     const { triggerGameEvent } = useGameEvents();
     
-    const [betAmount, setBetAmount] = useState(25);
+    // --- ИЗМЕНЕНИЕ: Состояния для двух ставок ---
+    const [betAmount1, setBetAmount1] = useState(25);
+    const [betAmount2, setBetAmount2] = useState(100);
+    const [isAutoSpin1, setIsAutoSpin1] = useState(false);
+    const [isAutoSpin2, setIsAutoSpin2] = useState(false);
+    const [activeBet, setActiveBet] = useState<1 | 2 | null>(null);
+    // ------------------------------------------
+
     const [reels, setReels] = useState<string[][]>(() => Array(reelCount).fill(Array(visibleSymbols).fill('❓')));
     const [spinning, setSpinning] = useState(false);
     const [message, setMessage] = useState('Place your bet and spin!');
     // --- ИЗМЕНЕНИЕ: Удаляем локальное состояние для прогресса ---
     // const [superGameProgress, setSuperGameProgress] = useState(0); 
     const [freeSpins, setFreeSpins] = useState(0);
-    const [isAutoSpin, setIsAutoSpin] = useState(false);
+    //const [isAutoSpin, setIsAutoSpin] = useState(false);
     const [isWinning, setIsWinning] = useState(false);
     const [winningSymbols, setWinningSymbols] = useState<[number, number][]>([]);
 
@@ -74,25 +81,31 @@ const SlotsGame: React.FC = () => {
     // ИСПРАВЛЕНИЕ: Логика авто-спи теперь корректно работает с фриспими
     useEffect(() => {
         let autoSpinTimeout: NodeJS.Timeout;
-        // Запускаем таймер, если авто-спин включен и барабаны не вращаются
-        if (isAutoSpin && !spinning) {
-            // Если есть фриспины, просто запускаем следующий спин
-            if (freeSpins > 0) {
-                autoSpinTimeout = setTimeout(handleSpin, 2300);
-            } 
-            // Иче (если фриспинов нет), проверяем баланс
-            else {
-                if (betAmount > balance) {
-                    setMessage("Insufficient balance for Auto-Spin!");
-                    setIsAutoSpin(false); // Отключаем авто-спин
-                } else {
-                    autoSpinTimeout = setTimeout(handleSpin, 2300);
-                }
+        if (isAutoSpin1 && !spinning) {
+            if (freeSpins > 0 || betAmount1 <= balance) {
+                autoSpinTimeout = setTimeout(() => handleSpin(1), 2300);
+            } else {
+                setMessage("Insufficient balance for Auto-Spin 1!");
+                setIsAutoSpin1(false);
+            }
+        }
+        return () => clearTimeout(autoSpinTimeout);
+    }, [isAutoSpin1, spinning, balance, freeSpins]);
+
+    // --- ИЗМЕНЕНИЕ: useEffect для авто-спина №2 ---
+    useEffect(() => {
+        let autoSpinTimeout: NodeJS.Timeout;
+        if (isAutoSpin2 && !spinning) {
+            if (freeSpins > 0 || betAmount2 <= balance) {
+                autoSpinTimeout = setTimeout(() => handleSpin(2), 2300);
+            } else {
+                setMessage("Insufficient balance for Auto-Spin 2!");
+                setIsAutoSpin2(false);
             }
         }
         // Очистка таймера при размонтировании компонента или изменении зависимостей
         return () => clearTimeout(autoSpinTimeout);
-    }, [isAutoSpin, spinning, balance, freeSpins]); // Добавлен freeSpins в зависимости
+    }, [isAutoSpin2, spinning, balance, freeSpins]);
 
     // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ГЕНЕРАЦИИ И АЛИЗА ---
     const findConsecutiveSequences = (line: string[]): { symbol: string, count: number, startIndex: number }[] => {
@@ -168,7 +181,6 @@ const SlotsGame: React.FC = () => {
             }
         }
 
-        // Диаголи /
         for (let k = 0; k < reelCount + visibleSymbols - 1; k++) {
             const antiDiagLine: string[] = [], antiDiagCoords: [number, number][] = [];
             for (let c = 0; c < reelCount; c++) {
@@ -219,20 +231,25 @@ const SlotsGame: React.FC = () => {
         return reels;
     };
 
-    const handleSpin = () => {
+    // --- ИЗМЕНЕНИЕ: handleSpin теперь принимает номер ставки ---
+    const handleSpin = (betNumber: 1 | 2) => {
         if (spinning) return;
-        if (freeSpins === 0 && betAmount > balance) {
+        const currentBetAmount = betNumber === 1 ? betAmount1 : betAmount2;
+
+        if (freeSpins === 0 && currentBetAmount > balance) {
             setMessage("Insufficient balance!");
-            setIsAutoSpin(false); 
+            setIsAutoSpin1(false);
+            setIsAutoSpin2(false);
             return;
         }
 
+        setActiveBet(betNumber);
         setWinningSymbols([]);
         const isSuperSpin = freeSpins > 0; // Определяем, является ли спин бесплатным ДО уменьшения счетчика
         if (isSuperSpin) {
             setFreeSpins(prev => prev - 1);
         } else {
-            updateBalance(balance - betAmount);
+            updateBalance(balance - currentBetAmount);
         }
         
         setSpinning(true);
@@ -306,6 +323,7 @@ const SlotsGame: React.FC = () => {
             setWinningSymbols(uniqueCoords);
 
             const finalMultiplier = totalMultiplier - (winningCombos > 1 ? (winningCombos - 1) : 0);
+            const betAmount = activeBet === 1 ? betAmount1 : betAmount2;
             const effectiveBet = freeSpins > 0 ? 55 : betAmount;
             const winAmount = effectiveBet * finalMultiplier;
             const netWin = winAmount - effectiveBet;
@@ -346,31 +364,42 @@ const SlotsGame: React.FC = () => {
         });
     };
 
-    const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // --- ИЗМЕНЕНИЕ: Новые хендлеры для каждой ставки ---
+    const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>, betNumber: 1 | 2) => {
         const value = parseInt(e.target.value) || 1;
         const clampedValue = Math.max(25, Math.min(value, 400));
-        setBetAmount(clampedValue);
+        if (betNumber === 1) setBetAmount1(clampedValue);
+        else setBetAmount2(clampedValue);
     };
 
-    // --- ИЗМЕНЕНИЕ: Функция для добавления к ставке ---
-    const addToBet = (amount: number) => {
-        setBetAmount(prev => {
-            const newValue = prev + amount;
-            return Math.min(newValue, 400); // Ограничение максимальной ставки
-        });
-    };
-
-    const toggleAutoSpin = () => {
-        if (!isAutoSpin && freeSpins === 0 && betAmount > balance) {
-            setMessage("Insufficient balance to start Auto-Spin!");
-            return;
+    const addToBet = (amount: number, betNumber: 1 | 2) => {
+        if (betNumber === 1) {
+            setBetAmount1(prev => Math.min(prev + amount, 400));
+        } else {
+            setBetAmount2(prev => Math.min(prev + amount, 400));
         }
-        setIsAutoSpin(!isAutoSpin);
-    }
+    };
+
+    const toggleAutoSpin = (betNumber: 1 | 2) => {
+        if (betNumber === 1) {
+            if (!isAutoSpin1 && freeSpins === 0 && betAmount1 > balance) {
+                setMessage("Insufficient balance for Auto-Spin 1!");
+                return;
+            }
+            setIsAutoSpin1(!isAutoSpin1);
+            if (!isAutoSpin1) setIsAutoSpin2(false); // Выключаем другой автоспин при включении этого
+        } else {
+            if (!isAutoSpin2 && freeSpins === 0 && betAmount2 > balance) {
+                setMessage("Insufficient balance for Auto-Spin 2!");
+                return;
+            }
+            setIsAutoSpin2(!isAutoSpin2);
+            if (!isAutoSpin2) setIsAutoSpin1(false); // Выключаем другой автоспин
+        }
+    };
 
     return (
         <div className="slots-game">
-            {/* ИЗМЕНЕНИЕ: Димически добавляем класс для фо во время фриспинов */}
             <div className={`slots-display ${isWinning ? 'win-animation' : ''} ${freeSpins > 0 ? 'super-game-active' : ''}`}>
                 <div className="reels-container">
                     {reels.map((reel, reelIndex) => (
@@ -407,43 +436,84 @@ const SlotsGame: React.FC = () => {
                     {freeSpins > 0 && <span className="freespins-info">Freespins: {freeSpins}</span>}
                 </div>
                 
-                {/* --- ИЗМЕНЕНИЕ: Новый блок управления ставками --- */}
-                <div className="betting-controls">
-                    <div className="bet-input-group">
-                        <input
-                            type="number"
-                            value={betAmount}
-                            onChange={handleBetAmountChange}
-                            disabled={spinning || freeSpins > 0 || isAutoSpin}
-                            min="25"
-                            max="400"
-                        />
-                        {/* --- ИЗМЕНЕНИЕ: Добавлена новая структура кнопок и ползунка --- */}
-                        <div className="slider-and-buttons-wrapper">
-                            <div className="bet-increments">
-                                <button className="bet-increment-btn" onClick={() => addToBet(25)} disabled={spinning || freeSpins > 0 || isAutoSpin}>+25</button>
-                                <button className="bet-increment-btn" onClick={() => addToBet(50)} disabled={spinning || freeSpins > 0 || isAutoSpin}>+50</button>
-                                <button className="bet-increment-btn" onClick={() => addToBet(100)} disabled={spinning || freeSpins > 0 || isAutoSpin}>+100</button>
-                            </div>
+                {/* --- ИЗМЕНЕНИЕ: Контейнер для двух панелей ставок --- */}
+                <div className="all-betting-controls">
+                    {/* --- Панель ставки №1 --- */}
+                    <div className="betting-controls">
+                        <div className="bet-input-group">
                             <input
-                                type="range"
+                                type="number"
+                                value={betAmount1}
+                                onChange={(e) => handleBetAmountChange(e, 1)}
+                                disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}
                                 min="25"
                                 max="400"
-                                step="25"
-                                value={betAmount}
-                                onChange={handleBetAmountChange}
-                                disabled={spinning || freeSpins > 0 || isAutoSpin}
-                                className="bet-slider"
                             />
+                            <div className="slider-and-buttons-wrapper">
+                                <div className="bet-increments">
+                                    <button className="bet-increment-btn" onClick={() => addToBet(25, 1)} disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}>+25</button>
+                                    <button className="bet-increment-btn" onClick={() => addToBet(50, 1)} disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}>+50</button>
+                                    <button className="bet-increment-btn" onClick={() => addToBet(100, 1)} disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}>+100</button>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="25"
+                                    max="400"
+                                    step="25"
+                                    value={betAmount1}
+                                    onChange={(e) => handleBetAmountChange(e, 1)}
+                                    disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}
+                                    className="bet-slider"
+                                />
+                            </div>
+                        </div>
+                        <div className="action-buttons">
+                            <button onClick={() => handleSpin(1)} disabled={spinning || isAutoSpin1 || isAutoSpin2}>
+                                {freeSpins > 0 ? `Free Spin` : 'Spin'}
+                            </button>
+                            <button onClick={() => toggleAutoSpin(1)} disabled={spinning || isAutoSpin2} className={isAutoSpin1 ? 'autospin-active' : ''}>
+                                {isAutoSpin1 ? 'Stop' : 'Auto'}
+                            </button>
                         </div>
                     </div>
-                    <div className="action-buttons">
-                        <button onClick={handleSpin} disabled={spinning || isAutoSpin}>
-                            {spinning ? 'Spinning...' : (freeSpins > 0 ? `Free Spin (${freeSpins})` : 'Spin')}
-                        </button>
-                        <button onClick={toggleAutoSpin} disabled={spinning} className={isAutoSpin ? 'autospin-active' : ''}>
-                            {isAutoSpin ? 'Stop Auto' : 'Start Auto'}
-                        </button>
+
+                    {/* --- Панель ставки №2 --- */}
+                    <div className="betting-controls">
+                        <div className="bet-input-group">
+                            <input
+                                type="number"
+                                value={betAmount2}
+                                onChange={(e) => handleBetAmountChange(e, 2)}
+                                disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}
+                                min="25"
+                                max="400"
+                            />
+                            <div className="slider-and-buttons-wrapper">
+                                <div className="bet-increments">
+                                    <button className="bet-increment-btn" onClick={() => addToBet(25, 2)} disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}>+25</button>
+                                    <button className="bet-increment-btn" onClick={() => addToBet(50, 2)} disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}>+50</button>
+                                    <button className="bet-increment-btn" onClick={() => addToBet(100, 2)} disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}>+100</button>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="25"
+                                    max="400"
+                                    step="25"
+                                    value={betAmount2}
+                                    onChange={(e) => handleBetAmountChange(e, 2)}
+                                    disabled={spinning || freeSpins > 0 || isAutoSpin1 || isAutoSpin2}
+                                    className="bet-slider"
+                                />
+                            </div>
+                        </div>
+                        <div className="action-buttons">
+                            <button onClick={() => handleSpin(2)} disabled={spinning || isAutoSpin1 || isAutoSpin2}>
+                                {freeSpins > 0 ? `Free Spin` : 'Spin'}
+                            </button>
+                            <button onClick={() => toggleAutoSpin(2)} disabled={spinning || isAutoSpin1} className={isAutoSpin2 ? 'autospin-active' : ''}>
+                                {isAutoSpin2 ? 'Stop' : 'Auto'}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

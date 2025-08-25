@@ -129,14 +129,28 @@
     font-weight: bold;
 }
 
+/* --- ИЗМЕНЕНИЕ: Контейнер для двух панелей --- */
+.all-betting-controls {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px; /* Увеличена ширина для двух панелей */
+    justify-content: center;
+}
+
 .betting-controls {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 15px; /* Уменьшен отступ */
     width: 100%;
-    max-width: 500px;
+    flex: 1; /* Панели занимают равное место */
+    padding: 15px;
+    border: 1px solid #e94560;
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.2);
 }
+
 .bet-input-group {
     display: flex;
     align-items: center;
@@ -146,14 +160,19 @@
 
 .bet-input-group input[type="number"] {
     width: 65px;
-    flex-shrink: 0;
+    padding: 10px;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--panel-background);
+    color: var(--text-color);
 }
 
 .bet-slider {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 4px;
+    height: 8px;
     background: #0f3460;
     border-radius: 5px;
     outline: none;
@@ -253,7 +272,6 @@
     100% { background-position: 0% 50%; }
 }
 
-/* --- НОВЫЕ СТИЛИ ДЛЯ ПАНЕЛИ СТАВОК --- */
 .slider-and-buttons-wrapper {
     display: flex;
     flex-direction: column;
