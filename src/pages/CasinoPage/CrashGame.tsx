@@ -204,11 +204,20 @@ const CrashGame: React.FC = () => {
         updateBetState(id, 'cashedOut', true);
     };
 
+    // --- НОВАЯ ФУНКЦИЯ: Определяет класс для свечения множителя ---
+    const getMultiplierClassName = () => {
+        if (multiplier >= 10) return 'gold-glow';
+        if (multiplier >= 5) return 'pink-glow';
+        if (multiplier >= 2) return 'green-glow';
+        return '';
+    };
+
     const renderGameState = () => {
         if (currentPhase === 'crashed') {
             return <div className="crash-message">CRASHED @ {crashPoint.toFixed(2)}x</div>;
         }
-        return <div className="multiplier">{multiplier.toFixed(2)}x</div>;
+        // --- ИЗМЕНЕНИЕ: Добавляем динамический класс ---
+        return <div className={`multiplier ${getMultiplierClassName()}`}>{multiplier.toFixed(2)}x</div>;
     };
 
     const getRocketPosition = () => {
@@ -237,7 +246,6 @@ const CrashGame: React.FC = () => {
                     ))}
                 </div>
                 <div className={`graph-container ${currentPhase === 'running' ? 'game-running' : ''}`}>
-                    {/* --- НОВЫЙ БЛОК: Контейнер для звезд --- */}
                     <div className="stars-wrapper">
                         <div className="stars"></div>
                         <div className="stars2"></div>
