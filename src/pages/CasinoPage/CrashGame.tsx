@@ -267,8 +267,6 @@ const CrashGame: React.FC = () => {
                             🕌
                         </div>
                     )}
-
-                    {/* --- ИЗМЕНЕНИЕ: Логика отображения ракет --- */}
                     
                     {/* Основная ракета, которая летит всегда, когда игра запущена */}
                     {currentPhase === 'running' && (
@@ -326,6 +324,12 @@ const CrashGame: React.FC = () => {
                 </div>
                  {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}
             </div>
+
+            {/* --- НОВЫЙ БЛОК: Отображение баланса --- */}
+            <div className="balance-display">
+                Balance: {balance.toFixed(2)} CPN
+            </div>
+
             <div className="controls-panel-grid">
                 {bets.map(bet => (
                     <div className="controls-panel" key={bet.id}>
