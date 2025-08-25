@@ -116,7 +116,6 @@ const CrashGame: React.FC = () => {
     const { gameState: currentPhase, countdown, multiplier, crashPoint, history } = gameState;
     
     const [isCruising, setIsCruising] = useState(false);
-    // --- НОВОЕ СОСТОЯНИЕ: для хранения координат крушения ---
     const [crashPosition, setCrashPosition] = useState({ left: '0%', bottom: '0%' });
 
     useEffect(() => {
@@ -143,7 +142,6 @@ const CrashGame: React.FC = () => {
 
     useEffect(() => {
         if (currentPhase === 'crashed') {
-            // --- НОВОЕ: Сохраняем позицию в момент краша ---
             const finalPosition = (crashPoint / 10) * 100;
             const finalCruisePosition = (CRUISE_START_MULTIPLIER / 10) * 100;
             const isCruisingAtCrash = crashPoint >= CRUISE_START_MULTIPLIER;
@@ -238,7 +236,14 @@ const CrashGame: React.FC = () => {
                         </span>
                     ))}
                 </div>
-                <div className="graph-container">
+                <div className={`graph-container ${currentPhase === 'running' ? 'game-running' : ''}`}>
+                    {/* --- НОВЫЙ БЛОК: Контейнер для звезд --- */}
+                    <div className="stars-wrapper">
+                        <div className="stars"></div>
+                        <div className="stars2"></div>
+                        <div className="stars3"></div>
+                    </div>
+
                     {renderGameState()}
                     
                     {isCruising && (
@@ -249,7 +254,6 @@ const CrashGame: React.FC = () => {
                         </div>
                     )}
 
-                    {/* --- НОВЫЙ БЛОК: Здание, появляющееся при краше --- */}
                     {currentPhase === 'crashed' && (
                         <div className="crash-building" style={crashPosition}>
                             🕌
@@ -260,7 +264,7 @@ const CrashGame: React.FC = () => {
                         className={`rocket ${currentPhase === 'running' ? 'flying' : ''} ${currentPhase === 'crashed' ? 'crashed' : ''} ${isCruising ? 'cruising' : ''}`}
                         style={getRocketPosition()}
                     >
-                        🚀
+                        {currentPhase === 'crashed' ? '💥' : '🚀'}
                     </div>
                 </div>
                  {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}

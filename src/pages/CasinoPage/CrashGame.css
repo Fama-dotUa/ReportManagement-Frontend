@@ -42,7 +42,7 @@
 
 .graph-container {
     flex-grow: 1;
-    background-color: #2e3a59;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
     border-radius: 10px;
     position: relative;
     overflow: hidden;
@@ -51,6 +51,68 @@
     justify-content: center;
     min-height: 300px;
 }
+
+/* --- Стили для динамичного фона со звездами --- */
+.stars-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes animate-stars {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-2000px);
+  }
+}
+
+.stars, .stars2, .stars3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2000px; /* Высота для анимации */
+    background: transparent;
+    animation-name: animate-stars;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-play-state: paused; /* Анимация по умолчанию остановлена */
+}
+
+.stars {
+    width: 1px;
+    height: 1px;
+    box-shadow: 798px 1508px #FFF, 1828px 1238px #FFF, 1290px 1888px #FFF, 1333px 1229px #FFF, 1227px 1588px #FFF, 1531px 1699px #FFF, 1904px 1905px #FFF, 1198px 1198px #FFF, 1237px 1438px #FFF, 1303px 1139px #FFF, 1599px 1318px #FFF, 1284px 1113px #FFF, 1109px 1617px #FFF, 168px 1206px #FFF, 1033px 186px #FFF, 1018px 143px #FFF, 183px 148px #FFF, 1494px 188px #FFF, 1243px 283px #FFF, 1333px 44px #FFF, 1825px 516px #FFF, 1278px 573px #FFF, 1185px 495px #FFF, 1145px 374px #FFF, 135px 333px #FFF, 185px 580px #FFF, 1319px 880px #FFF, 1500px 963px #FFF, 1149px 947px #FFF, 1888px 776px #FFF;
+    animation-duration: 50s;
+}
+
+.stars2 {
+    width: 2px;
+    height: 2px;
+    box-shadow: 107px 1011px #FFF, 790px 72px #FFF, 513px 432px #FFF, 1867px 158px #FFF, 1734px 184px #FFF, 1262px 105px #FFF, 1255px 529px #FFF, 1130px 1021px #FFF, 179px 1060px #FFF, 1231px 1475px #FFF, 150px 1111px #FFF, 1007px 1150px #FFF, 120px 1433px #FFF, 132px 1222px #FFF, 111px 1030px #FFF, 130px 100px #FFF, 1555px 1222px #FFF, 1444px 1100px #FFF, 1888px 1020px #FFF;
+    animation-duration: 100s;
+}
+
+.stars3 {
+    width: 3px;
+    height: 3px;
+    box-shadow: 1706px 1821px #FFF, 628px 101px #FFF, 133px 1277px #FFF, 1884px 1334px #FFF, 1335px 1729px #FFF, 64px 1114px #FFF, 1255px 1234px #FFF, 100px 1000px #FFF, 444px 1434px #FFF, 888px 1839px #FFF;
+    animation-duration: 150s;
+}
+
+/* Запускаем анимацию звезд, когда игра в состоянии 'running' */
+.game-running .stars,
+.game-running .stars2,
+.game-running .stars3 {
+    animation-play-state: running;
+}
+
 
 .multiplier {
     font-size: 5rem;
@@ -69,7 +131,7 @@
 
 .rocket {
     position: absolute;
-    font-size: 3rem;
+    font-size: 7rem; /*НЕ ТРОГАТЬ*/
     transition: all 0.1s linear;
     z-index: 10; 
 }
@@ -99,46 +161,46 @@
 
 .cloud {
     position: absolute;
-    font-size: 4rem;
+    font-size: 6rem;
     opacity: 0.6;
     animation: fly-by linear infinite;
+    left: 110%;
 }
 
 .cloud1 {
-    top: 20%;
-    animation-duration: 10s; 
+    top: 15%;
+    animation-duration: 12s; 
     animation-delay: -2s;
 }
 
 .cloud2 {
-    top: 50%;
-    font-size: 5rem;
-    animation-duration: 15s;
+    top: 40%;
+    font-size: 7rem;
+    animation-duration: 18s;
     animation-delay: -8s;
 }
 
 .cloud3 {
-    top: 70%;
-    font-size: 3rem;
-    animation-duration: 8s;
+    top: 65%;
+    font-size: 5rem;
+    animation-duration: 10s;
     animation-delay: -5s;
 }
 
 @keyframes fly-by {
     from {
-        transform: translateX(110vw);
+        transform: translate(0, 0);
     }
     to {
-        transform: translateX(-10vw);
+        transform: translate(-110vw, 40vh); /*! НЕ МЕНЯТЬ */
     }
 }
 
-/* --- НОВЫЕ СТИЛИ: Для здания при краше --- */
 .crash-building {
     position: absolute;
-    font-size: 6rem;
-    z-index: 15; /* Выше самолета */
-    transform: translate(-40%, 40%); /* Центрируем относительно точки */
+    font-size: 9rem;
+    z-index: 15;
+    transform: translate(-40%, 40%);
     animation: building-appear 0.2s ease-out forwards;
 }
 
