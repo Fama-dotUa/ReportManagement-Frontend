@@ -334,7 +334,11 @@ const CrashGame: React.FC = () => {
                         </div>
                         {currentPhase === 'waiting' && !bet.playerBet && (<button className="bet-btn" onClick={() => handlePlaceBet(bet.id)}>Place Bet</button>)}
                         {currentPhase === 'waiting' && bet.playerBet && (<button className="cancel-btn" onClick={() => handleCancelBet(bet.id)}>Cancel Bet</button>)}
-                        {currentPhase === 'running' && bet.playerBet && !bet.cashedOut && (<button className="cashout-btn" onClick={() => handleCashout(bet.id, multiplier)}>Cash Out @ {multiplier.toFixed(2)}x</button>)}
+                        {currentPhase === 'running' && bet.playerBet && !bet.cashedOut && (
+                            <button className="cashout-btn" onClick={() => handleCashout(bet.id, multiplier)}>
+                                Cash Out @ {(bet.betAmount * multiplier).toFixed(2)} CR
+                            </button>
+                        )}
                         {currentPhase === 'running' && (!bet.playerBet || bet.cashedOut) && (<button className="bet-btn" disabled>{bet.cashedOut ? `Cashed Out!` : 'Running...'}</button>)}
                         {currentPhase === 'crashed' && (<button className="bet-btn" disabled>Crashed!</button>)}
                         <button className={`autobet-btn ${bet.isAutoBet ? 'active' : ''}`} onClick={() => updateBetState(bet.id, 'isAutoBet', !bet.isAutoBet)}>Auto Bet</button>
