@@ -178,16 +178,48 @@ const CrashGame: React.FC = () => {
             });
         }
 
+        // --- LOGIC CORRECTION FOR AUTO BET ---
         if (currentPhase === 'waiting') {
             setIsCruising(false);
             
+            // Filter for active auto-bets and calculate the total amount needed.
+            const autoBetsToPlace = bets.filter(bet => bet.isAutoBet);
+            const totalAutoBetAmount = autoBetsToPlace.reduce((total, bet) => total + bet.betAmount, 0);
+
+            // Check if the player can afford the total amount for all auto-bets.
+            const canAffordAll = balance >= totalAutoBetAmount;
+
+            // If affordable, deduct the total amount from the balance in a single, safe update.
+            if (canAffordAll && totalAutoBetAmount > 0) {
+                updateBalance(prev => prev - totalAutoBetAmount);
+            }
+            
+            // Map over all bets to create the new state for the upcoming round.
             const updatedBets = bets.map(bet => {
                 let newPlayerBet = null;
+                let newIsAutoBet = bet.isAutoBet; // Keep the current auto-bet setting by default.
+
                 if (bet.isAutoBet) {
-                    newPlayerBet = handlePlaceBet(bet.id, true);
+                    if (canAffordAll) {
+                        // If all bets are affordable, set this one as active for the next round.
+                        newPlayerBet = bet.betAmount;
+                        crashService.placeBet();
+                    } else {
+                        // If the total is not affordable, disable auto-bet for this round to prevent errors.
+                        newIsAutoBet = false;
+                    }
                 }
-                return { ...bet, playerBet: newPlayerBet, cashedOut: false };
+                
+                // Reset playerBet and cashedOut status for the new round, and update isAutoBet if needed.
+                return { 
+                    ...bet, 
+                    playerBet: newPlayerBet, 
+                    cashedOut: false,
+                    isAutoBet: newIsAutoBet 
+                };
             });
+            
+            // Set the final, updated state for all bets.
             setBets(updatedBets);
         }
     }, [currentPhase]);
