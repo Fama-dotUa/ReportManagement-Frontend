@@ -8,7 +8,7 @@ import { useGameEvents } from './GameEventContext'; // <-- 1. ИМПОРТ
 // Шансы  победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
-    '7️⃣', '⭐', '7️⃣', '⭐', '⭐','⭐','⭐',
+    '7️⃣', '⭐', '7️⃣', '⭐', '⭐',
     // Нечастые
     '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉','🍉', '🍇', '🍉', '🍇', '🍊',
     // Частые
@@ -316,7 +316,7 @@ const SlotsGame: React.FC = () => {
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
                 // ИЗМЕНЕНИЕ: Уставливаем НОВЫЙ порог для следующей серии побед (2-5)
-                setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 2);
+                setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 3);
             }
 
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
@@ -324,7 +324,7 @@ const SlotsGame: React.FC = () => {
 
             const finalMultiplier = totalMultiplier - (winningCombos > 1 ? (winningCombos - 1) : 0);
             const betAmount = activeBet === 1 ? betAmount1 : betAmount2;
-            const effectiveBet = freeSpins > 0 ? 55 : betAmount;
+            const effectiveBet = freeSpins > 0 ? 105 : betAmount;
             const winAmount = effectiveBet * finalMultiplier;
             const netWin = winAmount - effectiveBet;
 
@@ -342,7 +342,7 @@ const SlotsGame: React.FC = () => {
             triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
             // ИЗМЕНЕНИЕ: Сбрасываем счетчик и уставливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
-            setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 2); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
+            setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 3); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
