@@ -352,7 +352,14 @@ const SlotsGame: React.FC = () => {
         setBetAmount(clampedValue);
     };
 
-    // ИСПРАВЛЕНИЕ: Позволяет включать авто-спин даже если есть фриспины, но нет денег  обычный спин
+    // --- ИЗМЕНЕНИЕ: Функция для добавления к ставке ---
+    const addToBet = (amount: number) => {
+        setBetAmount(prev => {
+            const newValue = prev + amount;
+            return Math.min(newValue, 400); // Ограничение максимальной ставки
+        });
+    };
+
     const toggleAutoSpin = () => {
         if (!isAutoSpin && freeSpins === 0 && betAmount > balance) {
             setMessage("Insufficient balance to start Auto-Spin!");
@@ -411,16 +418,24 @@ const SlotsGame: React.FC = () => {
                             min="25"
                             max="400"
                         />
-                        <input
-                            type="range"
-                            min="25"
-                            max="400"
-                            step="25"
-                            value={betAmount}
-                            onChange={handleBetAmountChange}
-                            disabled={spinning || freeSpins > 0 || isAutoSpin}
-                            className="bet-slider"
-                        />
+                        {/* --- ИЗМЕНЕНИЕ: Добавлена новая структура кнопок и ползунка --- */}
+                        <div className="slider-and-buttons-wrapper">
+                            <div className="bet-increments">
+                                <button className="bet-increment-btn" onClick={() => addToBet(25)} disabled={spinning || freeSpins > 0 || isAutoSpin}>+25</button>
+                                <button className="bet-increment-btn" onClick={() => addToBet(50)} disabled={spinning || freeSpins > 0 || isAutoSpin}>+50</button>
+                                <button className="bet-increment-btn" onClick={() => addToBet(100)} disabled={spinning || freeSpins > 0 || isAutoSpin}>+100</button>
+                            </div>
+                            <input
+                                type="range"
+                                min="25"
+                                max="400"
+                                step="25"
+                                value={betAmount}
+                                onChange={handleBetAmountChange}
+                                disabled={spinning || freeSpins > 0 || isAutoSpin}
+                                className="bet-slider"
+                            />
+                        </div>
                     </div>
                     <div className="action-buttons">
                         <button onClick={handleSpin} disabled={spinning || isAutoSpin}>
