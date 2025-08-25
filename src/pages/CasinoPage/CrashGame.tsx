@@ -140,6 +140,7 @@ const CrashGame: React.FC = () => {
         }
     }, [multiplier]);
 
+    // --- ИЗМЕНЕНИЕ: Логика сброса ставок перенесена и разделена ---
     useEffect(() => {
         if (currentPhase === 'crashed') {
             const finalPosition = (crashPoint / 10) * 100;
@@ -150,15 +151,19 @@ const CrashGame: React.FC = () => {
                 left: `${Math.min(95, isCruisingAtCrash ? finalCruisePosition : finalPosition)}%`,
                 bottom: `${Math.min(90, isCruisingAtCrash ? finalCruisePosition : finalPosition)}%`
             });
-        }
-
-        if (currentPhase === 'waiting' || currentPhase === 'crashed') {
             setIsCruising(false);
             
-            const updatedBets = bets.map(bet => {
+            bets.forEach(bet => {
                 if (bet.playerBet && !bet.cashedOut) {
                     triggerGameEvent('loss');
                 }
+            });
+        }
+
+        if (currentPhase === 'waiting') {
+            setIsCruising(false);
+            
+            const updatedBets = bets.map(bet => {
                 let newPlayerBet = null;
                 if (bet.isAutoBet) {
                     newPlayerBet = handlePlaceBet(bet.id, true);
@@ -173,10 +178,8 @@ const CrashGame: React.FC = () => {
         setBets(bets.map(bet => bet.id === id ? { ...bet, [field]: value } : bet));
     };
 
-    // --- ИЗМЕНЕНИЕ: Новые обработчики для инпутов с валидацией ---
     const handleBetAmountChange = (id: number, value: string) => {
         let numericValue = parseInt(value, 10);
-        // Исправляем баг ползунка (51 -> 50, 101 -> 100)
         if (numericValue > 1 && numericValue % 50 === 1) {
             numericValue -= 1;
         }
@@ -213,8 +216,10 @@ const CrashGame: React.FC = () => {
             return null;
         }
         if (bet.betAmount > balance) {
-            if (!isAuto) alert("Недостаточно средств!");
-            updateBetState(id, 'isAutoBet', false);
+            if (!isAuto) {
+                alert("Недостаточно средств!");
+                updateBetState(id, 'isAutoBet', false);
+            }
             return null;
         }
         updateBalance(balance - bet.betAmount);
@@ -305,7 +310,6 @@ const CrashGame: React.FC = () => {
                 {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}
             </div>
             
-            {/* --- ИЗМЕНЕНИЕ: Возвращаем панель баланса --- */}
             <div className="balance-display">Баланс: {balance.toFixed(2)} CR</div>
 
             <div className="controls-panel-grid">
@@ -340,7 +344,24 @@ const CrashGame: React.FC = () => {
                             </button>
                         )}
                         {currentPhase === 'running' && (!bet.playerBet || bet.cashedOut) && (<button className="bet-btn" disabled>{bet.cashedOut ? `Cashed Out!` : 'Running...'}</button>)}
-                        {currentPhase === 'crashed' && (<button className="bet-btn" disabled>Crashed!</button>)}
+                        
+                        {/* --- ИЗМЕНЕННАЯ ЛОГИКА ОТОБРАЖЕНИЯ КНОПКИ --- */}
+                        {currentPhase === 'crashed' && (
+                            bet.cashedOut ? (
+                                <button className="bet-btn" disabled>
+                                    Cashed Out!
+                                </button>
+                            ) : bet.playerBet ? (
+                                <button className="bet-btn" disabled style={{ backgroundColor: '#d9534f', color: 'white' }}>
+                                    Crashed
+                                </button>
+                            ) : (
+                                <button className="bet-btn" disabled>
+                                    Waiting...
+                                </button>
+                            )
+                        )}
+
                         <button className={`autobet-btn ${bet.isAutoBet ? 'active' : ''}`} onClick={() => updateBetState(bet.id, 'isAutoBet', !bet.isAutoBet)}>Auto Bet</button>
                     </div>
                 ))}
