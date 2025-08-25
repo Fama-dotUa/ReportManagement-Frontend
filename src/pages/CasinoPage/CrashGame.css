@@ -49,6 +49,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 300px;
 }
 
 .multiplier {
@@ -90,21 +91,27 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
-.controls-panel {
+.controls-panel-grid {
     width: 100%;
-    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.controls-panel {
+    padding: 15px;
     background-color: #2e3a59;
     border-radius: 10px;
-    margin-top: 20px;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
 }
 
 .bet-controls {
     display: flex;
-    justify-content: space-around;
-    gap: 20px;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .input-group {
@@ -118,22 +125,27 @@
     color: #a9a9a9;
 }
 
-.input-group input {
+.input-group input[type="number"] {
     padding: 10px;
     border-radius: 5px;
     border: none;
     background-color: #1a2238;
     color: white;
     font-size: 1.1rem;
-    width: 150px;
+    width: 100%;
 }
 
-.bet-btn, .cashout-btn {
+.input-group input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.bet-btn, .cashout-btn, .autobet-btn {
     width: 100%;
-    padding: 15px;
+    padding: 12px;
     border-radius: 5px;
     border: none;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
@@ -152,6 +164,15 @@
 .cashout-btn {
     background-color: #f0ad4e;
     color: #333;
+}
+
+.autobet-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.autobet-btn.active {
+    background-color: #0275d8;
 }
 
 @keyframes shake {

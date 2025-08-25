@@ -3,6 +3,17 @@ import { usePlayerStats } from './PlayerStatsContext';
 import { useGameEvents } from './GameEventContext';
 import './CrashGame.css';
 
+// --- Тип для состояния ставки ---
+interface BetState {
+    id: number;
+    betAmount: number;
+    autoCashout: number;
+    isAutoBet: boolean;
+    isAutoCashoutEnabled: boolean;
+    playerBet: number | null;
+    cashedOut: boolean;
+}
+
 // --- Конфигурация игры ---
 const WAITING_TIME = 10; // Время ожидания перед стартом (в секундах)
 
@@ -93,17 +104,16 @@ const CrashGame: React.FC = () => {
     const { balance, updateBalance, addXp } = usePlayerStats();
     const { triggerGameEvent } = useGameEvents();
 
-    // Локальное состояние для ставок и UI игрока
-    const [betAmount, setBetAmount] = useState(100);
-    const [autoCashout, setAutoCashout] = useState(2.0);
-    const [playerBet, setPlayerBet] = useState<number | null>(null);
-    const [cashedOut, setCashedOut] = useState(false);
+    const [bets, setBets] = useState<BetState[]>([
+        { id: 1, betAmount: 100, autoCashout: 2.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+        { id: 2, betAmount: 250, autoCashout: 3.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+        { id: 3, betAmount: 500, autoCashout: 1.5, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+        { id: 4, betAmount: 1000, autoCashout: 5.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+    ]);
 
-    // Состояние, синхронизированное с сервисом
     const [gameState, setGameState] = useState(crashService.state);
     const { gameState: currentPhase, countdown, multiplier, crashPoint, history } = gameState;
 
-    // Подписка на обновления от сервиса
     useEffect(() => {
         const handleStateUpdate = (newState: any) => {
             setGameState(newState);
@@ -112,42 +122,55 @@ const CrashGame: React.FC = () => {
         return () => crashService.unsubscribe(handleStateUpdate);
     }, []);
 
-    // Проверка на авто-кэшаут при изменении множителя
     useEffect(() => {
-        if (currentPhase === 'running' && playerBet && !cashedOut && autoCashout > 1 && multiplier >= autoCashout) {
-            handleCashout(autoCashout);
+        if (currentPhase === 'running') {
+            bets.forEach(bet => {
+                if (bet.playerBet && !bet.cashedOut && bet.isAutoCashoutEnabled && multiplier >= bet.autoCashout) {
+                    handleCashout(bet.id, bet.autoCashout);
+                }
+            });
         }
     }, [multiplier]);
 
-    // Сброс ставки игрока после окончания раунда
     useEffect(() => {
-        if (currentPhase === 'waiting' && playerBet) {
-            if (!cashedOut) {
-                triggerGameEvent('loss');
-            }
-            setPlayerBet(null);
-            setCashedOut(false);
+        if (currentPhase === 'waiting') {
+            const updatedBets = bets.map(bet => {
+                if (bet.playerBet && !bet.cashedOut) {
+                    triggerGameEvent('loss');
+                }
+                if (bet.isAutoBet) {
+                    handlePlaceBet(bet.id);
+                }
+                return { ...bet, playerBet: null, cashedOut: false };
+            });
+            setBets(updatedBets);
         }
     }, [currentPhase]);
 
-
-    const handlePlaceBet = () => {
-        if (betAmount > balance) {
-            alert("Недостаточно средств!");
-            return;
-        }
-        updateBalance(balance - betAmount);
-        setPlayerBet(betAmount);
+    const updateBetState = (id: number, field: keyof BetState, value: any) => {
+        setBets(bets.map(bet => bet.id === id ? { ...bet, [field]: value } : bet));
     };
 
-    const handleCashout = (cashoutMultiplier: number) => {
-        if (!playerBet || cashedOut) return;
+    const handlePlaceBet = (id: number) => {
+        const bet = bets.find(b => b.id === id);
+        if (!bet || bet.betAmount > balance) {
+            if (!bet?.isAutoBet) alert("Недостаточно средств!");
+            updateBetState(id, 'isAutoBet', false);
+            return;
+        }
+        updateBalance(balance - bet.betAmount);
+        updateBetState(id, 'playerBet', bet.betAmount);
+    };
+
+    const handleCashout = (id: number, cashoutMultiplier: number) => {
+        const bet = bets.find(b => b.id === id);
+        if (!bet || !bet.playerBet || bet.cashedOut) return;
         
-        const winAmount = playerBet * cashoutMultiplier;
+        const winAmount = bet.playerBet * cashoutMultiplier;
         updateBalance(balance + winAmount);
-        addXp(winAmount - playerBet);
+        addXp(winAmount - bet.playerBet);
         triggerGameEvent('win');
-        setCashedOut(true);
+        updateBetState(id, 'cashedOut', true);
     };
 
     const renderGameState = () => {
@@ -181,48 +204,62 @@ const CrashGame: React.FC = () => {
                 </div>
                  {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}
             </div>
-            <div className="controls-panel">
-                <div className="bet-controls">
-                    <div className="input-group">
-                        <label>Bet Amount</label>
-                        <input 
-                            type="number" 
-                            value={betAmount} 
-                            onChange={e => setBetAmount(Number(e.target.value))}
-                            disabled={!!playerBet}
-                        />
+            <div className="controls-panel-grid">
+                {bets.map(bet => (
+                    <div className="controls-panel" key={bet.id}>
+                        <div className="bet-controls">
+                            <div className="input-group">
+                                <label>Bet Amount</label>
+                                <input 
+                                    type="number" 
+                                    value={bet.betAmount} 
+                                    onChange={e => updateBetState(bet.id, 'betAmount', Number(e.target.value))}
+                                    disabled={!!bet.playerBet}
+                                />
+                            </div>
+                            <div className="input-group">
+                                <label>Auto Cashout</label>
+                                <input 
+                                    type="number" 
+                                    value={bet.autoCashout}
+                                    onChange={e => updateBetState(bet.id, 'autoCashout', Number(e.target.value))}
+                                    disabled={!bet.isAutoCashoutEnabled || !!bet.playerBet}
+                                />
+                                <input 
+                                    type="checkbox"
+                                    checked={bet.isAutoCashoutEnabled}
+                                    onChange={e => updateBetState(bet.id, 'isAutoCashoutEnabled', e.target.checked)}
+                                    disabled={!!bet.playerBet}
+                                />
+                            </div>
+                        </div>
+                        {currentPhase === 'waiting' && !bet.playerBet && (
+                            <button className="bet-btn" onClick={() => handlePlaceBet(bet.id)}>Place Bet</button>
+                        )}
+                        {currentPhase === 'waiting' && bet.playerBet && (
+                            <button className="bet-btn" disabled>Waiting...</button>
+                        )}
+                        {currentPhase === 'running' && bet.playerBet && !bet.cashedOut && (
+                            <button className="cashout-btn" onClick={() => handleCashout(bet.id, multiplier)}>
+                                Cash Out @ {multiplier.toFixed(2)}x
+                            </button>
+                        )}
+                         {currentPhase === 'running' && (!bet.playerBet || bet.cashedOut) && (
+                            <button className="bet-btn" disabled>
+                                {bet.cashedOut ? `Cashed Out!` : 'Running...'}
+                            </button>
+                        )}
+                         {currentPhase === 'crashed' && (
+                            <button className="bet-btn" disabled>Crashed!</button>
+                        )}
+                        <button 
+                            className={`autobet-btn ${bet.isAutoBet ? 'active' : ''}`}
+                            onClick={() => updateBetState(bet.id, 'isAutoBet', !bet.isAutoBet)}
+                        >
+                            Auto Bet
+                        </button>
                     </div>
-                    <div className="input-group">
-                        <label>Auto Cashout</label>
-                        <input 
-                            type="number" 
-                            value={autoCashout}
-                            onChange={e => setAutoCashout(Number(e.target.value))}
-                            disabled={!!playerBet}
-                        />
-                    </div>
-                </div>
-                {currentPhase === 'waiting' && !playerBet && (
-                    <button className="bet-btn" onClick={handlePlaceBet}>Place Bet</button>
-                )}
-                {currentPhase === 'waiting' && playerBet && (
-                    <button className="bet-btn" disabled>Waiting for next round...</button>
-                )}
-                {currentPhase === 'running' && playerBet && !cashedOut && (
-                    <button className="cashout-btn" onClick={() => handleCashout(multiplier)}>
-                        Cash Out @ {multiplier.toFixed(2)}x
-                    </button>
-                )}
-                 {currentPhase === 'running' && (!playerBet || cashedOut) && (
-                    <button className="bet-btn" disabled>
-                        {cashedOut ? `Cashed Out!` : 'Running...'}
-                    </button>
-                )}
-                 {currentPhase === 'crashed' && (
-                    <button className="bet-btn" disabled>
-                        Crashed!
-                    </button>
-                )}
+                ))}
             </div>
         </div>
     );
