@@ -26,6 +26,7 @@ const crashService = {
         multiplier: 1.00,
         crashPoint: 1.00,
         history: [] as number[],
+        activeBetsCount: 0, // --- ИЗМЕНЕНИЕ: Счетчик активных ставок
     },
     subscribers: [] as ((state: any) => void)[],
     gameTimer: null as NodeJS.Timeout | null,
@@ -40,6 +41,14 @@ const crashService = {
     },
     notify() {
         this.subscribers.forEach(callback => callback(this.state));
+    },
+
+    // --- ИЗМЕНЕНИЕ: Методы для отслеживания ставок ---
+    placeBet() {
+        this.state.activeBetsCount++;
+    },
+    cancelBet() {
+        this.state.activeBetsCount--;
     },
 
     start() {
@@ -57,8 +66,17 @@ const crashService = {
         }, 1000);
     },
 
+    // --- ИЗМЕНЕНИЕ: Логика генерации точки краша ---
     startGame() {
-        const p = Math.random();
+        const hasActiveBets = this.state.activeBetsCount > 0;
+        let p = Math.random();
+
+        // Если ставок нет, есть 30% шанс на большой коэффициент
+        if (!hasActiveBets && Math.random() < 0.3) {
+            const highMultiplier = Math.random() * 40 + 10; // от 10x до 50x
+            p = 1 - (1 / highMultiplier);
+        }
+        
         const newCrashPoint = parseFloat((1 / (1 - p)).toFixed(2));
         
         this.state = { 
@@ -93,8 +111,9 @@ const crashService = {
         setTimeout(() => this.resetGame(), 3000);
     },
 
+    // --- ИЗМЕНЕНИЕ: Сброс счетчика ставок ---
     resetGame() {
-        this.state = { ...this.state, gameState: 'waiting', countdown: WAITING_TIME, multiplier: 1.00 };
+        this.state = { ...this.state, gameState: 'waiting', countdown: WAITING_TIME, multiplier: 1.00, activeBetsCount: 0 };
         this.notify();
     }
 };
@@ -140,7 +159,6 @@ const CrashGame: React.FC = () => {
         }
     }, [multiplier]);
 
-    // --- ИЗМЕНЕНИЕ: Логика сброса ставок перенесена и разделена ---
     useEffect(() => {
         if (currentPhase === 'crashed') {
             const finalPosition = (crashPoint / 10) * 100;
@@ -224,6 +242,7 @@ const CrashGame: React.FC = () => {
         }
         updateBalance(balance - bet.betAmount);
         updateBetState(id, 'playerBet', bet.betAmount);
+        crashService.placeBet(); // --- ИЗМЕНЕНИЕ: Сообщаем "серверу" о ставке
         return bet.betAmount;
     };
 
@@ -232,6 +251,7 @@ const CrashGame: React.FC = () => {
         if (!bet || !bet.playerBet) return;
         updateBalance(balance + bet.playerBet);
         updateBetState(id, 'playerBet', null);
+        crashService.cancelBet(); // --- ИЗМЕНЕНИЕ: Сообщаем "серверу" об отмене
     };
 
     const handleCashout = (id: number, cashoutMultiplier: number) => {
@@ -345,7 +365,6 @@ const CrashGame: React.FC = () => {
                         )}
                         {currentPhase === 'running' && (!bet.playerBet || bet.cashedOut) && (<button className="bet-btn" disabled>{bet.cashedOut ? `Cashed Out!` : 'Running...'}</button>)}
                         
-                        {/* --- ИЗМЕНЕННАЯ ЛОГИКА ОТОБРАЖЕНИЯ КНОПКИ --- */}
                         {currentPhase === 'crashed' && (
                             bet.cashedOut ? (
                                 <button className="bet-btn" disabled>
