@@ -94,6 +94,32 @@
     color: var(--text-color);
 }
 
+/* --- ИЗМЕНЕНИЕ: Стили для кнопок --- */
+.roulette-controls button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+
+.roulette-controls button.accept-btn {
+    background-color: #5cb85c; /* Green */
+}
+
+.roulette-controls button.cancel-btn {
+    background-color: #d9534f; /* Red */
+}
+
+.roulette-controls button:disabled {
+    background-color: #6c757d; /* Gray */
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+/* ------------------------------------ */
+
 .result-display {
     font-size: 1.0rem;
     font-weight: bold;
@@ -106,10 +132,6 @@
     align-items: center;
     justify-content: center;
 }
-/*.result-display .red { color: #d9534f; }
-.result-display .black { color: #333; }
-.result-display .green { color: #5cb85c; }*/
-
 
 /* Betting Grid */
 .betting-grid {

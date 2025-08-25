@@ -255,8 +255,9 @@ const RouletteGame: React.FC = () => {
                         className="bet-slider"
                     />
                 </div>
-                <button onClick={handleAcceptBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Принять ставки</button>
-                <button onClick={handleCancelBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Отменить ставки</button>
+                {/* --- ИЗМЕНЕНИЕ: Добавлены классы для стилизации кнопок --- */}
+                <button className="accept-btn" onClick={handleAcceptBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Принять ставки</button>
+                <button className="cancel-btn" onClick={handleCancelBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Отменить ставки</button>
             </div>
 
             <div className={`betting-grid ${betsAccepted || isSpinning ? 'disabled' : ''}`}>
