@@ -73,43 +73,19 @@ const generateAndSaveUserCode = async (user: any): Promise<string> => {
 	return result
 }
 
+type PaymentStatus = 'idle' | 'checking' | 'success' | 'duplicated' | 'notfound' | 'error';
+
 const DonationPage: React.FC = () => {
 	const navigate = useNavigate()
-	const { user } = useAuth()
+	const { user, refetchUser } = useAuth()
 
     const [donationCode, setDonationCode] = useState<string>('Загрузка...');
-	const [monoToken, setMonoToken] = useState('');
 	const [isLoading, setIsLoading] = useState(true);
 
 	// Ссылка на вашу банку Monobank
 	const MONO_BANK_URL = 'https://send.monobank.ua/jar/2ZkTWpWwcu';
-    const [status, setStatus] = useState<'idle'|'checking'|'success'|'notfound'|'error'>('idle');
+    const [status, setStatus] = useState<PaymentStatus>('idle');
     const [msg, setMsg] = useState<string>('');
-
-  const onClick = async () => {
-    setStatus('checking'); setMsg('');
-    try {
-	  const res = await checkPaymentByCode(
-		user?.unique_code ?? '',
-		{
-		  // baseUrl: 'https://api.my-backend.com', // если бекенд на другом домене
-		  // withCredentials: true,                 // если нужны куки
-		  timeoutMs: 12000,
-		}
-	  );
-      if (res.found) {
-        setStatus('success');
-        setMsg(`Оплата найдена. txId=${res.txId ?? '—'}`);
-      } else {
-        setStatus('notfound');
-        setMsg(res.reason || 'Пока не видно, попробуйте через минуту');
-      }
-    } catch (e: any) {
-      setStatus('error');
-      setMsg(e?.message || 'Ошибка запроса');
-    }
-  };
-
 
 	useEffect(() => {
 		if (user) {
@@ -131,6 +107,50 @@ const DonationPage: React.FC = () => {
 		}
 	}, [user]);
 
+    // --- ОБНОВЛЕННАЯ ЛОГИКА ПРОВЕРКИ ---
+    const handleCheckPayment = async () => {
+        setStatus('checking'); 
+        setMsg('');
+        try {
+          // Ваш API клиент, который обращается к бэкенду
+          const res: CheckPaymentResponse & { created?: boolean; duplicated?: boolean } = await checkPaymentByCode(
+            user?.unique_code ?? '',
+            { timeoutMs: 12000 }
+          );
+
+          // --- ЛОГИКА ПРОВЕРКИ ПЕРЕПИСАНА НА SWITCH ---
+          switch (true) {
+            // res.created === true -> реально зачислили
+            case res.created === true:
+              setStatus('success');
+              setMsg('Успешно! CR зачислены на ваш баланс.');
+              if (refetchUser) refetchUser(); // Обновляем данные пользователя в UI
+              break;
+            
+            // res.duplicated === true -> платёж уже был, ничего не делали
+            case res.duplicate === true:
+              setStatus('duplicated');
+              setMsg('Эта оплата уже была зачислена ранее.');
+              break;
+
+            // Оплата найдена, но что-то пошло не так (например, не найден юзер)
+            case (res.found === true && res.credited === false && res.duplicate === false):
+              setStatus('error');
+              setMsg(res.reason || 'Платёж найден, перезагрузите страницу или не удалось зачислить оплату.');
+              break;
+            
+            // Оплата не найдена
+            default:
+              setStatus('notfound');
+              setMsg(res.reason || 'Оплата пока не найдена. Попробуйте через минуту.');
+              break;
+          }
+        } catch (e: any) {
+          setStatus('error');
+          setMsg(e?.message || 'Ошибка запроса');
+        }
+    };
+
     const handleCopyToClipboard = () => {
 		// Теперь donationCode это всегда строка, и ошибки не будет
 		if (donationCode && !isLoading && donationCode !== 'Ошибка') {
@@ -138,6 +158,19 @@ const DonationPage: React.FC = () => {
 			alert(`Код ${donationCode} скопирован в буфер обмена!`);
 		}
 	};
+
+    const renderStatusMessage = () => {
+        if (!msg) return null;
+        const statusClasses: Record<PaymentStatus, string> = {
+            success: 'status-message success',
+            duplicated: 'status-message info',
+            notfound: 'status-message warning',
+            error: 'status-message error',
+            checking: 'status-message info',
+            idle: ''
+        };
+        return <div className={statusClasses[status]}>{msg}</div>;
+    };
 
 	return (
 		<div className='donation-page'>
@@ -169,17 +202,17 @@ const DonationPage: React.FC = () => {
 							<FaCopy />
 						</button>
 					</div>
-				</div>
-                    <button className='check-payment-button' onClick={onClick}>
+                    <button className='check-payment-button' onClick={handleCheckPayment} disabled={status === 'checking'}>
                         {status==='checking' ? 'Проверяем…' : 'Проверить оплату'}
                     </button>
-                    {msg && <div>{msg}</div>}
+                    {renderStatusMessage()}
 				</div>
 
 				<button className='back-button' onClick={() => navigate('/officer')}>
 					Назад
 				</button>
 			</div>
+        </div>
 	)
 }
 

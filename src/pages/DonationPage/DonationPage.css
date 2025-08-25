@@ -123,3 +123,62 @@
     cursor: pointer;
     z-index: 10;
 }
+
+.check-payment-button {
+    margin-top: 10px;
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-color);
+    background-color: var(--report-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.check-payment-button:hover {
+    background-color: rgba(138, 183, 107, 0.5);
+    border-color: rgba(138, 183, 107, 0.9);
+}
+
+.check-payment-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* --- НОВЫЕ СТИЛИ ДЛЯ СООБЩЕНИЙ СТАТУСА --- */
+.status-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: 500;
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+    border: 1px solid transparent;
+}
+
+.status-message.success {
+    background-color: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+    border-color: #28a745;
+}
+
+.status-message.info {
+    background-color: rgba(23, 162, 184, 0.2);
+    color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.status-message.warning {
+    background-color: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+    border-color: #ffc107;
+}
+
+.status-message.error {
+    background-color: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+    border-color: #dc3545;
+}

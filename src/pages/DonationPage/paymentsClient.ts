@@ -2,6 +2,8 @@ export interface CheckPaymentResponse {
   found: boolean;
   txId?: string;
   reason?: string;
+  credited?: boolean;
+  duplicate?: boolean;
 }
 
 export async function checkPaymentByCode(
@@ -37,6 +39,7 @@ export async function checkPaymentByCode(
     const data = await res.json();
     if (!res.ok) throw new Error(data.reason || `HTTP ${res.status}`);
 
+    console.log(data) 
     return data as CheckPaymentResponse;
   } finally {
     clearTimeout(timer);
