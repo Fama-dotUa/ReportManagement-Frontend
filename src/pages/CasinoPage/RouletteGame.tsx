@@ -72,7 +72,6 @@ const RouletteGame: React.FC = () => {
 
     const [spinCount, setSpinCount] = useState(0);
     const [lastSpinTranslateX, setLastSpinTranslateX] = useState(-500);
-    const [isResetting, setIsResetting] = useState(false);
     const [randomRotations, setRandomRotations] = useState(() => getRandomNumber(3, 7));
 
     useEffect(() => {
@@ -89,17 +88,10 @@ const RouletteGame: React.FC = () => {
                 const finalTranslateX = -(finalTarget * 100 - centeringOffset);
                 setLastSpinTranslateX(finalTranslateX);
 
-                if (spinCount > 5) {
-                    setTimeout(() => {
-                        setIsResetting(true); setSpinCount(1);
-                        const resetTarget = (37 * (randomRotations + 1)) + (newState.winningNumber ?? 0);
-                        const resetTranslateX = -(resetTarget * 100 - centeringOffset);
-                        setLastSpinTranslateX(resetTranslateX);
-                        setTimeout(() => setIsResetting(false), 50);
-                    }, 50);
-                } else {
-                    setSpinCount(prev => prev + 1);
-                }
+                // --- ИЗМЕНЕНИЕ: Убрана логика сброса счетчика вращений ---
+                // Просто увеличиваем счетчик, чтобы колесо продолжало двигаться вперед.
+                setSpinCount(prev => prev + 1);
+                // ----------------------------------------------------
             }
             setGameState(newState);
         };
@@ -214,7 +206,8 @@ const RouletteGame: React.FC = () => {
             </div>
             <div className="roulette-wheel-container">
                 <div className="roulette-pointer"></div>
-                <div className={`roulette-wheel ${isSpinning ? 'spinning' : ''} ${isResetting ? 'no-transition' : ''}`}
+                {/* --- ИЗМЕНЕНИЕ: Убран класс для сброса анимации --- */}
+                <div className={`roulette-wheel ${isSpinning ? 'spinning' : ''}`}
                      style={{ transform: `translateX(${getTransformValue()}px)` }}>
                     {wheelNumbers.map((num, index) => (
                         <div key={index} className={`roulette-number ${numberColors[num]}`}>{num}</div>
