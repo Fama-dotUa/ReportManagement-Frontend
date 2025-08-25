@@ -115,9 +115,9 @@ const CrashGame: React.FC = () => {
     const [gameState, setGameState] = useState(crashService.state);
     const { gameState: currentPhase, countdown, multiplier, crashPoint, history } = gameState;
     
-    // --- НОВОЕ СОСТОЯНИЕ: для управления анимацией облаков ---
     const [isCruising, setIsCruising] = useState(false);
-
+    // --- НОВОЕ СОСТОЯНИЕ: для хранения координат крушения ---
+    const [crashPosition, setCrashPosition] = useState({ left: '0%', bottom: '0%' });
 
     useEffect(() => {
         const handleStateUpdate = (newState: any) => {
@@ -129,7 +129,6 @@ const CrashGame: React.FC = () => {
 
     useEffect(() => {
         if (currentPhase === 'running') {
-            // Активируем анимацию облаков при достижении множителя
             if (multiplier >= CRUISE_START_MULTIPLIER && !isCruising) {
                 setIsCruising(true);
             }
@@ -143,8 +142,19 @@ const CrashGame: React.FC = () => {
     }, [multiplier]);
 
     useEffect(() => {
+        if (currentPhase === 'crashed') {
+            // --- НОВОЕ: Сохраняем позицию в момент краша ---
+            const finalPosition = (crashPoint / 10) * 100;
+            const finalCruisePosition = (CRUISE_START_MULTIPLIER / 10) * 100;
+            const isCruisingAtCrash = crashPoint >= CRUISE_START_MULTIPLIER;
+
+            setCrashPosition({
+                left: `${Math.min(95, isCruisingAtCrash ? finalCruisePosition : finalPosition)}%`,
+                bottom: `${Math.min(90, isCruisingAtCrash ? finalCruisePosition : finalPosition)}%`
+            });
+        }
+
         if (currentPhase === 'waiting' || currentPhase === 'crashed') {
-            // Сбрасываем анимацию облаков в конце раунда
             setIsCruising(false);
             
             const updatedBets = bets.map(bet => {
@@ -203,17 +213,14 @@ const CrashGame: React.FC = () => {
         return <div className="multiplier">{multiplier.toFixed(2)}x</div>;
     };
 
-    // --- Функция для вычисления позиции самолетика ---
     const getRocketPosition = () => {
         if (isCruising) {
-            // Фиксируем позицию, когда облака активны
             const cruisePosition = (CRUISE_START_MULTIPLIER / 10) * 100;
             return {
                 left: `${Math.min(95, cruisePosition)}%`,
                 bottom: `${Math.min(90, cruisePosition)}%`
             };
         }
-        // Обычное движение
         const position = (multiplier / 10) * 100;
         return {
             left: `${Math.min(95, position)}%`,
@@ -234,7 +241,6 @@ const CrashGame: React.FC = () => {
                 <div className="graph-container">
                     {renderGameState()}
                     
-                    {/* --- НОВЫЙ БЛОК: Контейнер для облаков --- */}
                     {isCruising && (
                         <div className="clouds-container">
                             <div className="cloud cloud1">☁️</div>
@@ -243,11 +249,18 @@ const CrashGame: React.FC = () => {
                         </div>
                     )}
 
+                    {/* --- НОВЫЙ БЛОК: Здание, появляющееся при краше --- */}
+                    {currentPhase === 'crashed' && (
+                        <div className="crash-building" style={crashPosition}>
+                            🕌
+                        </div>
+                    )}
+
                     <div 
                         className={`rocket ${currentPhase === 'running' ? 'flying' : ''} ${currentPhase === 'crashed' ? 'crashed' : ''} ${isCruising ? 'cruising' : ''}`}
                         style={getRocketPosition()}
                     >
-                        ✈️
+                        🚀
                     </div>
                 </div>
                  {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}

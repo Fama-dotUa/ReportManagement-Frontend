@@ -71,10 +71,9 @@
     position: absolute;
     font-size: 3rem;
     transition: all 0.1s linear;
-    z-index: 10; /* Поднимаем самолет над облаками */
+    z-index: 10; 
 }
 
-/* --- НОВЫЙ СТИЛЬ: Убираем transition, когда самолет "завис" --- */
 .rocket.cruising {
     transition: none;
 }
@@ -87,7 +86,6 @@
     animation: explode 0.5s forwards;
 }
 
-/* --- НОВЫЕ СТИЛИ: Для облаков и их анимации --- */
 .clouds-container {
     position: absolute;
     top: 0;
@@ -96,7 +94,7 @@
     height: 100%;
     overflow: hidden;
     pointer-events: none;
-    z-index: 5; /* Облака под самолетом, но над фоном */
+    z-index: 5; 
 }
 
 .cloud {
@@ -108,7 +106,7 @@
 
 .cloud1 {
     top: 20%;
-    animation-duration: 10s; /* Разная скорость для облаков */
+    animation-duration: 10s; 
     animation-delay: -2s;
 }
 
@@ -132,6 +130,26 @@
     }
     to {
         transform: translateX(-10vw);
+    }
+}
+
+/* --- НОВЫЕ СТИЛИ: Для здания при краше --- */
+.crash-building {
+    position: absolute;
+    font-size: 6rem;
+    z-index: 15; /* Выше самолета */
+    transform: translate(-40%, 40%); /* Центрируем относительно точки */
+    animation: building-appear 0.2s ease-out forwards;
+}
+
+@keyframes building-appear {
+    from {
+        transform: translate(-40%, 40%) scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-40%, 40%) scale(1);
+        opacity: 1;
     }
 }
 
