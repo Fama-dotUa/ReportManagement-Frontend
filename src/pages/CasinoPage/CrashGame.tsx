@@ -106,9 +106,9 @@ const CrashGame: React.FC = () => {
     const { triggerGameEvent } = useGameEvents();
 
     const [bets, setBets] = useState<BetState[]>([
-        { id: 1, betAmount: 100, autoCashout: 2.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+        { id: 1, betAmount: 100, autoCashout: 2.0, isAutoBet: false, isAutoCashoutEnabled: false, playerBet: null, cashedOut: false },
         { id: 2, betAmount: 250, autoCashout: 3.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
-        { id: 3, betAmount: 500, autoCashout: 2.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+        { id: 3, betAmount: 500, autoCashout: 2.0, isAutoBet: false, isAutoCashoutEnabled: false, playerBet: null, cashedOut: false },
         { id: 4, betAmount: 500, autoCashout: 5.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
     ]);
 
