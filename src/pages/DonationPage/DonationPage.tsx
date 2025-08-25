@@ -1,17 +1,20 @@
-import React, 'react'
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { FaCopy } from 'react-icons/fa' // Иконка для кнопки
+import { useUpdateUser } from '../../hooks/useUpdateUser'
+import { checkPaymentByCode, type CheckPaymentResponse } from './paymentsClient';
 import './DonationPage.css'
 
 // ВАЖНО: Эта функция должна быть на бэкенде.
 // Здесь она для демонстрации. Бэкенд должен сгенерировать,
 // сохранить код для юзера и вернуть его.
-const generateAndSaveUserCode = (user: any): string => {
-	// Если у пользователя уже есть код, возвращаем его
-	if (user && user.donation_code) {
-		return user.donation_code
-	}
+//! ИДИ НА ХУЙ ГЕМИНИ
+const generateAndSaveUserCode = async (user: any): Promise<string> => {
+    // 1. Если у пользователя уже есть код, просто возвращаем его.
+    if (user && user.unique_code) {
+        return user.unique_code;
+    }
 
 	// Иначе генерируем новый (симуляция)
 	const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789' // Без похожих символов O/0, I/1
@@ -21,6 +24,52 @@ const generateAndSaveUserCode = (user: any): string => {
 	}
 	// В реальном приложении здесь был бы API-запрос на сохранение этого кода
 	console.log(`Generated code ${result} for user ${user?.id}. (This should be a backend call)`)
+        try {
+        // Получаем токен и URL API напрямую
+        const token = localStorage.getItem('jwt');
+        const API_URL = import.meta.env.VITE_API_URL; // Убедитесь, что VITE_API_URL доступен
+        
+
+        if (!token) {
+            throw new Error('Токен авторизации не найден');
+        }
+        if (!user || !user.id) {
+            throw new Error('ID пользователя не найден');
+        }
+
+        // Формируем тело запроса только с теми полями, которые нужно обновить
+        const payload = {
+            unique_code: result,
+        };
+
+        // Отправляем PUT-запрос для обновления пользователя
+        const response = await fetch(`${API_URL}/api/users/${user.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            // Если сервер вернул ошибку, выводим ее
+            const errorData = await response.json();
+            throw new Error(errorData.error?.message || 'Ошибка при сохранении кода на сервере');
+        }
+
+        console.log(`Сгенерирован и сохранен новый код ${result} для пользователя ${user.id}`);
+        
+        // 3. Возвращаем новый код только после успешного сохранения
+        return result;
+
+    } catch (error) {
+        console.error('Не удалось сгенерировать и сохранить код:', error);
+        // В случае ошибки возвращаем пустую строку или выбрасываем ошибку,
+        // чтобы UI мог это обработать.
+        throw error;
+    }
+
 	return result
 }
 
@@ -28,16 +77,67 @@ const DonationPage: React.FC = () => {
 	const navigate = useNavigate()
 	const { user } = useAuth()
 
+    const [donationCode, setDonationCode] = useState<string>('Загрузка...');
+	const [monoToken, setMonoToken] = useState('');
+	const [isLoading, setIsLoading] = useState(true);
+
 	// Ссылка на вашу банку Monobank
-	const MONO_BANK_URL = 'https://send.monobank.ua/jar/ВАШ_ID_БАНКИ'
+	const MONO_BANK_URL = 'https://send.monobank.ua/jar/2ZkTWpWwcu';
+    const [status, setStatus] = useState<'idle'|'checking'|'success'|'notfound'|'error'>('idle');
+    const [msg, setMsg] = useState<string>('');
 
-	// Генерируем или получаем код пользователя
-	const donationCode = user ? generateAndSaveUserCode(user) : 'LOADING...'
+  const onClick = async () => {
+    setStatus('checking'); setMsg('');
+    try {
+	  const res = await checkPaymentByCode(
+		user?.unique_code ?? '',
+		{
+		  // baseUrl: 'https://api.my-backend.com', // если бекенд на другом домене
+		  // withCredentials: true,                 // если нужны куки
+		  timeoutMs: 12000,
+		}
+	  );
+      if (res.found) {
+        setStatus('success');
+        setMsg(`Оплата найдена. txId=${res.txId ?? '—'}`);
+      } else {
+        setStatus('notfound');
+        setMsg(res.reason || 'Пока не видно, попробуйте через минуту');
+      }
+    } catch (e: any) {
+      setStatus('error');
+      setMsg(e?.message || 'Ошибка запроса');
+    }
+  };
 
-	const handleCopyToClipboard = () => {
-		navigator.clipboard.writeText(donationCode)
-		alert(`Код ${donationCode} скопирован в буфер обмена!`)
-	}
+
+	useEffect(() => {
+		if (user) {
+			// Создаем async функцию внутри useEffect для вызова await
+			const setupCode = async () => {
+				try {
+					setIsLoading(true);
+					// Вот здесь мы ЖДЕМ выполнения промиса
+					const code = await generateAndSaveUserCode(user);
+					// И только потом кладем РЕЗУЛЬТАТ (строку) в состояние
+					setDonationCode(code);
+				} catch (error) {
+					setDonationCode('Ошибка');
+				} finally {
+					setIsLoading(false);
+				}
+			};
+			setupCode();
+		}
+	}, [user]);
+
+    const handleCopyToClipboard = () => {
+		// Теперь donationCode это всегда строка, и ошибки не будет
+		if (donationCode && !isLoading && donationCode !== 'Ошибка') {
+			navigator.clipboard.writeText(donationCode);
+			alert(`Код ${donationCode} скопирован в буфер обмена!`);
+		}
+	};
 
 	return (
 		<div className='donation-page'>
@@ -70,12 +170,16 @@ const DonationPage: React.FC = () => {
 						</button>
 					</div>
 				</div>
+                    <button className='check-payment-button' onClick={onClick}>
+                        {status==='checking' ? 'Проверяем…' : 'Проверить оплату'}
+                    </button>
+                    {msg && <div>{msg}</div>}
+				</div>
 
 				<button className='back-button' onClick={() => navigate('/officer')}>
 					Назад
 				</button>
 			</div>
-		</div>
 	)
 }
 

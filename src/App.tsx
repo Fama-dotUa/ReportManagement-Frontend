@@ -39,6 +39,7 @@ function App() {
 		}
 	}, [user?.id, updateActivity])
 
+
 	return (
 		<AnimatePresence mode='wait'>
 			<Routes location={location} key={location.pathname}>
