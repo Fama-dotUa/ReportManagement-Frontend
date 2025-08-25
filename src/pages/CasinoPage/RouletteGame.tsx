@@ -73,32 +73,37 @@ const RouletteGame: React.FC = () => {
     const [spinCount, setSpinCount] = useState(0);
     const [lastSpinTranslateX, setLastSpinTranslateX] = useState(-500);
     const [randomRotations, setRandomRotations] = useState(() => getRandomNumber(3, 7));
+    // --- ИЗМЕНЕНИЕ: Добавляем состояние для случайного смещения при остановке ---
+    const [centeringOffset, setCenteringOffset] = useState(500);
+    // --------------------------------------------------------------------
 
     useEffect(() => {
         const handleStateUpdate = (newState: any) => {
             if (!gameState.isSpinning && newState.isSpinning) {
                 setRandomRotations(getRandomNumber(3, 7));
+                // --- ИЗМЕНЕНИЕ: Генерируем новое смещение для каждого спина ---
+                setCenteringOffset(getRandomNumber(455, 545));
+                // -----------------------------------------------------------
             }
             if (gameState.isSpinning && !newState.isSpinning) {
                 calculateWinnings(newState.winningNumber);
                 setSpinResult({ number: newState.winningNumber, color: `history-number ${numberColors[newState.winningNumber]}` });
                 setBetsAccepted(false);
-                const centeringOffset = 500;
+                // --- ИЗМЕНЕНИЕ: Используем случайное смещение в расчетах ---
                 const finalTarget = (37 * (randomRotations + spinCount)) + (newState.winningNumber ?? 0);
                 const finalTranslateX = -(finalTarget * 100 - centeringOffset);
                 setLastSpinTranslateX(finalTranslateX);
+                // --------------------------------------------------------
 
-                // --- ИЗМЕНЕНИЕ: Убрана логика сброса счетчика вращений ---
                 // Просто увеличиваем счетчик, чтобы колесо продолжало двигаться вперед.
                 setSpinCount(prev => prev + 1);
-                // ----------------------------------------------------
             }
             setGameState(newState);
         };
 
         rouletteService.subscribe(handleStateUpdate);
         return () => rouletteService.unsubscribe(handleStateUpdate);
-    }, [gameState.isSpinning, bets, betsAccepted, spinCount, randomRotations]);
+    }, [gameState.isSpinning, bets, betsAccepted, spinCount, randomRotations, centeringOffset]);
 
     const placeBet = (betType: string) => {
         if (betsAccepted) { alert("Ставки уже приняты, дождитесь следующего раунда."); return; }
@@ -187,10 +192,11 @@ const RouletteGame: React.FC = () => {
     };
 
     const getTransformValue = () => {
-        const centeringOffset = 500;
         if (isSpinning) {
+            // --- ИЗМЕНЕНИЕ: Используем случайное смещение в расчетах ---
             const spinTarget = (37 * (randomRotations + spinCount)) + (winningNumber ?? 0);
             return -(spinTarget * 100 - centeringOffset);
+            // --------------------------------------------------------
         } else {
             return lastSpinTranslateX;
         }
