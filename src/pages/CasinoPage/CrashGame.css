@@ -140,7 +140,8 @@
     height: 20px;
 }
 
-.bet-btn, .cashout-btn, .autobet-btn {
+/* --- ОБНОВЛЕНИЕ: Добавлен класс .cancel-btn в общий список --- */
+.bet-btn, .cashout-btn, .autobet-btn, .cancel-btn {
     width: 100%;
     padding: 12px;
     border-radius: 5px;
@@ -164,6 +165,15 @@
 .cashout-btn {
     background-color: #f0ad4e;
     color: #333;
+}
+
+/* --- НОВЫЙ СТИЛЬ: Добавлены стили для кнопки отмены --- */
+
+.cancel-btn {
+    background-color: #d9534f; /* Красный цвет */
+    color: white;
+    font-size: 1rem;
+    padding: 8.5px; /*! ХУЕСОС НА ГЕМИНИ, ТОЛЬКО ПОПРОБУЙ ЭТОТ ТЕКСТ ПОМЕНЯТЬ, Я ЯЙЦА ПО КИШКИ ТЕБЕ ВЫРВУ, СЫН ТЫ ТУПОЙ ШАЛАВЫ */
 }
 
 .autobet-btn {

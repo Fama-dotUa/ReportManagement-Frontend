@@ -138,10 +138,11 @@ const CrashGame: React.FC = () => {
                 if (bet.playerBet && !bet.cashedOut) {
                     triggerGameEvent('loss');
                 }
+                let newPlayerBet = null;
                 if (bet.isAutoBet) {
-                    handlePlaceBet(bet.id);
+                    newPlayerBet = handlePlaceBet(bet.id, true);
                 }
-                return { ...bet, playerBet: null, cashedOut: false };
+                return { ...bet, playerBet: newPlayerBet, cashedOut: false };
             });
             setBets(updatedBets);
         }
@@ -151,15 +152,24 @@ const CrashGame: React.FC = () => {
         setBets(bets.map(bet => bet.id === id ? { ...bet, [field]: value } : bet));
     };
 
-    const handlePlaceBet = (id: number) => {
+    const handlePlaceBet = (id: number, isAuto: boolean = false) => {
         const bet = bets.find(b => b.id === id);
         if (!bet || bet.betAmount > balance) {
-            if (!bet?.isAutoBet) alert("Недостаточно средств!");
+            if (!isAuto) alert("Недостаточно средств!");
             updateBetState(id, 'isAutoBet', false);
-            return;
+            return null;
         }
         updateBalance(balance - bet.betAmount);
         updateBetState(id, 'playerBet', bet.betAmount);
+        return bet.betAmount;
+    };
+
+    const handleCancelBet = (id: number) => {
+        const bet = bets.find(b => b.id === id);
+        if (!bet || !bet.playerBet) return;
+
+        updateBalance(balance + bet.playerBet);
+        updateBetState(id, 'playerBet', null);
     };
 
     const handleCashout = (id: number, cashoutMultiplier: number) => {
@@ -237,7 +247,7 @@ const CrashGame: React.FC = () => {
                             <button className="bet-btn" onClick={() => handlePlaceBet(bet.id)}>Place Bet</button>
                         )}
                         {currentPhase === 'waiting' && bet.playerBet && (
-                            <button className="bet-btn" disabled>Waiting...</button>
+                            <button className="cancel-btn" onClick={() => handleCancelBet(bet.id)}>Cancel Bet</button>
                         )}
                         {currentPhase === 'running' && bet.playerBet && !bet.cashedOut && (
                             <button className="cashout-btn" onClick={() => handleCashout(bet.id, multiplier)}>
