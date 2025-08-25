@@ -1,0 +1,167 @@
+.crash-game {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: #1a2238;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.game-area {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.history-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.history-bar span {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.history-bad {
+    background-color: #e94560;
+}
+
+.history-good {
+    background-color: #5cb85c;
+}
+
+.graph-container {
+    flex-grow: 1;
+    background-color: #2e3a59;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.multiplier {
+    font-size: 5rem;
+    font-weight: bold;
+    color: white;
+    z-index: 2;
+}
+
+.crash-message {
+    font-size: 5rem;
+    font-weight: bold;
+    color: #e94560;
+    animation: shake 0.5s;
+    z-index: 2;
+}
+
+.rocket {
+    position: absolute;
+    font-size: 3rem;
+    transition: all 0.1s linear;
+    z-index: 1;
+}
+
+.rocket.flying {
+    /* Анимация полета */
+}
+
+.rocket.crashed {
+    animation: explode 0.5s forwards;
+}
+
+.countdown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.controls-panel {
+    width: 100%;
+    padding: 20px;
+    background-color: #2e3a59;
+    border-radius: 10px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.bet-controls {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    color: #a9a9a9;
+}
+
+.input-group input {
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #1a2238;
+    color: white;
+    font-size: 1.1rem;
+    width: 150px;
+}
+
+.bet-btn, .cashout-btn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bet-btn {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.bet-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.cashout-btn {
+    background-color: #f0ad4e;
+    color: #333;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}

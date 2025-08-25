@@ -6,11 +6,12 @@ import './CasinoPage.css';
 import RouletteGame from './RouletteGame';
 import BlackjackGame from './BlackjackGame';
 import SlotsGame from './SlotsGame';
+import CrashGame from './CrashGame'; // <-- Импорт новой игры
 import CouponConverter from './CouponConverter';
 import { PlayerStatsProvider } from './PlayerStatsContext';
 import PlayerLevelBar from './PlayerLevelBar';
-import { GameEventProvider } from './GameEventContext'; // <-- 1. Импорт провайдера событий
-import EmojiAssistant from './EmojiAssistant'; // <-- 2. Импорт ассистента
+import { GameEventProvider } from './GameEventContext';
+import EmojiAssistant from './EmojiAssistant';
 
 const CasinoPage: React.FC = () => {
     const [view, setView] = useState<'menu' | 'game' | 'converter'>('menu');
@@ -34,6 +35,8 @@ const CasinoPage: React.FC = () => {
                         return <BlackjackGame />;
                     case 'slots':
                         return <SlotsGame />;
+                    case 'crash': // <-- Добавляем новую игру
+                        return <CrashGame />;
                     default:
                         setView('menu');
                         return null;
@@ -47,6 +50,7 @@ const CasinoPage: React.FC = () => {
                             <button onClick={() => handleSelectGame('roulette')}>Рулетка</button>
                             <button onClick={() => handleSelectGame('blackjack')}>Блекджек</button>
                             <button onClick={() => handleSelectGame('slots')}>Слоты</button>
+                            <button onClick={() => handleSelectGame('crash')}>Crash</button> 
                         </div>
                     </div>
                 );
@@ -54,12 +58,9 @@ const CasinoPage: React.FC = () => {
     };
 
     return (
-        // Оборачиваем все в оба провайдера
         <PlayerStatsProvider> 
             <GameEventProvider>
-                {/* 3. Размещаем ассистента здесь, чтобы он был поверх всего */}
                 <EmojiAssistant />
-
                 <div className="casino-page">
                     <div className="blur-background"></div>
                     <div className="casino-panel">
@@ -88,7 +89,6 @@ const CasinoPage: React.FC = () => {
                             {renderContent()}
                         </div>
 
-                        {/* Компонент уровня остается на своем месте */}
                         <PlayerLevelBar />
                     </div>
                 </div>
