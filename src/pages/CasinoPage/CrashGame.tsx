@@ -225,7 +225,7 @@ const CrashGame: React.FC = () => {
         if (!bet) return null;
 
         if (bet.betAmount < 1 || bet.betAmount > 500) {
-            if (!isAuto) alert("Сумма ставки должна быть от 1 до 500 CR.");
+            if (!isAuto) alert("Сумма ставки должна быть от 1 до 500 CPN.");
             return null;
         }
         if (bet.isAutoCashoutEnabled && bet.autoCashout < 2.0) {
@@ -330,7 +330,7 @@ const CrashGame: React.FC = () => {
                 {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}
             </div>
             
-            <div className="balance-display">Баланс: {balance.toFixed(2)} CR</div>
+            <div className="balance-display">Баланс: {balance.toFixed(2)} CPN</div>
 
             <div className="controls-panel-grid">
                 {bets.map(bet => (
@@ -360,7 +360,7 @@ const CrashGame: React.FC = () => {
                         {currentPhase === 'waiting' && bet.playerBet && (<button className="cancel-btn" onClick={() => handleCancelBet(bet.id)}>Cancel Bet</button>)}
                         {currentPhase === 'running' && bet.playerBet && !bet.cashedOut && (
                             <button className="cashout-btn" onClick={() => handleCashout(bet.id, multiplier)}>
-                                Cash Out @ {(bet.betAmount * multiplier).toFixed(2)} CR
+                                Cash Out @ {(bet.betAmount * multiplier).toFixed(2)} CPN
                             </button>
                         )}
                         {currentPhase === 'running' && (!bet.playerBet || bet.cashedOut) && (<button className="bet-btn" disabled>{bet.cashedOut ? `Cashed Out!` : 'Running...'}</button>)}

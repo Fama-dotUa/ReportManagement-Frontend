@@ -30,8 +30,30 @@
     padding: 5px 10px;
     border-radius: 15px;
     font-weight: bold;
+    display: inline-block; /* Allows centering while respecting padding */
+    text-align: center; /* Centers the text horizontally */
+}
+.history-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    justify-content: center; /* Centers the span elements horizontally within the bar */
 }
 
+.history-bar span {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.history-bad {
+    background-color: #e94560;
+}
+
+.history-good {
+    background-color: #5cb85c;
+}
 .history-bad {
     background-color: #e94560;
 }
