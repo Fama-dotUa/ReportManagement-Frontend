@@ -119,21 +119,22 @@
     font-weight: bold;
     color: white;
     z-index: 2;
-    transition: text-shadow 0.3s ease-in-out; /* Плавный переход для тени */
+    /* --- ИЗМЕНЕНИЕ: Добавляем transition для плавного перехода цвета и тени --- */
+    transition: text-shadow 0.5s ease, color 0.5s ease;
 }
 
 /* --- НОВЫЕ СТИЛИ: Свечение для множителя --- */
 .multiplier.green-glow {
-    text-shadow: 0 0 10px #28a745, 0 0 20px #28a745;
+    text-shadow: 0 0 50px #28a745, 0 0 20px #28a745;
 }
 
 .multiplier.pink-glow {
-    text-shadow: 0 0 15px #ff00ff, 0 0 25px #ff00ff, 0 0 35px #ff00ff;
+    text-shadow: 0 0 55px #ff00ff, 0 0 25px #ff00ff, 0 0 35px #ff00ff;
 }
 
 .multiplier.gold-glow {
     color: #ffd700;
-    text-shadow: 0 0 10px #ffd700, 0 0 20px #ffc400, 0 0 30px #ffac00, 0 0 40px #fff;
+    text-shadow: 0 0 20px #ffd700, 0 0 20px #ffc400, 0 0 30px #ffac00, 0 0 40px #fff;
 }
 
 
@@ -147,7 +148,7 @@
 
 .rocket {
     position: absolute;
-    font-size: 3rem;
+    font-size: 7rem;
     transition: all 0.1s linear;
     z-index: 10; 
 }
@@ -208,7 +209,7 @@
         transform: translate(0, 0);
     }
     to {
-        transform: translate(-150vw, 40vh);
+        transform: translate(-110vw, 30vh); /*! НЕ МЕНЯТЬ */
     }
 }
 
