@@ -120,19 +120,20 @@
     background-color: #ec971f;
 }
 
-/* --- НОВЫЕ СТИЛИ ДЛЯ ПОЛЗУНКА --- */
+/* --- ИЗМЕНЕНИЕ: Стили для группы ввода ставки --- */
 .bet-input-group {
     display: flex;
     align-items: center;
     gap: 15px;
-    width: 100%;
-    max-width: 350px;
+    flex-grow: 1;
+    justify-content: center;
 }
 
 .bet-slider {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
+    max-width: 250px;
     height: 8px;
     background: #062214;
     border-radius: 5px;
@@ -164,4 +165,47 @@
     cursor: pointer;
     border-radius: 50%;
     border: 3px solid white;
+}
+
+/* --- НОВЫЕ СТИЛИ ИЗ РУЛЕТКИ --- */
+.slider-and-buttons-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.bet-increments {
+    display: flex;
+    gap: 5px;
+}
+
+.bet-increment-btn {
+    background-color: #f0ad4e; /* Цвет кнопок блэкджека */
+    color: #333;
+    padding: 8px 10px;
+    font-size: 0.8rem; /* Уменьшен размер шрифта */
+    border-radius: 4px;
+    height: 12px; /* Уменьшена высота кнопок */
+    font-weight: bold;
+    border: 1px solid #eea236; /* Рамка кнопок блэкджека */
+    cursor: pointer;
+    transition: background-color 0.2s;
+    /* --- ИЗМЕНЕНИЯ ДЛЯ ЦЕНТРИРОВАНИЯ --- */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bet-increment-btn:hover:not(:disabled) {
+    background-color: #ec971f; /* Цвет при наведении */
+}
+
+.bet-increment-btn:disabled {
+    background-color: #6c757d;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+    border: 1px solid #6c757d;
 }

@@ -97,9 +97,7 @@ const BlackjackGame: React.FC = () => {
             return;
         }
 
-        // --- ИЗМЕНЕНИЕ: Опыт больше не начисляется за ставку ---
         updateBalance(balance - betAmount);
-        // addXp(betAmount); // <-- ЭТА СТРОКА УДАЛЕНА
         setBet(betAmount);
         
         const newDeck = shuffleDeck(createDeck());
@@ -128,7 +126,7 @@ const BlackjackGame: React.FC = () => {
             setPlayerHand(newHand);
             if (calculateHandValue(newHand) > 21) {
                 setMessage('Bust! You lose.');
-                triggerGameEvent('loss'); // <-- 3. ВЫЗОВ ПРИ ПРОИГРЫШЕ (перебор)
+                triggerGameEvent('loss');
                 setGamePhase('gameOver');
             }
         } else {
@@ -150,20 +148,17 @@ const BlackjackGame: React.FC = () => {
 
         if (finalDealerScore > 21 || (finalPlayerScore <= 21 && finalPlayerScore > finalDealerScore)) {
             const totalReturn = bet * 2;
-            const netWin = bet; // Чистый выигрыш равен ставке
+            const netWin = bet;
             setMessage(`You win! 🎉 (${finalPlayerScore} vs ${finalDealerScore})`);
-            triggerGameEvent('win'); // <-- 4. ВЫЗОВ ПРИ ПОБЕДЕ
+            triggerGameEvent('win');
             newBalance += totalReturn;
-            // --- ИЗМЕНЕНИЕ: Опыт начисляется за чистый выигрыш ---
             addXp(netWin); 
         } else if (finalPlayerScore < finalDealerScore) {
             setMessage(`You lose. (${finalPlayerScore} vs ${finalDealerScore})`);
-            triggerGameEvent('loss'); // <-- 5. ВЫЗОВ ПРИ ПРОИГРЫШЕ
-            // Опыт за проигрыш не начисляется
+            triggerGameEvent('loss');
         } else {
             setMessage(`Push. (${finalPlayerScore} vs ${finalDealerScore})`);
-            newBalance += bet; // Возвращаем ставку
-            // Нет выигрыша - нет опыта
+            newBalance += bet;
         }
         updateBalance(newBalance);
         setGamePhase('gameOver');
@@ -181,6 +176,14 @@ const BlackjackGame: React.FC = () => {
         const value = parseInt(e.target.value) || 1;
         const clampedValue = Math.max(1, Math.min(value, 250));
         setBetAmount(clampedValue);
+    };
+
+    // --- ИЗМЕНЕНИЕ: Функция для добавления к ставке ---
+    const addToBet = (amount: number) => {
+        setBetAmount(prev => {
+            const newValue = prev + amount;
+            return Math.min(newValue, 250); // Ограничение максимальной ставки
+        });
     };
 
     const renderCard = (card: Card, index: number) => (
@@ -217,15 +220,23 @@ const BlackjackGame: React.FC = () => {
                                 min="25"
                                 max="250"
                             />
-                            <input
-                                type="range"
-                                min="25"
-                                max="250"
-                                step="25"
-                                value={betAmount}
-                                onChange={handleBetAmountChange}
-                                className="bet-slider"
-                            />
+                            {/* --- ИЗМЕНЕНИЕ: Добавлена структура кнопок и ползунка из рулетки --- */}
+                            <div className="slider-and-buttons-wrapper">
+                                <div className="bet-increments">
+                                    <button className="bet-increment-btn" onClick={() => addToBet(25)}>+25</button>
+                                    <button className="bet-increment-btn" onClick={() => addToBet(50)}>+50</button>
+                                    <button className="bet-increment-btn" onClick={() => addToBet(100)}>+100</button>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="25"
+                                    max="250"
+                                    step="25"
+                                    value={betAmount}
+                                    onChange={handleBetAmountChange}
+                                    className="bet-slider"
+                                />
+                            </div>
                         </div>
                         <button onClick={placeBetAndDeal}>Place Bet</button>
                     </div>
