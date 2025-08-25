@@ -270,7 +270,7 @@ const SlotsGame: React.FC = () => {
             setCooldownSpins(prev => prev - 1);
         } 
         // Приоритет 2: Режим "Неудачи"
-        else if (profitPercentage > 0.25 && Math.random() < 0.65) {
+        else if (profitPercentage > 0.25 && Math.random() < 0.50) {
             let hasWins;
             do {
                 animationReels = Array.from({ length: reelCount }, () => createReelStrip(isSuperSpin));
@@ -279,7 +279,7 @@ const SlotsGame: React.FC = () => {
             } while (hasWins);
         }
         // Приоритет 3: Режим "Помощи"
-        else if (balance < initialBalance * 0.45 && Math.random() < 0.25) {
+        else if (balance < initialBalance * 0.45 && Math.random() < 0.30) {
             finalReels = generateGuaranteedWinReels(isSuperSpin);
             animationReels = finalReels.map((reelColumn) => {
                 const randomStrip = createReelStrip(isSuperSpin, 45); //! Хуйня создает ленту с фейковыми 45 и добавляет подкрут 5 шт своих.
