@@ -108,8 +108,8 @@ const CrashGame: React.FC = () => {
     const [bets, setBets] = useState<BetState[]>([
         { id: 1, betAmount: 100, autoCashout: 2.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
         { id: 2, betAmount: 250, autoCashout: 3.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
-        { id: 3, betAmount: 500, autoCashout: 1.5, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
-        { id: 4, betAmount: 1000, autoCashout: 5.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+        { id: 3, betAmount: 500, autoCashout: 2.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
+        { id: 4, betAmount: 500, autoCashout: 5.0, isAutoBet: false, isAutoCashoutEnabled: true, playerBet: null, cashedOut: false },
     ]);
 
     const [gameState, setGameState] = useState(crashService.state);
@@ -173,9 +173,46 @@ const CrashGame: React.FC = () => {
         setBets(bets.map(bet => bet.id === id ? { ...bet, [field]: value } : bet));
     };
 
+    // --- ИЗМЕНЕНИЕ: Новые обработчики для инпутов с валидацией ---
+    const handleBetAmountChange = (id: number, value: string) => {
+        let numericValue = parseInt(value, 10);
+        // Исправляем баг ползунка (51 -> 50, 101 -> 100)
+        if (numericValue > 1 && numericValue % 50 === 1) {
+            numericValue -= 1;
+        }
+        const clampedValue = Math.max(1, Math.min(numericValue, 500));
+        updateBetState(id, 'betAmount', isNaN(clampedValue) ? 1 : clampedValue);
+    };
+
+    const handleAutoCashoutChange = (id: number, value: string) => {
+        const numericValue = parseFloat(value);
+        if (isNaN(numericValue)) {
+            updateBetState(id, 'autoCashout', 2.0);
+            return;
+        }
+        updateBetState(id, 'autoCashout', numericValue);
+    };
+    
+    const handleAutoCashoutBlur = (id: number, value: string) => {
+        const numericValue = parseFloat(value);
+        const clampedValue = Math.max(2.0, numericValue);
+        updateBetState(id, 'autoCashout', isNaN(clampedValue) ? 2.0 : clampedValue);
+    };
+
     const handlePlaceBet = (id: number, isAuto: boolean = false) => {
         const bet = bets.find(b => b.id === id);
-        if (!bet || bet.betAmount > balance) {
+        if (!bet) return null;
+
+        if (bet.betAmount < 1 || bet.betAmount > 500) {
+            if (!isAuto) alert("Сумма ставки должна быть от 1 до 500 CR.");
+            return null;
+        }
+        if (bet.isAutoCashoutEnabled && bet.autoCashout < 2.0) {
+            if (!isAuto) alert("Auto Cashout не может быть ниже 2.0x.");
+            updateBetState(id, 'autoCashout', 2.0);
+            return null;
+        }
+        if (bet.betAmount > balance) {
             if (!isAuto) alert("Недостаточно средств!");
             updateBetState(id, 'isAutoBet', false);
             return null;
@@ -188,7 +225,6 @@ const CrashGame: React.FC = () => {
     const handleCancelBet = (id: number) => {
         const bet = bets.find(b => b.id === id);
         if (!bet || !bet.playerBet) return;
-
         updateBalance(balance + bet.playerBet);
         updateBetState(id, 'playerBet', null);
     };
@@ -196,7 +232,6 @@ const CrashGame: React.FC = () => {
     const handleCashout = (id: number, cashoutMultiplier: number) => {
         const bet = bets.find(b => b.id === id);
         if (!bet || !bet.playerBet || bet.cashedOut) return;
-        
         const winAmount = bet.playerBet * cashoutMultiplier;
         updateBalance(balance + winAmount);
         addXp(winAmount - bet.playerBet);
@@ -221,16 +256,10 @@ const CrashGame: React.FC = () => {
     const getRocketPosition = () => {
         if (isCruising) {
             const cruisePosition = (CRUISE_START_MULTIPLIER / 10) * 100;
-            return {
-                left: `${Math.min(95, cruisePosition)}%`,
-                bottom: `${Math.min(90, cruisePosition)}%`
-            };
+            return { left: `${Math.min(95, cruisePosition)}%`, bottom: `${Math.min(90, cruisePosition)}%` };
         }
         const position = (multiplier / 10) * 100;
-        return {
-            left: `${Math.min(95, position)}%`,
-            bottom: `${Math.min(90, position)}%`
-        };
+        return { left: `${Math.min(95, position)}%`, bottom: `${Math.min(90, position)}%` };
     };
 
     const activeBets = bets.filter(bet => bet.playerBet !== null);
@@ -240,9 +269,7 @@ const CrashGame: React.FC = () => {
             <div className="game-area">
                 <div className="history-bar">
                     {history.map((val, i) => (
-                        <span key={i} className={val < 2 ? 'history-bad' : 'history-good'}>
-                            {val.toFixed(2)}x
-                        </span>
+                        <span key={i} className={val < 2 ? 'history-bad' : 'history-good'}>{val.toFixed(2)}x</span>
                     ))}
                 </div>
                 <div className={`graph-container ${currentPhase === 'running' ? 'game-running' : ''}`}>
@@ -251,9 +278,7 @@ const CrashGame: React.FC = () => {
                         <div className="stars2"></div>
                         <div className="stars3"></div>
                     </div>
-
                     {renderGameState()}
-                    
                     {isCruising && (
                         <div className="clouds-container">
                             <div className="cloud cloud1">☁️</div>
@@ -261,74 +286,27 @@ const CrashGame: React.FC = () => {
                             <div className="cloud cloud3">☁️</div>
                         </div>
                     )}
-
-                    {currentPhase === 'crashed' && (
-                        <div className="crash-building" style={crashPosition}>
-                            🕌
-                        </div>
-                    )}
-                    
-                    {/* Основная ракета, которая летит всегда, когда игра запущена */}
+                    {currentPhase === 'crashed' && (<div className="crash-building" style={crashPosition}>🕌</div>)}
                     {currentPhase === 'running' && (
-                        <div 
-                            className={`rocket flying ${isCruising ? 'cruising' : ''}`}
-                            style={getRocketPosition()}
-                        >
-                            🚀
-                        </div>
+                        <div className={`rocket flying ${isCruising ? 'cruising' : ''}`} style={getRocketPosition()}>🚀</div>
                     )}
-
-                    {/* Ракеты, представляющие ставки игроков */}
                     {currentPhase === 'running' && activeBets.map((bet, index) => {
-                        // Ракета-призрак игрока, который забрал ставку
                         if (bet.cashedOut) {
                             return (
-                                <div 
-                                    key={bet.id}
-                                    className="rocket cashed-out-rocket"
-                                    style={{
-                                        ...getRocketPosition(),
-                                        transform: `translate(${(index + 1) * -35}px, ${(index + 1) * 20}px)`
-                                    }}
-                                >
-                                    💲
-                                </div>
+                                <div key={bet.id} className="rocket cashed-out-rocket" style={{ ...getRocketPosition(), transform: `translate(${(index + 1) * -35}px, ${(index + 1) * 20}px)` }}>💲</div>
                             );
                         }
-
-                        // Ракета-призрак игрока, который еще в игре
                         return (
-                            <div 
-                                key={bet.id}
-                                className={`rocket ghost-rocket flying ${isCruising ? 'cruising' : ''}`}
-                                style={{
-                                    ...getRocketPosition(),
-                                    transform: `translate(${(index + 1) * -35}px, ${(index + 1) * 20}px)`
-                                }}
-                            >
-                                🚀
-                            </div>
+                            <div key={bet.id} className={`rocket ghost-rocket flying ${isCruising ? 'cruising' : ''}`} style={{ ...getRocketPosition(), transform: `translate(${(index + 1) * -35}px, ${(index + 1) * 20}px)` }}>🚀</div>
                         );
                     })}
-                    
-                    {/* Взрыв на месте крушения */}
-                    {currentPhase === 'crashed' && (
-                         <div 
-                            className="rocket crashed"
-                            style={crashPosition}
-                        >
-                            💥
-                        </div>
-                    )}
-
+                    {currentPhase === 'crashed' && (<div className="rocket crashed" style={crashPosition}>💥</div>)}
                 </div>
-                 {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}
+                {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}
             </div>
-
-            {/* --- НОВЫЙ БЛОК: Отображение баланса --- */}
-            <div className="balance-display">
-                Balance: {balance.toFixed(2)} CPN
-            </div>
+            
+            {/* --- ИЗМЕНЕНИЕ: Возвращаем панель баланса --- */}
+            <div className="balance-display">Баланс: {balance.toFixed(2)} CR</div>
 
             <div className="controls-panel-grid">
                 {bets.map(bet => (
@@ -336,54 +314,30 @@ const CrashGame: React.FC = () => {
                         <div className="bet-controls">
                             <div className="input-group">
                                 <label>Bet Amount</label>
-                                <input 
-                                    type="number" 
-                                    value={bet.betAmount} 
-                                    onChange={e => updateBetState(bet.id, 'betAmount', Number(e.target.value))}
-                                    disabled={!!bet.playerBet}
-                                />
+                                <input type="number" value={bet.betAmount} onChange={e => handleBetAmountChange(bet.id, e.target.value)} disabled={!!bet.playerBet} min="1" max="500" />
+                                <input type="range" min="1" max="501" step="50" value={bet.betAmount} onChange={e => handleBetAmountChange(bet.id, e.target.value)} className="bet-slider" disabled={!!bet.playerBet} />
                             </div>
-                            <div className="input-group">
-                                <label>Auto Cashout</label>
-                                <input 
-                                    type="number" 
-                                    value={bet.autoCashout}
-                                    onChange={e => updateBetState(bet.id, 'autoCashout', Number(e.target.value))}
-                                    disabled={!bet.isAutoCashoutEnabled || !!bet.playerBet}
-                                />
-                                <input 
-                                    type="checkbox"
-                                    checked={bet.isAutoCashoutEnabled}
-                                    onChange={e => updateBetState(bet.id, 'isAutoCashoutEnabled', e.target.checked)}
-                                    disabled={!!bet.playerBet}
-                                />
+                            <div className="input-group auto-cashout-group">
+                                <div className="label-with-presets">
+                                    <label>Auto Cashout</label>
+                                    <div className="preset-buttons">
+                                        <button className="preset-btn" onClick={() => updateBetState(bet.id, 'autoCashout', 2.0)} disabled={!bet.isAutoCashoutEnabled || !!bet.playerBet}>2x</button>
+                                        <button className="preset-btn" onClick={() => updateBetState(bet.id, 'autoCashout', 3.0)} disabled={!bet.isAutoCashoutEnabled || !!bet.playerBet}>3x</button>
+                                        <button className="preset-btn" onClick={() => updateBetState(bet.id, 'autoCashout', 5.0)} disabled={!bet.isAutoCashoutEnabled || !!bet.playerBet}>5x</button>
+                                    </div>
+                                </div>
+                                <div className="input-with-checkbox">
+                                    <input type="number" value={bet.autoCashout} onChange={e => handleAutoCashoutChange(bet.id, e.target.value)} onBlur={e => handleAutoCashoutBlur(bet.id, e.target.value)} disabled={!bet.isAutoCashoutEnabled || !!bet.playerBet} min="2.0" step="0.1" />
+                                    <input type="checkbox" checked={bet.isAutoCashoutEnabled} onChange={e => updateBetState(bet.id, 'isAutoCashoutEnabled', e.target.checked)} disabled={!!bet.playerBet} />
+                                </div>
                             </div>
                         </div>
-                        {currentPhase === 'waiting' && !bet.playerBet && (
-                            <button className="bet-btn" onClick={() => handlePlaceBet(bet.id)}>Place Bet</button>
-                        )}
-                        {currentPhase === 'waiting' && bet.playerBet && (
-                            <button className="cancel-btn" onClick={() => handleCancelBet(bet.id)}>Cancel Bet</button>
-                        )}
-                        {currentPhase === 'running' && bet.playerBet && !bet.cashedOut && (
-                            <button className="cashout-btn" onClick={() => handleCashout(bet.id, multiplier)}>
-                                Cash Out @ {multiplier.toFixed(2)}x
-                            </button>
-                        )}
-                         {currentPhase === 'running' && (!bet.playerBet || bet.cashedOut) && (
-                            <button className="bet-btn" disabled>
-                                {bet.cashedOut ? `Cashed Out!` : 'Running...'}
-                            </button>
-                        )}
-                         {currentPhase === 'crashed' && (
-                            <button className="bet-btn" disabled>Crashed!</button>
-                        )}
-                        <button 
-                            className={`autobet-btn ${bet.isAutoBet ? 'active' : ''}`}
-                            onClick={() => updateBetState(bet.id, 'isAutoBet', !bet.isAutoBet)}
-                        >
-                            Auto Bet
-                        </button>
+                        {currentPhase === 'waiting' && !bet.playerBet && (<button className="bet-btn" onClick={() => handlePlaceBet(bet.id)}>Place Bet</button>)}
+                        {currentPhase === 'waiting' && bet.playerBet && (<button className="cancel-btn" onClick={() => handleCancelBet(bet.id)}>Cancel Bet</button>)}
+                        {currentPhase === 'running' && bet.playerBet && !bet.cashedOut && (<button className="cashout-btn" onClick={() => handleCashout(bet.id, multiplier)}>Cash Out @ {multiplier.toFixed(2)}x</button>)}
+                        {currentPhase === 'running' && (!bet.playerBet || bet.cashedOut) && (<button className="bet-btn" disabled>{bet.cashedOut ? `Cashed Out!` : 'Running...'}</button>)}
+                        {currentPhase === 'crashed' && (<button className="bet-btn" disabled>Crashed!</button>)}
+                        <button className={`autobet-btn ${bet.isAutoBet ? 'active' : ''}`} onClick={() => updateBetState(bet.id, 'isAutoBet', !bet.isAutoBet)}>Auto Bet</button>
                     </div>
                 ))}
             </div>
