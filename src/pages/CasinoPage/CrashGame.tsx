@@ -204,7 +204,6 @@ const CrashGame: React.FC = () => {
         updateBetState(id, 'cashedOut', true);
     };
 
-    // --- НОВАЯ ФУНКЦИЯ: Определяет класс для свечения множителя ---
     const getMultiplierClassName = () => {
         if (multiplier >= 10) return 'gold-glow';
         if (multiplier >= 5) return 'pink-glow';
@@ -216,7 +215,6 @@ const CrashGame: React.FC = () => {
         if (currentPhase === 'crashed') {
             return <div className="crash-message">CRASHED @ {crashPoint.toFixed(2)}x</div>;
         }
-        // --- ИЗМЕНЕНИЕ: Добавляем динамический класс ---
         return <div className={`multiplier ${getMultiplierClassName()}`}>{multiplier.toFixed(2)}x</div>;
     };
 
@@ -234,6 +232,9 @@ const CrashGame: React.FC = () => {
             bottom: `${Math.min(90, position)}%`
         };
     };
+
+    // --- НОВОЕ: Фильтруем активные ставки для отображения доп. ракет ---
+    const activeBets = bets.filter(bet => bet.playerBet !== null);
 
     return (
         <div className="crash-game">
@@ -268,12 +269,31 @@ const CrashGame: React.FC = () => {
                         </div>
                     )}
 
-                    <div 
-                        className={`rocket ${currentPhase === 'running' ? 'flying' : ''} ${currentPhase === 'crashed' ? 'crashed' : ''} ${isCruising ? 'cruising' : ''}`}
-                        style={getRocketPosition()}
-                    >
-                        {currentPhase === 'crashed' ? '💥' : '🚀'}
-                    </div>
+                    {/* --- ИЗМЕНЕНИЕ: Отображаем главную и дополнительные ракеты --- */}
+                    {currentPhase === 'running' && activeBets.map((bet, index) => (
+                        <div 
+                            key={bet.id}
+                            className={`rocket ${index > 0 ? 'ghost-rocket' : ''} ${currentPhase === 'running' ? 'flying' : ''} ${isCruising ? 'cruising' : ''}`}
+                            style={{
+                                ...getRocketPosition(),
+                                // Смещаем "призрачные" ракеты, чтобы они не накладывались
+                                transform: index > 0 ? `translate(${index * -35}px, ${index * 20}px)` : 'none'
+                            }}
+                        >
+                            🚀
+                        </div>
+                    ))}
+                    
+                    {/* Основная ракета в состоянии "краш" */}
+                    {currentPhase === 'crashed' && (
+                         <div 
+                            className={`rocket crashed`}
+                            style={getRocketPosition()}
+                        >
+                            💥
+                        </div>
+                    )}
+
                 </div>
                  {currentPhase === 'waiting' && <div className="countdown">Starting in {countdown}s...</div>}
             </div>

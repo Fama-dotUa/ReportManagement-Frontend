@@ -153,6 +153,14 @@
     z-index: 10; 
 }
 
+/* --- НОВЫЙ СТИЛЬ: для дополнительных ракет --- */
+.ghost-rocket {
+    z-index: 9;
+    opacity: 0.5;
+    transform: scale(0.8);
+}
+
+
 .rocket.cruising {
     transition: none;
 }
@@ -179,30 +187,41 @@
 .cloud {
     position: absolute;
     font-size: 6rem;
-    opacity: 0.6;
-    animation: fly-by linear infinite;
+    opacity: 0; /* Начальная прозрачность для анимации */
+    animation: cloud-fade-in 1.5s ease-out forwards, fly-by linear infinite;
     left: 110%;
 }
 
 .cloud1 {
     top: 15%;
-    animation-duration: 12s; 
-    animation-delay: -2s;
+    animation-duration: 1.5s, 12s; 
+    animation-delay: 0s, -2s;
 }
 
 .cloud2 {
     top: 40%;
     font-size: 7rem;
-    animation-duration: 18s;
-    animation-delay: -8s;
+    animation-duration: 1.5s, 18s;
+    animation-delay: 0.5s, -8s; /* Небольшая задержка появления */
 }
 
 .cloud3 {
     top: 65%;
     font-size: 5rem;
-    animation-duration: 10s;
-    animation-delay: -5s;
+    animation-duration: 1.5s, 10s;
+    animation-delay: 1s, -5s; /* Небольшая задержка появления */
 }
+
+/* --- НОВАЯ АНИМАЦИЯ: Плавное появление облаков --- */
+@keyframes cloud-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.6;
+    }
+}
+
 
 @keyframes fly-by {
     from {
