@@ -71,7 +71,12 @@
     position: absolute;
     font-size: 3rem;
     transition: all 0.1s linear;
-    z-index: 1;
+    z-index: 10; /* Поднимаем самолет над облаками */
+}
+
+/* --- НОВЫЙ СТИЛЬ: Убираем transition, когда самолет "завис" --- */
+.rocket.cruising {
+    transition: none;
 }
 
 .rocket.flying {
@@ -81,6 +86,55 @@
 .rocket.crashed {
     animation: explode 0.5s forwards;
 }
+
+/* --- НОВЫЕ СТИЛИ: Для облаков и их анимации --- */
+.clouds-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5; /* Облака под самолетом, но над фоном */
+}
+
+.cloud {
+    position: absolute;
+    font-size: 4rem;
+    opacity: 0.6;
+    animation: fly-by linear infinite;
+}
+
+.cloud1 {
+    top: 20%;
+    animation-duration: 10s; /* Разная скорость для облаков */
+    animation-delay: -2s;
+}
+
+.cloud2 {
+    top: 50%;
+    font-size: 5rem;
+    animation-duration: 15s;
+    animation-delay: -8s;
+}
+
+.cloud3 {
+    top: 70%;
+    font-size: 3rem;
+    animation-duration: 8s;
+    animation-delay: -5s;
+}
+
+@keyframes fly-by {
+    from {
+        transform: translateX(110vw);
+    }
+    to {
+        transform: translateX(-10vw);
+    }
+}
+
 
 .countdown {
     position: absolute;
@@ -140,7 +194,6 @@
     height: 20px;
 }
 
-/* --- ОБНОВЛЕНИЕ: Добавлен класс .cancel-btn в общий список --- */
 .bet-btn, .cashout-btn, .autobet-btn, .cancel-btn {
     width: 100%;
     padding: 12px;
@@ -167,13 +220,9 @@
     color: #333;
 }
 
-/* --- НОВЫЙ СТИЛЬ: Добавлены стили для кнопки отмены --- */
-
 .cancel-btn {
-    background-color: #d9534f; /* Красный цвет */
+    background-color: #d9534f;
     color: white;
-    font-size: 1rem;
-    padding: 8.5px; /*! ХУЕСОС НА ГЕМИНИ, ТОЛЬКО ПОПРОБУЙ ЭТОТ ТЕКСТ ПОМЕНЯТЬ, Я ЯЙЦА ПО КИШКИ ТЕБЕ ВЫРВУ, СЫН ТЫ ТУПОЙ ШАЛАВЫ */
 }
 
 .autobet-btn {
@@ -200,11 +249,10 @@
 /* --- Стили для мониторов 1080p и выше --- */
 @media (min-width: 1080px) {
     .multiplier, .crash-message {
-        font-size: 4rem; /* Уменьшаем шрифт множителя */
+        font-size: 4rem;
     }
 
     .controls-panel-grid {
-        /* Отображаем 4 панели в ряд */
         grid-template-columns: repeat(4, 1fr);
     }
 
@@ -212,8 +260,8 @@
         padding: 10px;
     }
 
-    .bet-btn, .cashout-btn, .autobet-btn {
-        font-size: 0.9rem; /* Уменьшаем шрифт на кнопках */
+    .bet-btn, .cashout-btn, .autobet-btn, .cancel-btn {
+        font-size: 0.9rem;
         padding: 10px;
     }
 
