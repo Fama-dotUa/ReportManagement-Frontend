@@ -186,6 +186,13 @@ const RouletteGame: React.FC = () => {
         setBetAmount(clampedValue);
     };
 
+    const addToBet = (amount: number) => {
+        setBetAmount(prev => {
+            const newValue = prev + amount;
+            return Math.min(newValue, 5000); // Ограничение максимальной ставки
+        });
+    };
+
     const getBetDisplay = (betType: string) => {
         if (bets[betType]) { return <div className="bet-chip">{bets[betType]}</div>; }
         return null;
@@ -244,18 +251,26 @@ const RouletteGame: React.FC = () => {
                         min="250"
                         max="5000"
                     />
-                    <input
-                        type="range"
-                        min="250"
-                        max="5000"
-                        step="250"
-                        value={betAmount}
-                        onChange={handleBetAmountChange}
-                        disabled={isSpinning || betsAccepted}
-                        className="bet-slider"
-                    />
+                    {/* --- ИЗМЕНЕНИЕ: Обертка для кнопок и ползунка --- */}
+                    <div className="slider-and-buttons-wrapper">
+                        <div className="bet-increments">
+                            <button className="bet-increment-btn" onClick={() => addToBet(25)} disabled={isSpinning || betsAccepted}>+25</button>
+                            <button className="bet-increment-btn" onClick={() => addToBet(100)} disabled={isSpinning || betsAccepted}>+100</button>
+                            <button className="bet-increment-btn" onClick={() => addToBet(250)} disabled={isSpinning || betsAccepted}>+250</button>
+                            <button className="bet-increment-btn" onClick={() => addToBet(500)} disabled={isSpinning || betsAccepted}>+500</button>
+                        </div>
+                        <input
+                            type="range"
+                            min="250"
+                            max="5000"
+                            step="250"
+                            value={betAmount}
+                            onChange={handleBetAmountChange}
+                            disabled={isSpinning || betsAccepted}
+                            className="bet-slider"
+                        />
+                    </div>
                 </div>
-                {/* --- ИЗМЕНЕНИЕ: Добавлены классы для стилизации кнопок --- */}
                 <button className="accept-btn" onClick={handleAcceptBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Принять ставки</button>
                 <button className="cancel-btn" onClick={handleCancelBets} disabled={isSpinning || betsAccepted || Object.keys(bets).length === 0}>Отменить ставки</button>
             </div>
