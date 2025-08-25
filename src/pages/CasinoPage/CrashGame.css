@@ -84,7 +84,7 @@
 
 .countdown {
     position: absolute;
-    top: 50%;
+    top: 80%;
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 2rem;
@@ -132,7 +132,7 @@
     background-color: #1a2238;
     color: white;
     font-size: 1.1rem;
-    width: 100%;
+    width: 90%;
 }
 
 .input-group input[type="checkbox"] {
@@ -185,4 +185,29 @@
 @keyframes explode {
     0% { transform: scale(1); opacity: 1; }
     100% { transform: scale(3); opacity: 0; }
+}
+
+/* --- Стили для мониторов 1080p и выше --- */
+@media (min-width: 1080px) {
+    .multiplier, .crash-message {
+        font-size: 4rem; /* Уменьшаем шрифт множителя */
+    }
+
+    .controls-panel-grid {
+        /* Отображаем 4 панели в ряд */
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .controls-panel {
+        padding: 10px;
+    }
+
+    .bet-btn, .cashout-btn, .autobet-btn {
+        font-size: 0.9rem; /* Уменьшаем шрифт на кнопках */
+        padding: 10px;
+    }
+
+    .input-group input[type="number"] {
+        font-size: 1rem;
+    }
 }
