@@ -13,13 +13,13 @@ const numberColors: { [key: number]: string } = {
     31: 'black', 32: 'red', 33: 'black', 34: 'red', 35: 'black', 36: 'red',
 };
 
-// --- СИМУЛЯЦИЯ СЕРВЕРА ДЛЯ СИНХРОНИЗАЦИИ (без изменений) ---
+// --- СИМУЛЯЦИЯ СЕРВЕРА ДЛЯ СИНХРОНИЗАЦИИ ---
 const rouletteService = {
     state: {
         countdown: 30,
         isSpinning: false,
         winningNumber: null as number | null,
-        history: [] as number[], 
+        history: [] as number[],
     },
     subscribers: [] as ((state: any) => void)[],
     timerId: null as NodeJS.Timeout | null,
@@ -27,7 +27,27 @@ const rouletteService = {
     unsubscribe(callback: (state: any) => void) { this.subscribers = this.subscribers.filter(sub => sub !== callback); },
     notify() { this.subscribers.forEach(callback => callback(this.state)); },
     start() { if (this.timerId) return; this.timerId = setInterval(() => { if (!this.state.isSpinning) { const newCountdown = this.state.countdown - 1; this.state = { ...this.state, countdown: newCountdown }; if (newCountdown <= 0) { this.spin(); } else { this.notify(); } } }, 1000); },
-    spin() { if (this.state.isSpinning) return; const newWinningNumber = Math.floor(Math.random() * 37); this.state = { ...this.state, isSpinning: true, winningNumber: newWinningNumber, }; this.notify(); setTimeout(() => { const newHistory = [...this.state.history, newWinningNumber]; if (newHistory.length > 15) newHistory.shift(); this.state = { ...this.state, isSpinning: false, countdown: 30, history: newHistory }; this.notify(); }, 7000); }
+    spin() {
+        if (this.state.isSpinning) return;
+
+        // --- УЛУЧШЕННЫЙ АЛГОРИТМ СЛУЧАЙНОГО ЧИСЛА ---
+        // Создаем массив для хранения одного 32-битного беззнакового целого числа.
+        const randomArray = new Uint32Array(1);
+        // Заполняем массив криптографически стойким случайным значением.
+        window.crypto.getRandomValues(randomArray);
+        // Используем оператор деления по модулю (%), чтобы получить число в диапазоне от 0 до 36.
+        const newWinningNumber = randomArray[0] % 37;
+        // ---------------------------------------------
+
+        this.state = { ...this.state, isSpinning: true, winningNumber: newWinningNumber, };
+        this.notify();
+        setTimeout(() => {
+            const newHistory = [...this.state.history, newWinningNumber];
+            if (newHistory.length > 15) newHistory.shift();
+            this.state = { ...this.state, isSpinning: false, countdown: 30, history: newHistory };
+            this.notify();
+        }, 7000);
+    }
 };
 rouletteService.start();
 // ---------------------------------------------
@@ -40,13 +60,13 @@ const RouletteGame: React.FC = () => {
     // --- ИЗМЕНЕНИЕ: Используем глобальное состояние ---
     const { balance, updateBalance, addXp } = usePlayerStats();
     const { triggerGameEvent } = useGameEvents(); // <-- 2. ПОЛУЧЕНИЕ ФУНКЦИИ
-    
+
     const [betAmount, setBetAmount] = useState(250);
     const [bets, setBets] = useState<{ [key: string]: number }>({});
     const [spinResult, setSpinResult] = useState<{ number: number; color: string } | null>(null);
     const [totalWin, setTotalWin] = useState(0);
     const [betsAccepted, setBetsAccepted] = useState(false);
-    
+
     const [gameState, setGameState] = useState(rouletteService.state);
     const { isSpinning, countdown, winningNumber, history } = gameState;
 
@@ -63,12 +83,12 @@ const RouletteGame: React.FC = () => {
             if (gameState.isSpinning && !newState.isSpinning) {
                 calculateWinnings(newState.winningNumber);
                 setSpinResult({ number: newState.winningNumber, color: `history-number ${numberColors[newState.winningNumber]}` });
-                setBetsAccepted(false); 
+                setBetsAccepted(false);
                 const centeringOffset = 500;
                 const finalTarget = (37 * (randomRotations + spinCount)) + (newState.winningNumber ?? 0);
                 const finalTranslateX = -(finalTarget * 100 - centeringOffset);
                 setLastSpinTranslateX(finalTranslateX);
-                
+
                 if (spinCount > 5) {
                     setTimeout(() => {
                         setIsResetting(true); setSpinCount(1);
@@ -102,7 +122,7 @@ const RouletteGame: React.FC = () => {
     const handleAcceptBets = () => {
         if (Object.keys(bets).length === 0) { alert("Сделайте хотя бы одну ставку!"); return; }
         setBetsAccepted(true);
-        setSpinResult(null); 
+        setSpinResult(null);
     };
 
     const handleCancelBets = () => {
@@ -156,13 +176,13 @@ const RouletteGame: React.FC = () => {
             triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
         }
 
-        
+
         // Баланс уже был уменьшен при ставках, поэтому просто добавляем общий выигрыш
         updateBalance(balance + winnings);
         setTotalWin(winnings);
         setBets({});
     };
-    
+
     const handleBetAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value) || 1;
         const clampedValue = Math.max(250, Math.min(value, 5000));
@@ -203,8 +223,8 @@ const RouletteGame: React.FC = () => {
             </div>
 
             <div className="roulette-info-bar">
-                {isSpinning ? ( <div className="info-text">Вращение...</div> ) : 
-                 betsAccepted ? ( <div className="info-text accepted">Ставки приняты! Спин через: {countdown} сек.</div> ) : 
+                {isSpinning ? ( <div className="info-text">Вращение...</div> ) :
+                 betsAccepted ? ( <div className="info-text accepted">Ставки приняты! Спин через: {countdown} сек.</div> ) :
                                 ( <div className="info-text">Следующий спин через: {countdown} сек</div> )}
             </div>
 
