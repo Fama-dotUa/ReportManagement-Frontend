@@ -8,7 +8,7 @@ import { useGameEvents } from './GameEventContext'; // <-- 1. ИМПОРТ
 // Шансы  победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
-    '7️⃣', '⭐', '7️⃣', '⭐', '⭐','⭐', '7️⃣','7️⃣',
+    '7️⃣', '⭐', '7️⃣', '⭐', '⭐','⭐', '7️⃣','7️⃣', '🎰',
     // Нечастые
     '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉','🍉','🍉','🍉', '🍇', '🍉', '🍇', '🍊','🍇','🍊','🍇',
     // Частые
@@ -40,6 +40,7 @@ const payouts: { [key: string]: { [count: number]: number } } = {
     '🍉': { 3: 1.8, 4: 2.6, 5: 3.2, 6: 3.8, 7: 7.0 },
     '⭐': { 3: 2.0, 4: 2.8, 5: 3.6, 6: 4.4, 7: 10.0 },
     '7️⃣': { 3: 3.2, 4: 4.2, 5: 5.2, 6: 6.2, 7: 17.0 },
+    '🎰': { 3: 5.0 },
 };
 
 // ИЗМЕНЕНИЕ: Функция теперь принимает флаг isFreeSpin для выбора бора символов
@@ -208,7 +209,7 @@ const SlotsGame: React.FC = () => {
     const generateGuaranteedWinReels = (isSuperSpin: boolean): string[][] => {
         const reels: string[][] = Array(reelCount).fill(null).map(() => Array(visibleSymbols).fill(''));
         const sourceSymbols = isSuperSpin ? superGameSymbols : symbols;
-        const winningSymbols = ['7️⃣', '⭐','🍉',];
+        const winningSymbols = ['7️⃣', '⭐','🍉','🎰',];
         const winSymbol = winningSymbols[Math.floor(Math.random() * winningSymbols.length)];
         const winLength = Math.random() < 0.7 ? 4 : 4; // 70% шанс  3, 30%  4
         const startPos = Math.floor(Math.random() * (reelCount - winLength));
@@ -317,7 +318,7 @@ const SlotsGame: React.FC = () => {
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
                 // ИЗМЕНЕНИЕ: Уставливаем НОВЫЙ порог для следующей серии побед (2-5)
-                setWinsNeededForCooldown(Math.floor(Math.random() * 6) + 3);
+                setWinsNeededForCooldown(Math.floor(Math.random() * 7) + 5);
             }
 
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
@@ -345,7 +346,7 @@ const SlotsGame: React.FC = () => {
             triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
             // ИЗМЕНЕНИЕ: Сбрасываем счетчик и уставливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
-            setWinsNeededForCooldown(Math.floor(Math.random() * 6) + 3); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
+            setWinsNeededForCooldown(Math.floor(Math.random() * 7) + 5); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
