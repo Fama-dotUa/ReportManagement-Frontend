@@ -8,11 +8,11 @@ import { useGameEvents } from './GameEventContext'; // <-- 1. ИМПОРТ
 // Шансы  победу изменены, частые символы сделаны реже
 const symbols = [
     // Редкие
-    '7️⃣', '⭐', '7️⃣', '⭐', '⭐',
+    '7️⃣', '⭐', '7️⃣', '⭐', '⭐','⭐', '7️⃣','7️⃣',
     // Нечастые
-    '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉','🍉', '🍇', '🍉', '🍇', '🍊',
+    '🍉', '🍇', '🍊', '🍉', '🍇', '🍊','🍉','🍉','🍉','🍉', '🍇', '🍉', '🍇', '🍊','🍇','🍊','🍇',
     // Частые
-    '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊', '🍒', '🍊', '🍋', '🍒', 
+    '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍋', '🍒', '🍊', '🍒', '🍊', '🍋', '🍒','🍊', '🍋', '🍒', 
 ];
 
 // НОВОЕ: стройки для Супер Игры (Фриспинов)
@@ -58,7 +58,6 @@ const SlotsGame: React.FC = () => {
     const [betAmount2, setBetAmount2] = useState(100);
     const [isAutoSpin1, setIsAutoSpin1] = useState(false);
     const [isAutoSpin2, setIsAutoSpin2] = useState(false);
-    const [activeBet, setActiveBet] = useState<1 | 2 | null>(null);
     // ------------------------------------------
 
     const [reels, setReels] = useState<string[][]>(() => Array(reelCount).fill(Array(visibleSymbols).fill('❓')));
@@ -243,13 +242,13 @@ const SlotsGame: React.FC = () => {
             return;
         }
 
-        setActiveBet(betNumber);
         setWinningSymbols([]);
         const isSuperSpin = freeSpins > 0; // Определяем, является ли спин бесплатным ДО уменьшения счетчика
         if (isSuperSpin) {
             setFreeSpins(prev => prev - 1);
         } else {
-            updateBalance(balance - currentBetAmount);
+            // --- ИСПРАВЛЕНИЕ: Используем функциональное обновление для безопасности ---
+            updateBalance(prev => prev - currentBetAmount);
         }
         
         setSpinning(true);
@@ -294,15 +293,17 @@ const SlotsGame: React.FC = () => {
 
         setReels(animationReels);
 
+        // --- ИСПРАВЛЕНИЕ БАГА: Передаем betNumber напрямую в calculateWinnings ---
         setTimeout(() => {
             setReels(finalReels);
             setSpinning(false);
-            calculateWinnings(finalReels);
+            calculateWinnings(finalReels, betNumber);
         }, 2000); 
     };
 
     // --- ОБНОВЛЕННЫЙ CALCULATEWINNINGS ДЛЯ ОТСЛЕЖИВАНИЯ ПОБЕД ---
-    const calculateWinnings = (finalReels: string[][]) => {
+    // --- ИСПРАВЛЕНИЕ БАГА: Функция теперь принимает betNumber ---
+    const calculateWinnings = (finalReels: string[][], betNumber: 1 | 2) => {
         const { winningCombos, totalMultiplier, winMessages, newWinningCoords } = analyzeWinnings(finalReels);
 
         if (winningCombos > 0) {
@@ -316,14 +317,15 @@ const SlotsGame: React.FC = () => {
                 setCooldownSpins(newCooldown);
                 setConsecutiveWins(0); // Сбрасываем счетчик
                 // ИЗМЕНЕНИЕ: Уставливаем НОВЫЙ порог для следующей серии побед (2-5)
-                setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 3);
+                setWinsNeededForCooldown(Math.floor(Math.random() * 6) + 3);
             }
 
             const uniqueCoords = Array.from(new Set(newWinningCoords.map(JSON.stringify)), JSON.parse);
             setWinningSymbols(uniqueCoords);
 
             const finalMultiplier = totalMultiplier - (winningCombos > 1 ? (winningCombos - 1) : 0);
-            const betAmount = activeBet === 1 ? betAmount1 : betAmount2;
+            // --- ИСПРАВЛЕНИЕ БАГА: Используем переданный betNumber для определения ставки ---
+            const betAmount = betNumber === 1 ? betAmount1 : betAmount2;
             const effectiveBet = freeSpins > 0 ? 105 : betAmount;
             const winAmount = effectiveBet * finalMultiplier;
             const netWin = winAmount - effectiveBet;
@@ -331,7 +333,8 @@ const SlotsGame: React.FC = () => {
             let finalMessage = `Win! ${winMessages.join(' & ')} pays ${winAmount.toFixed(1)} CPN!`;
             setMessage(finalMessage);
 
-            updateBalance(balance - effectiveBet + winAmount);
+            // --- ИСПРАВЛЕНИЕ: Добавляем только сумму выигрыша, т.к. ставка уже вычтена ---
+            updateBalance(prev => prev + winAmount);
             if (netWin > 0) addXp(netWin);
             
             setIsWinning(true);
@@ -342,7 +345,7 @@ const SlotsGame: React.FC = () => {
             triggerGameEvent('loss'); // <-- 4. ВЫЗОВ ПРИ ПРОИГРЫШЕ
             // ИЗМЕНЕНИЕ: Сбрасываем счетчик и уставливаем новый порог при проигрыше (2-5)
             setConsecutiveWins(0); 
-            setWinsNeededForCooldown(Math.floor(Math.random() * 5) + 3); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
+            setWinsNeededForCooldown(Math.floor(Math.random() * 6) + 3); //! ОХЛАЖДЕНИЕ ДЛЯ ПОБЕД
             if (cooldownSpins <= 0) {
                 setMessage('You lose. Try again!');
             }
