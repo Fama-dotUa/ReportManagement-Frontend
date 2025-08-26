@@ -1,0 +1,527 @@
+.crash-game {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: #1a2238;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.game-area {
+    width: 100%;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.history-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.history-bar span {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+    display: inline-block; /* Allows centering while respecting padding */
+    text-align: center; /* Centers the text horizontally */
+}
+.history-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    justify-content: center; /* Centers the span elements horizontally within the bar */
+}
+
+.history-bar span {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+}
+
+.history-bad {
+    background-color: #e94560;
+}
+
+.history-good {
+    background-color: #5cb85c;
+}
+.history-bad {
+    background-color: #e94560;
+}
+
+.history-good {
+    background-color: #5cb85c;
+}
+
+.graph-container {
+    flex-grow: 1;
+    background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+/* --- Стили для динамичного фона со звездами --- */
+.stars-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes animate-stars {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-2000px);
+  }
+}
+
+.stars, .stars2, .stars3 {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2000px; /* Высота для анимации */
+    background: transparent;
+    animation-name: animate-stars;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-play-state: paused; /* Анимация по умолчанию остановлена */
+}
+
+.stars {
+    width: 1px;
+    height: 1px;
+    box-shadow: 798px 1508px #FFF, 1828px 1238px #FFF, 1290px 1888px #FFF, 1333px 1229px #FFF, 1227px 1588px #FFF, 1531px 1699px #FFF, 1904px 1905px #FFF, 1198px 1198px #FFF, 1237px 1438px #FFF, 1303px 1139px #FFF, 1599px 1318px #FFF, 1284px 1113px #FFF, 1109px 1617px #FFF, 168px 1206px #FFF, 1033px 186px #FFF, 1018px 143px #FFF, 183px 148px #FFF, 1494px 188px #FFF, 1243px 283px #FFF, 1333px 44px #FFF, 1825px 516px #FFF, 1278px 573px #FFF, 1185px 495px #FFF, 1145px 374px #FFF, 135px 333px #FFF, 185px 580px #FFF, 1319px 880px #FFF, 1500px 963px #FFF, 1149px 947px #FFF, 1888px 776px #FFF;
+    animation-duration: 50s;
+}
+
+.stars2 {
+    width: 2px;
+    height: 2px;
+    box-shadow: 107px 1011px #FFF, 790px 72px #FFF, 513px 432px #FFF, 1867px 158px #FFF, 1734px 184px #FFF, 1262px 105px #FFF, 1255px 529px #FFF, 1130px 1021px #FFF, 179px 1060px #FFF, 1231px 1475px #FFF, 150px 1111px #FFF, 1007px 1150px #FFF, 120px 1433px #FFF, 132px 1222px #FFF, 111px 1030px #FFF, 130px 100px #FFF, 1555px 1222px #FFF, 1444px 1100px #FFF, 1888px 1020px #FFF;
+    animation-duration: 100s;
+}
+
+.stars3 {
+    width: 3px;
+    height: 3px;
+    box-shadow: 1706px 1821px #FFF, 628px 101px #FFF, 133px 1277px #FFF, 1884px 1334px #FFF, 1335px 1729px #FFF, 64px 1114px #FFF, 1255px 1234px #FFF, 100px 1000px #FFF, 444px 1434px #FFF, 888px 1839px #FFF;
+    animation-duration: 150s;
+}
+
+/* Запускаем анимацию звезд, когда игра в состоянии 'running' */
+.game-running .stars,
+.game-running .stars2,
+.game-running .stars3 {
+    animation-play-state: running;
+}
+
+
+.multiplier {
+    font-size: 5rem;
+    font-weight: bold;
+    color: white;
+    z-index: 2;
+    transition: text-shadow 0.5s ease, color 0.5s ease;
+}
+
+/* --- НОВЫЕ СТИЛИ: Свечение для множителя --- */
+.multiplier.green-glow {
+    text-shadow: 0 0 50px #28a745, 0 0 20px #28a745;
+}
+
+.multiplier.pink-glow {
+    text-shadow: 0 0 55px #ff00ff, 0 0 25px #ff00ff, 0 0 35px #ff00ff;
+}
+
+.multiplier.gold-glow {
+    color: #ffd700;
+    text-shadow: 0 0 20px #ffd700, 0 0 20px #ffc400, 0 0 30px #ffac00, 0 0 40px #fff;
+}
+
+
+.crash-message {
+    font-size: 5rem;
+    font-weight: bold;
+    color: #e94560;
+    animation: shake 0.5s;
+    z-index: 2;
+}
+
+.rocket {
+    position: absolute;
+    font-size: 7rem;
+    transition: all 0.1s linear;
+    z-index: 10; 
+}
+
+/* --- НОВЫЙ СТИЛЬ: для дополнительных ракет --- */
+.ghost-rocket {
+    z-index: 9;
+    opacity: 0.5;
+    transform: scale(0.8);
+}
+
+/* --- НОВЫЙ СТИЛЬ: для ракет, которые забрали ставку --- */
+.cashed-out-rocket {
+    font-size: 2.5rem;
+    z-index: 11;
+    animation: cash-out-effect 0.8s ease-out forwards;
+}
+
+@keyframes cash-out-effect {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.5);
+    }
+}
+
+
+.rocket.cruising {
+    transition: none;
+}
+
+.rocket.flying {
+    /* Анимация полета */
+}
+
+.rocket.crashed {
+    animation: explode 0.5s forwards;
+}
+
+.clouds-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5; 
+}
+
+.cloud {
+    position: absolute;
+    font-size: 6rem;
+    opacity: 0; /* Начальная прозрачность для анимации */
+    animation: cloud-fade-in 1.5s ease-out forwards, fly-by linear infinite;
+    left: 110%;
+}
+
+.cloud1 {
+    top: 15%;
+    animation-duration: 1.5s, 12s; 
+    animation-delay: 0s, -2s;
+}
+
+.cloud2 {
+    top: 40%;
+    font-size: 7rem;
+    animation-duration: 1.5s, 18s;
+    animation-delay: 0.5s, -8s; /* Небольшая задержка появления */
+}
+
+.cloud3 {
+    top: 65%;
+    font-size: 5rem;
+    animation-duration: 1.5s, 10s;
+    animation-delay: 1s, -5s; /* Небольшая задержка появления */
+}
+
+/* --- НОВАЯ АНИМАЦИЯ: Плавное появление облаков --- */
+@keyframes cloud-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.6;
+    }
+}
+
+
+@keyframes fly-by {
+    from {
+        transform: translate(0, 0);
+    }
+    to {
+        transform: translate(-110vw, 30vh); /*! НЕ МЕНЯТЬ */
+    }
+}
+
+.crash-building {
+    position: absolute;
+    font-size: 6rem;
+    z-index: 15;
+    transform: translate(-40%, 40%);
+    animation: building-appear 0.2s ease-out forwards;
+}
+
+@keyframes building-appear {
+    from {
+        transform: translate(-40%, 40%) scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: translate(-40%, 40%) scale(1);
+        opacity: 1;
+    }
+}
+
+
+.countdown {
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* --- НОВЫЙ СТИЛЬ: для панели баланса --- */
+.balance-display {
+    width: 20%;
+    text-align: center;
+    font-size: 1.0rem;
+    font-weight: 500;
+    padding: 6px;
+    margin-bottom: 1px; /* Отступ снизу */
+    color: #ffc107; /* Золотой цвет */
+    background-color: rgba(46, 58, 89, 0.6); /* Полупрозрачный фон */
+    border-radius: 8px;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.controls-panel-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.controls-panel {
+    padding: 15px;
+    background-color: #2e3a59;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bet-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    margin-bottom: -4px;
+}
+
+.input-group input[type="number"] {
+    padding: 8px;
+    border-radius: 5px;
+    border: none;
+    background-color: #1a2238;
+    color: white;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.input-group.auto-cashout-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.label-with-presets {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 4px;
+}
+
+.preset-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    background-color: #495a80;
+    color: white;
+    border: 1px solid #6c757d;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.preset-btn:hover:not(:disabled) {
+    background-color: #6c757d;
+}
+
+.preset-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-with-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-with-checkbox input[type="number"] {
+    flex-grow: 1;
+}
+
+.input-with-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+
+.bet-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: #1a2238;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.8;
+    transition: opacity .2s;
+    margin-top: 4px;
+}
+
+.bet-slider:hover {
+    opacity: 1;
+}
+
+.bet-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #f0ad4e;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.bet-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #f0ad4e;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+
+.bet-btn, .cashout-btn, .autobet-btn, .cancel-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bet-btn {
+    background-color: #5cb85c;
+    color: white;
+}
+
+.bet-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.cashout-btn {
+    background-color: #f0ad4e;
+    color: #333;
+}
+
+.cancel-btn {
+    background-color: #d9534f;
+    color: white;
+}
+
+.autobet-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.autobet-btn.active {
+    background-color: #0275d8;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+}
+
+@keyframes explode {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* --- Стили для мониторов 1080p и выше --- */
+@media (min-width: 1080px) {
+    .multiplier, .crash-message {
+        font-size: 4rem;
+    }
+
+    .controls-panel-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .controls-panel {
+        padding: 10px;
+    }
+
+    .bet-btn, .cashout-btn, .autobet-btn, .cancel-btn {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .input-group input[type="number"] {
+        font-size: 1rem;
+    }
+}

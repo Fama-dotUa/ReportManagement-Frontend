@@ -7,6 +7,7 @@ export const transformUsers = (data: any[]) => {
 		id: user.id,
 		username: user.username,
 		discord: user.discord,
+		unique_code: user.unique_code || '',
 		CR: user.CR || 0,
 		rank: user.rank?.name ?? '',
 		rank_daily_reward: user.rank?.daily_reward || 0,

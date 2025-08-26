@@ -8,6 +8,12 @@ export const BurgerMenu: React.FC = () => {
 	const navigate = useNavigate()
 
 	const menuItems = [
+				{
+			label: 'ДОНАТ',
+			onClick: () => {
+				navigate('/donation')
+			},
+		},
 		{
 			label: 'УСТАВ',
 			onClick: () => {

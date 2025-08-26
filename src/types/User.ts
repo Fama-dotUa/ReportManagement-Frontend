@@ -20,6 +20,7 @@ export type User = {
 	rank_daily_reward?: number
 	role?: string
 	Description?: string
+	unique_code?: string
 	positions?: {
 		id: number
 		name: string
