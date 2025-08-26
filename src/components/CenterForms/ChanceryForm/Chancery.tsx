@@ -20,6 +20,7 @@ const Chancery: React.FC = () => {
 		| 'issue_loans_give'
 		| 'issue_loans_collect'
 		| 'bookkeeping'
+		| 'awards'
 	>('briefing')
 	const [selectedRequest, setSelectedRequest] =
 		useState<TrainingRequest | null>(null)
@@ -56,17 +57,20 @@ const Chancery: React.FC = () => {
 					Запросы на инструктаж
 					{hasNewBriefings && <span className='notification-dot'></span>}
 				</button>
-				<button
-					className={
-						activeTab === 'contestation'
-							? 'center-header-button active'
-							: 'center-header-button'
-					}
-					disabled
-					onClick={() => setActiveTab('contestation')}
-				>
-					Рапорты на оспаривание
-				</button>
+				{role === 'general' && (
+					<button
+						className={
+							activeTab === 'contestation'
+								? 'center-header-button active'
+								: 'center-header-button'
+						}
+						disabled
+						onClick={() => setActiveTab('contestation')}
+					>
+						Рапорты на оспаривание
+					</button>
+				)}
+
 				{role === 'general' && (
 					<button
 						className={
@@ -78,6 +82,19 @@ const Chancery: React.FC = () => {
 						onClick={() => setActiveTab('orders')}
 					>
 						Выдать приказ
+					</button>
+				)}
+				{role === 'general' && (
+					<button
+						className={
+							activeTab === 'awards'
+								? 'center-header-button active'
+								: 'center-header-button'
+						}
+						disabled
+						onClick={() => setActiveTab('awards')}
+					>
+						Наградить
 					</button>
 				)}
 				<button
