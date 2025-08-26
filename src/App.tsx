@@ -20,7 +20,8 @@ import { SpecialistsPage } from './pages/SpecialistsPage/SpecialistsPage'
 import { CosmeticsPage } from './pages/CosmeticsPage/CosmeticsPage'
 import { useAuth } from './hooks/useAuth'
 import { useEffect } from 'react'
-
+import  CasinoPage  from './pages/CasinoPage/CasinoPage'
+import  DonationPage  from './pages/DonationPage/DonationPage'
 function App() {
 	const { user } = useAuth()
 	const location = useLocation()
@@ -38,6 +39,7 @@ function App() {
 		}
 	}, [user?.id, updateActivity])
 
+
 	return (
 		<AnimatePresence mode='wait'>
 			<Routes location={location} key={location.pathname}>
@@ -47,6 +49,8 @@ function App() {
 					<Route path='store' element={<Store />} />
 					<Route path='specialists' element={<SpecialistsPage />} />
 					<Route path='cosmetics' element={<CosmeticsPage />} />
+					<Route path='casino' element={<CasinoPage />} />
+					<Route path='donation' element={<DonationPage />} />
 				</Route>
 			</Routes>
 		</AnimatePresence>

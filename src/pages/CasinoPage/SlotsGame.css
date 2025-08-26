@@ -1,0 +1,313 @@
+.slots-game {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: linear-gradient(to bottom, #1a1a2e, #16213e);
+    border-radius: 10px;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+.slots-display {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #0f3460;
+    border: 5px solid #e94560;
+    border-radius: 15px;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+}
+
+.reels-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    overflow: hidden;
+    height: 400px; /* 80px * 5 символов */
+}
+
+.reel {
+    width: 100px;
+    height: 100%;
+    background-color: #16213e;
+    border: 2px solid #a9a9a9;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.reel-strip {
+    display: flex;
+    flex-direction: column;
+    transition: transform 2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.reel-strip.spinning {
+    transform: translateY(calc(-100% + 400px)); /* Обновлено для 5 символов */
+}
+
+.symbol {
+    width: 100px;
+    height: 80px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+}
+
+.win-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background-color: #f0ad4e;
+    transform: translateY(-50%);
+    box-shadow: 0 0 10px #f0ad4e;
+}
+
+.super-game-bar-container {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.bar-background {
+    flex-grow: 1;
+    height: 20px;
+    background-color: #16213e;
+    border-radius: 10px;
+    border: 1px solid #e94560;
+    overflow: hidden;
+}
+
+.bar-progress {
+    height: 100%;
+    background: linear-gradient(to right, #f0ad4e, #e94560);
+    border-radius: 10px;
+    transition: width 0.5s ease-in-out;
+}
+
+.game-message {
+    font-size: 1.5rem;
+    font-weight: bold;
+    padding: 15px 25px;
+    margin-top: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    text-align: center;
+    min-height: 60px;
+}
+
+.controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding-top: 20px;
+}
+
+.balance-info {
+    font-size: 1.2rem;
+    font-weight: 500;
+    display: flex;
+    gap: 20px;
+}
+
+.freespins-info {
+    color: #f0ad4e;
+    font-weight: bold;
+}
+
+/* --- ИЗМЕНЕНИЕ: Контейнер для двух панелей --- */
+.all-betting-controls {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px; /* Увеличена ширина для двух панелей */
+    justify-content: center;
+}
+
+.betting-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Уменьшен отступ */
+    width: 100%;
+    flex: 1; /* Панели занимают равное место */
+    padding: 15px;
+    border: 1px solid #e94560;
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.2);
+}
+
+.bet-input-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.bet-input-group input[type="number"] {
+    width: 65px;
+    padding: 10px;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--panel-background);
+    color: var(--text-color);
+}
+
+.bet-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #0f3460;
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+    border: 1px solid #e94560;
+}
+
+.bet-slider:hover {
+    opacity: 1;
+}
+
+.bet-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: #e94560;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.bet-slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: #e94560;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid white;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.controls button {
+    padding: 12px 25px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #e94560;
+    color: white;
+    border: 1px solid #d43d51;
+    transition: background-color 0.2s;
+}
+
+.controls button:hover {
+    background-color: #c23347;
+}
+
+.controls button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}
+
+.slots-display.win-animation {
+    animation: win-glow 2s ease-in-out;
+}
+
+@keyframes win-glow {
+    0% {
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 0 5px #e94560;
+    }
+    50% {
+        box-shadow: inset 0 0 25px rgba(0,0,0,0.5), 0 0 30px #f0ad4e, 0 0 40px #f0ad4e;
+    }
+    100% {
+        box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 0 5px #e94560;
+    }
+}
+.autospin-active {
+    background-color: #5cb85c !important;
+    border-color: #4cae4c !important;
+}
+.symbol.highlight {
+    background-color: rgba(255, 215, 0, 0.25);
+    border: 0px solid #ffd700;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #ffd900;
+    transform: scale(1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+
+.slots-display.super-game-active {
+    background: linear-gradient(270deg, #ffd700, #f0c040, #ffec8b, #f0c040, #ffd700);
+    background-size: 400% 400%;
+    animation: gold-gradient 8s ease infinite;
+    border-color: #fff;
+}
+
+@keyframes gold-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.slider-and-buttons-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+}
+
+.bet-increments {
+    display: flex;
+    gap: 5px;
+}
+
+.bet-increment-btn {
+    background-color: #e94560;
+    color: white;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    font-weight: bold;
+    border: 1px solid #d43d51;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bet-increment-btn:hover:not(:disabled) {
+    background-color: #c23347;
+}
+
+.bet-increment-btn:disabled {
+    background-color: #6c757d;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+    border: 1px solid #6c757d;
+}

@@ -67,6 +67,9 @@ export const useUpdateUser = (currentUserId: number | null) => {
 						console.warn('ID роли не найден')
 					}
 				}
+				if (typeof updatedUser.unique_code !== 'undefined') {
+					payload.unique_code = updatedUser.unique_code
+				}
 
 				if (updatedUser.rank) {
 					const rankId = await getRankIdByName(updatedUser.rank)
