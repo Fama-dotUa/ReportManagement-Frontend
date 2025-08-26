@@ -50,7 +50,7 @@ const CasinoPage: React.FC = () => {
                             <button onClick={() => handleSelectGame('roulette')}>Рулетка</button>
                             <button onClick={() => handleSelectGame('blackjack')}>Блекджек</button>
                             <button onClick={() => handleSelectGame('slots')}>Слоты</button>
-                            <button onClick={() => handleSelectGame('crash')}>Crash</button> 
+                            <button onClick={() => handleSelectGame('crash')}>SCUD X</button> 
                         </div>
                     </div>
                 );
