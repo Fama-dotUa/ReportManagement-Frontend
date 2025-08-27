@@ -13,15 +13,17 @@ import {
 import { usePurchasePosition } from '../../hooks/usePurchasePosition'
 import { useUpdateUser } from '../../hooks/useUpdateUser'
 import './Store.css'
+import { usePositionPurchaseStatus } from '../../hooks/usePositionPurchaseStatus'
+import { useQueryClient } from '@tanstack/react-query'
 
 function Store() {
 	const { purchasableData, error } = usePurchasablePositions()
 	const { user, CR } = useAuth()
 	const navigate = useNavigate()
-
+	const { getPositionStatus } = usePositionPurchaseStatus()
 	const { mutate: purchasePosition } = usePurchasePosition()
 	const { updateUser } = useUpdateUser(user?.id)
-
+	const qc = useQueryClient()
 	const allPositions = useMemo(() => {
 		if (!purchasableData) return []
 		return Object.values(purchasableData).flat()
@@ -45,12 +47,18 @@ function Store() {
 			const newBalance = user.CR - item.CR
 			await updateUser({ id: user.id, CR: newBalance })
 
-			purchasePosition({ applicantId: user.id, positionId: item.id })
+			purchasePosition({ applicantId: user.id, positionId: item.id }),
+				{
+					onSuccess: () => {
+						qc.invalidateQueries({ queryKey: ['trainingRequests', user.id] })
+
+						alert('Покупка успешна! Заявка отправлена на рассмотрение.')
+					},
+				}
 
 			alert('Покупка успешна! Заявка отправлена на рассмотрение.')
 		} catch (err) {
 			console.error('Ошибка при покупке:', err)
-			// Здесь можно добавить логику возврата средств, если первый шаг прошел, а второй нет
 		}
 	}
 
@@ -77,12 +85,13 @@ function Store() {
 									description: item.description,
 									price: item.CR,
 								}
+								const status = getPositionStatus(item.id, item.CR)
 								return (
 									<ShopItemCard
 										key={item.id}
 										item={cardItem}
 										onBuy={handleBuyItem}
-										status={item.purchaseStatus}
+										status={status}
 									/>
 								)
 							})}

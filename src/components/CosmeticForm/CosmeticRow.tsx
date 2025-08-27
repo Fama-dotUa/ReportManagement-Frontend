@@ -22,7 +22,7 @@ export const CosmeticRow: React.FC<Props> = ({
 	items,
 	selectedItemId,
 	onSelectItem,
-	itemClassName, // ✅ Получаем новый пропс
+	itemClassName,
 }) => {
 	const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -32,7 +32,6 @@ export const CosmeticRow: React.FC<Props> = ({
 			scrollRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' })
 		}
 	}
-	console.log('Rendering CosmeticRow with items:', items)
 	return (
 		<div className='cosmetic-row'>
 			<div className='cosmetic-row-header'>
@@ -112,7 +111,6 @@ export const CosmeticRow: React.FC<Props> = ({
 										)
 									}
 
-									// Если формат не подошел, ничего не показываем
 									return null
 								})()}
 								<div className='item-name-overlay'>{item.name}</div>

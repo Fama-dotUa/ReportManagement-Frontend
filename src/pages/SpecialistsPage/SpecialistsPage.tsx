@@ -6,13 +6,14 @@ import {
 	usePurchasablePositions,
 	type PurchasablePositionItem,
 } from '../../hooks/usePurchasablePositions'
-
+import { usePositionPurchaseStatus } from '../../hooks/usePositionPurchaseStatus'
 import './SpecialistsPage.css'
 import type { HoverColor } from './PurchasableCard'
 import { useAuth } from '../../hooks/useAuth'
 
 import { usePurchasePosition } from '../../hooks/usePurchasePosition'
 import { useUpdateUser } from '../../hooks/useUpdateUser'
+import { useQueryClient } from '@tanstack/react-query'
 
 const themeMap: Record<string, HoverColor> = {
 	'Воздушная Техника': 'sky',
@@ -23,10 +24,10 @@ const themeMap: Record<string, HoverColor> = {
 function SpecialistsPage() {
 	const { purchasableData, error } = usePurchasablePositions()
 	const { user } = useAuth()
-
+	const { getPositionStatus } = usePositionPurchaseStatus()
 	const { mutate: purchasePosition } = usePurchasePosition()
 	const { updateUser } = useUpdateUser(user?.id)
-
+	const qc = useQueryClient()
 	const allPositions = useMemo(() => {
 		if (!purchasableData) return []
 		return Object.values(purchasableData).flat()
@@ -49,7 +50,14 @@ function SpecialistsPage() {
 			const newBalance = user.CR - item.CR
 			await updateUser({ id: user.id, CR: newBalance })
 
-			purchasePosition({ applicantId: user.id, positionId: item.id })
+			purchasePosition({ applicantId: user.id, positionId: item.id }),
+				{
+					onSuccess: () => {
+						qc.invalidateQueries({ queryKey: ['trainingRequests', user.id] })
+
+						alert('Покупка успешна! Заявка отправлена на рассмотрение.')
+					},
+				}
 
 			alert('Покупка успешна! Заявка отправлена на рассмотрение.')
 		} catch (err) {
@@ -88,14 +96,14 @@ function SpecialistsPage() {
 									description: item.description,
 									price: item.CR,
 								}
+								const status = getPositionStatus(item.id, item.CR)
 								return (
 									<PurchasableCard
 										key={item.id}
 										item={cardItem}
 										onBuy={handleBuyItem}
 										hoverColor={theme}
-										// Теперь item содержит purchaseStatus, и ошибки не будет
-										status={item.purchaseStatus}
+										status={status}
 									/>
 								)
 							})}

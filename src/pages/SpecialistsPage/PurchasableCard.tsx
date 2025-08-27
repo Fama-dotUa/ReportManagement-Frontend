@@ -13,22 +13,22 @@ interface PurchasableCardProps {
 	item: Item
 	onBuy: (id: Item['id']) => void
 	hoverColor?: HoverColor
-	status: 'owned' | 'canBuy' | 'insufficientFunds'
+	status: 'owned' | 'pending' | 'canBuy' | 'insufficientFunds' // + pending
 }
-
 export const PurchasableCard: React.FC<PurchasableCardProps> = ({
 	item,
 	onBuy,
 	hoverColor = 'blue',
 	status,
 }) => {
-	// Динамически формируем классы для карточки
 	const cardClassName = `purchasable-card hover-${hoverColor}`
 
 	const getButtonState = () => {
 		switch (status) {
 			case 'owned':
 				return { text: 'Обучен', disabled: true }
+			case 'pending':
+				return { text: 'На обучении', disabled: true }
 			case 'insufficientFunds':
 				return { text: 'Нищий', disabled: true }
 			case 'canBuy':
@@ -36,7 +36,6 @@ export const PurchasableCard: React.FC<PurchasableCardProps> = ({
 				return { text: 'Купить', disabled: false }
 		}
 	}
-
 	const { text, disabled } = getButtonState()
 
 	return (

@@ -8,11 +8,10 @@ export interface ShopItem {
 	price: number
 }
 
-// 1. Добавляем 'status' в props
 interface ShopItemCardProps {
 	item: ShopItem
 	onBuy: (id: number) => void
-	status: 'owned' | 'canBuy' | 'insufficientFunds'
+	status: 'owned' | 'pending' | 'canBuy' | 'insufficientFunds'
 }
 
 export const ShopItemCard: React.FC<ShopItemCardProps> = ({
@@ -20,11 +19,12 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
 	onBuy,
 	status,
 }) => {
-	// 2. Добавляем логику для определения состояния кнопки
 	const getButtonState = () => {
 		switch (status) {
 			case 'owned':
 				return { text: 'Обучен', disabled: true }
+			case 'pending':
+				return { text: 'На обучении', disabled: true }
 			case 'insufficientFunds':
 				return { text: 'Нищий', disabled: true }
 			case 'canBuy':
@@ -32,7 +32,6 @@ export const ShopItemCard: React.FC<ShopItemCardProps> = ({
 				return { text: 'Купить', disabled: false }
 		}
 	}
-
 	const { text, disabled } = getButtonState()
 
 	return (
