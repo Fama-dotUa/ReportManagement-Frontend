@@ -1,14 +1,15 @@
 .soldier-list {
-	width: 200px;
+	width: 220px;
 	height: 100%;
 	padding: 8px;
 	display: flex;
+	position: relative;
 	flex-direction: column;
 	gap: 8px;
 }
 
 .search-input {
-	width: 95%;
+	width: 94%;
 	padding: 6px 4px;
 	background-color: var(--report-background);
 	color: var(--text-color);
@@ -20,17 +21,16 @@
 	outline: none;
 	border-color: var(--background-color);
 }
-.soldier-list ul {
+.soldier-list-ul {
 	list-style: none;
 	height: 100%;
 	overflow-y: auto;
 	overflow-x: hidden;
-	background-color: var(--report-background);
 	padding: 8px 4px;
 	margin: 0;
 }
 
-.soldier-list li button {
+.soldier-list-ul button {
 	width: 100%;
 	background: var(--report-background);
 	border: none;
@@ -43,6 +43,6 @@
 	transition: 0.2s;
 }
 
-.soldier-list li button.active {
+.soldier-list-ul button.active {
 	border: 3px solid rgba(255, 34, 0, 0.9);
 }

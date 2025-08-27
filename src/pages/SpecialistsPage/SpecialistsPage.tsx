@@ -20,7 +20,7 @@ const themeMap: Record<string, HoverColor> = {
 	'Пехота и Специалисты': 'emerald',
 }
 
-export const SpecialistsPage: React.FC = () => {
+function SpecialistsPage() {
 	const { purchasableData, error } = usePurchasablePositions()
 	const { user } = useAuth()
 
@@ -106,3 +106,4 @@ export const SpecialistsPage: React.FC = () => {
 		</>
 	)
 }
+export default SpecialistsPage

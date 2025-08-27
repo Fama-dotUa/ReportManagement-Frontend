@@ -14,7 +14,7 @@ import { usePurchasePosition } from '../../hooks/usePurchasePosition'
 import { useUpdateUser } from '../../hooks/useUpdateUser'
 import './Store.css'
 
-export const Store: React.FC = () => {
+function Store() {
 	const { purchasableData, error } = usePurchasablePositions()
 	const { user, CR } = useAuth()
 	const navigate = useNavigate()
@@ -101,3 +101,4 @@ export const Store: React.FC = () => {
 		</>
 	)
 }
+export default Store

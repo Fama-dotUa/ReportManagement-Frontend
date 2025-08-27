@@ -1,56 +1,64 @@
-import React, { useState } from 'react'
+import React, { useMemo, useRef, useState } from 'react'
 import './SoldierList.css'
 import { useUsers } from '../../hooks/useUsers'
 import { useCurrentUser } from '../../hooks/useCurrentUser'
 import { useSearch } from '../../hooks/useSearch'
 import type { User } from '../../types/User'
-const API_URL = import.meta.env.VITE_API_URL
+import { useVirtualizer } from '@tanstack/react-virtual'
+
 interface Props {
 	selectedId: string | null
 	onSelect: (id: string) => void
 	excludeId?: number | string
 }
-const getButtonStyle = (user: User, currentUserId: string | null) => {
-	// ... (эта функция остаётся без изменений)
+
+const getButtonStyle = (user: User, _currentUserId: string | null) => {
 	if (user.fon_schildik_active?.image?.url) {
 		return {
-			backgroundImage: `url(${API_URL + user.fon_schildik_active.image.url})`,
+			backgroundImage: `url(${
+				import.meta.env.VITE_API_URL + user.fon_schildik_active.image.url
+			})`,
 			backgroundSize: 'cover',
 			backgroundPosition: 'center',
-			color: 'white',
-			textShadow:
-				'-1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black',
-		}
+		} as React.CSSProperties
 	}
-	if (String(user.id) === currentUserId) {
-		return { backgroundColor: '#d0f0c0' }
-	}
-	return { backgroundColor: 'transparent' }
+	return {}
 }
 
+const ROW_HEIGHT = 44
+
 const SoldierList: React.FC<Props> = ({ selectedId, onSelect, excludeId }) => {
-	// ================== ВСЕ ХУКИ ДОЛЖНЫ БЫТЬ ЗДЕСЬ ==================
-
-	// 1. Хуки для получения данных
-	const { data: allUsers, isLoading: isLoadingUsers } = useUsers()
+	const { data: users = [], isLoading } = useUsers()
 	const { data: currentUser } = useCurrentUser()
+	const currentUserId = currentUser?.id ? String(currentUser.id) : null
 
-	// 2. Хуки для состояния и логики поиска (перенесены наверх)
+	// 🔎 Поиск по username/discord
 	const [searchQuery, setSearchQuery] = useState('')
-	const filteredUsers = useSearch(allUsers || [], searchQuery)
 
-	// =================================================================
+	// Базовый массив с исключением одного id (если нужно)
+	const baseUsers = useMemo(
+		() => users.filter(u => String(u.id) !== String(excludeId ?? '')),
+		[users, excludeId]
+	)
 
-	// Теперь, когда все хуки вызваны, можно делать условный рендеринг
-	if (isLoadingUsers) {
-		return <div>Загрузка...</div>
+	// Клиентский поиск (быстрый, без дополнительных запросов к бэку)
+	const filteredUsers = useSearch<User>(baseUsers, searchQuery)
+
+	// Виртуализация списка
+	const parentRef = useRef<HTMLDivElement | null>(null)
+	const rowVirtualizer = useVirtualizer({
+		count: filteredUsers.length,
+		getScrollElement: () => parentRef.current,
+		estimateSize: () => ROW_HEIGHT,
+		overscan: 10,
+	})
+
+	if (isLoading) {
+		return <div className='loader'>Загрузка...</div>
 	}
 
-	const visibleUsers = filteredUsers.filter(
-		u => String(u.id) !== String(excludeId)
-	)
 	return (
-		<div className='soldier-list'>
+		<div className='soldier-list' ref={parentRef}>
 			<input
 				type='text'
 				placeholder='Поиск солдата...'
@@ -58,24 +66,27 @@ const SoldierList: React.FC<Props> = ({ selectedId, onSelect, excludeId }) => {
 				value={searchQuery}
 				onChange={e => setSearchQuery(e.target.value)}
 			/>
-			<ul>
-				{visibleUsers.map((user: User) => (
-					<li key={user.id}>
+
+			<div className='soldier-list-ul'>
+				{rowVirtualizer.getVirtualItems().map(virtualRow => {
+					const user = filteredUsers[virtualRow.index]
+					return (
 						<button
-							className={selectedId === String(user.id) ? 'active' : ''}
+							key={user.id}
+							className={`soldier-btn ${
+								selectedId === String(user.id) ? 'active' : ''
+							}`}
 							onClick={() => onSelect(String(user.id))}
-							style={getButtonStyle(
-								user,
-								currentUser?.id !== null ? String(currentUser?.id) : null
-							)}
+							title={`${user.username} | @${user.discord}`}
+							style={getButtonStyle(user, currentUserId)}
 						>
-							<span className='truncate-text' title={user.username}>
+							<span className='truncate-text'>
 								{user.username} | @{user.discord}
 							</span>
 						</button>
-					</li>
-				))}
-			</ul>
+					)
+				})}
+			</div>
 		</div>
 	)
 }

@@ -10,7 +10,7 @@ import { useAllCosmetics } from '../../hooks/useAllCosmetics'
 import './CosmeticsPage.css'
 import { useAuth } from '../../hooks/useAuth'
 
-export const CosmeticsPage: React.FC = () => {
+function CosmeticsPage() {
 	const { user, CR, token } = useAuth()
 
 	const { allCosmetics, loading, error } = useAllCosmetics(user)
@@ -153,3 +153,4 @@ export const CosmeticsPage: React.FC = () => {
 		</>
 	)
 }
+export default CosmeticsPage

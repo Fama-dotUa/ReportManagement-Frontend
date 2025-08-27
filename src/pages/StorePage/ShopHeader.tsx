@@ -1,7 +1,6 @@
 // src/components/ShopHeader/ShopHeader.tsx
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { BsArrowLeft } from 'react-icons/bs'
 interface ShopHeaderProps {
 	title: string
 	balance: number
@@ -16,7 +15,7 @@ export const ShopHeader: React.FC<ShopHeaderProps> = ({ title, balance }) => {
 				<span> CR</span>
 			</div>
 			<button onClick={() => navigate('/officer')} className='back-button'>
-				<BsArrowLeft className='icon-arrow' /> На главную
+				&larr; На главную
 			</button>
 		</header>
 	)

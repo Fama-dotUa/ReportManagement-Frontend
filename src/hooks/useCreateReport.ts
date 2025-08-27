@@ -1,40 +1,40 @@
-const API_URL = import.meta.env.VITE_API_URL
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '../api/client'
 
-export async function createReport({
-	userId,
-	reasonId,
-	days,
-	description,
-	creatorId,
-}: {
+type CreateReportInput = {
 	userId: string | number
 	reasonId: string | number
 	days: number
 	description: string
 	creatorId?: string | number
-}) {
-	const token = localStorage.getItem('jwt')
-	if (!token) throw new Error('JWT не найден в localStorage')
+}
 
-	const res = await fetch(`${API_URL}/api/reports`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
+const createReportRequest = async (body: CreateReportInput) => {
+	const payload = {
+		data: {
+			user: Number(body.userId),
+			reason: String(body.reasonId),
+			time_to_free: Number(body.days),
+			description: body.description,
+			creator: body.creatorId ? Number(body.creatorId) : undefined,
 		},
-		body: JSON.stringify({
-			data: {
-				user: Number(userId),
-				reason: String(reasonId),
-				time_to_free: Number(days),
-				description: description,
-				creator: Number(creatorId),
-			},
-		}),
+	}
+	const res = await api.post('/api/reports', payload)
+	return res.data.data
+}
+
+export const useCreateReport = () => {
+	const qc = useQueryClient()
+	return useMutation({
+		mutationFn: createReportRequest,
+		onSuccess: (_data, variables) => {
+			// keep caches in sync without blasting everything
+			qc.invalidateQueries({ queryKey: ['reports'] })
+			if (variables.userId) {
+				qc.invalidateQueries({
+					queryKey: ['reportsBySoldier', variables.userId],
+				})
+			}
+		},
 	})
-
-	if (!res.ok) throw new Error('Ошибка при создании рапорта')
-
-	const json = await res.json()
-	return json.data
 }

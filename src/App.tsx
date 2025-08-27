@@ -6,27 +6,26 @@ import {
 } from 'react-router-dom'
 import './App.css'
 import { AnimatePresence } from 'framer-motion'
+import { Suspense, lazy, useEffect } from 'react'
 
-// Импортируем нашу новую обертку
 import { AnimatedLayout } from './AnimatedLayout'
-
 import { useUpdateActivity } from './hooks/useUpdateActivity'
-
-// Импортируем все страницы
-import StartPages from './pages/StartPage/StartPage'
-import OfficerPage from './pages/OfficerPage/OfficerPage'
-import { Store } from './pages/StorePage/Store'
-import { SpecialistsPage } from './pages/SpecialistsPage/SpecialistsPage'
-import { CosmeticsPage } from './pages/CosmeticsPage/CosmeticsPage'
 import { useAuth } from './hooks/useAuth'
-import { useEffect } from 'react'
-import  CasinoPage  from './pages/CasinoPage/CasinoPage'
-import  DonationPage  from './pages/DonationPage/DonationPage'
-function App() {
-	const { user } = useAuth()
+
+const StartPages = lazy(() => import('./pages/StartPage/StartPage'))
+const OfficerPage = lazy(() => import('./pages/OfficerPage/OfficerPage'))
+const CasinoPage = lazy(() => import('./pages/CasinoPage/CasinoPage'))
+const CosmeticsPage = lazy(() => import('./pages/CosmeticsPage/CosmeticsPage'))
+const DonationPage = lazy(() => import('./pages/DonationPage/DonationPage'))
+const SpecialistsPage = lazy(
+	() => import('./pages/SpecialistsPage/SpecialistsPage')
+)
+const StorePage = lazy(() => import('./pages/StorePage/Store'))
+
+function AppContent() {
 	const location = useLocation()
 	const { mutate: updateActivity } = useUpdateActivity()
-
+	const { user } = useAuth()
 	useEffect(() => {
 		if (user?.id) {
 			updateActivity(user.id)
@@ -39,18 +38,66 @@ function App() {
 		}
 	}, [user?.id, updateActivity])
 
-
 	return (
 		<AnimatePresence mode='wait'>
 			<Routes location={location} key={location.pathname}>
-				<Route path='/' element={<AnimatedLayout />}>
-					<Route index element={<StartPages />} />
-					<Route path='officer' element={<OfficerPage />} />
-					<Route path='store' element={<Store />} />
-					<Route path='specialists' element={<SpecialistsPage />} />
-					<Route path='cosmetics' element={<CosmeticsPage />} />
-					<Route path='casino' element={<CasinoPage />} />
-					<Route path='donation' element={<DonationPage />} />
+				<Route element={<AnimatedLayout />}>
+					<Route
+						path='/'
+						element={
+							<Suspense fallback={null}>
+								<StartPages />
+							</Suspense>
+						}
+					/>
+					<Route
+						path='officer'
+						element={
+							<Suspense fallback={null}>
+								<OfficerPage />
+							</Suspense>
+						}
+					/>
+					<Route
+						path='casino'
+						element={
+							<Suspense fallback={null}>
+								<CasinoPage />
+							</Suspense>
+						}
+					/>
+					<Route
+						path='cosmetics'
+						element={
+							<Suspense fallback={null}>
+								<CosmeticsPage />
+							</Suspense>
+						}
+					/>
+					<Route
+						path='donation'
+						element={
+							<Suspense fallback={null}>
+								<DonationPage />
+							</Suspense>
+						}
+					/>
+					<Route
+						path='specialists'
+						element={
+							<Suspense fallback={null}>
+								<SpecialistsPage />
+							</Suspense>
+						}
+					/>
+					<Route
+						path='store'
+						element={
+							<Suspense fallback={null}>
+								<StorePage />
+							</Suspense>
+						}
+					/>
 				</Route>
 			</Routes>
 		</AnimatePresence>
@@ -59,7 +106,7 @@ function App() {
 
 const Root = () => (
 	<Router>
-		<App />
+		<AppContent />
 	</Router>
 )
 

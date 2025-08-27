@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import MDEditor from '@uiw/react-md-editor'
 import { getReasons } from '../../../../api/getReasons'
-import { createReport } from '../../../../hooks/useCreateReport'
+import { useCreateReport } from '../../../../hooks/useCreateReport'
 import { useAuth } from '../../../../hooks/useAuth'
 import { generateChanceryPdfBlob } from '../../../../hooks/generateChanceryPdfBlob'
 
@@ -55,7 +55,8 @@ const ChanceryReportForm: React.FC<ChanceryReportFormProps> = ({
 		if (!confirm) return
 
 		try {
-			const report = await createReport({
+			const createReportMutation = useCreateReport()
+			const report = await createReportMutation.mutateAsync({
 				userId: finalUserId,
 				reasonId: Number(reason),
 				days: Number(days),

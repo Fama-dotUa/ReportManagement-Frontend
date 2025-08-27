@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import api from '../api/client'
+import dayjs from 'dayjs'
 
 type ReportView = {
 	id: number
@@ -14,62 +15,47 @@ type ReportView = {
 	}
 }
 
-export const useReportsBySoldier = (soldierId: string | null) => {
-	const [reports, setReports] = useState<ReportView[]>([])
-	const [loading, setLoading] = useState(false)
-	const [error, setError] = useState<string | null>(null)
+const fetchReportsBySoldier = async (soldierId: number | string) => {
+	const { data } = await api.get(`/api/reports`, {
+		params: {
+			'filters[user][id][$eq]': soldierId,
+			populate: '*',
+			'sort[0]': 'createdAt:desc',
+			'pagination[pageSize]': 50,
+		},
+	})
 
-	const API_URL = import.meta.env.VITE_API_URL
+	return (data.data ?? []).map(
+		(r: any): ReportView => ({
+			id: r.id,
+			time_to_free: r.time_to_free,
+			createdAt: r.createdAt,
+			description: r.description,
+			creatorName: r.creator?.username ?? '—',
+			reason: {
+				cipher: r.reason?.cipher ?? '',
+				number: r.reason?.number ?? 0,
+				description: r.reason?.description ?? '',
+			},
+		})
+	)
+}
 
-	useEffect(() => {
-		if (!soldierId) return
-
-		const token = localStorage.getItem('jwt')
-		if (!token) {
-			setError('Пользователь не авторизован')
-			return
-		}
-
-		setLoading(true)
-		setError(null)
-
-		axios
-			.get(
-				`${API_URL}/api/reports?filters[user][id][$eq]=${soldierId}&populate=*`,
-				{
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				}
-			)
-			.then(res => {
-				const raw = res.data?.data
-				if (!Array.isArray(raw)) {
-					console.error('Некорректный формат данных:', res.data)
-					setError('Неверный ответ от сервера')
-					return
-				}
-				const result: ReportView[] = raw.map((r: any) => ({
-					id: r.id,
-					time_to_free: r.time_to_free,
-					createdAt: r.createdAt,
-					description: r.description,
-					creatorName: r.creator?.username || '',
-					reason: {
-						cipher: r.reason?.cipher || '',
-						number: r.reason?.number || 0,
-						description: r.reason?.description || '',
-					},
-				}))
-
-				setReports(result)
-			})
-			.catch(err => {
-				console.error('Ошибка запроса:', err)
-				setError('Не удалось загрузить рапорты')
-			})
-			.finally(() => setLoading(false))
-	}, [soldierId])
-
-	return { reports, loading, error }
+export const useReportsBySoldier = (soldierId: number | string | null) => {
+	return useQuery({
+		enabled: !!soldierId,
+		queryKey: ['reportsBySoldier', soldierId],
+		queryFn: () => fetchReportsBySoldier(soldierId!),
+		staleTime: 10 * 60 * 1000,
+		select: list =>
+			list.map(
+				(item: {
+					createdAt: string | number | Date | dayjs.Dayjs | null | undefined
+				}) => ({
+					...item,
+					// any lightweight derived data stays here
+					createdAt: dayjs(item.createdAt).toISOString(),
+				})
+			),
+	})
 }

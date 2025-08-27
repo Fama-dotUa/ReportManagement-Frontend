@@ -17,8 +17,7 @@ const fetchAuthenticatedUser = async () => {
 		localStorage.removeItem('jwt')
 		throw new Error('Сессия истекла или невалидна.')
 	}
-	const rawUserData = await response.json()
-	console.log('Raw user data:', rawUserData)
+
 	return response.json()
 }
 

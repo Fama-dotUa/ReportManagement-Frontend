@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import SoldierList from './SoldierList'
 import './CenterPanel.css'
 import MDEditor from '@uiw/react-md-editor'
-import { getReasons } from '../../api/getReasons'
-import { createReport } from '../../hooks/useCreateReport'
+import { useReasons } from '../../hooks/useReasons'
+import { useCreateReport } from '../../hooks/useCreateReport'
 import { useAuth } from '../../hooks/useAuth'
 import { generatePdfBlob } from '../../hooks/generatePdfBlob'
 
@@ -12,51 +12,18 @@ const ReportForm: React.FC = () => {
 	const [reason, setReason] = useState('')
 	const [days, setDays] = useState('0')
 	const [value, setValue] = useState<string | undefined>('**Текст рапорта**')
-	const [reasons, setReasons] = useState<{ id: number; label: string }[]>([])
 	const { user, token } = useAuth()
-	const [excludeSelf, setExcludeSelf] = useState(true)
-
-	useEffect(() => {
-		getReasons()
-			.then(allReasons => {
-				const excludedSubstrings = [
-					'Отказ от прохождения обучения',
-					'Повышена квалификация',
-					'Обучен новой специальности',
-				]
-
-				const filteredReasons = allReasons.filter(
-					(reason: { label: string }) =>
-						!excludedSubstrings.some(substring =>
-							reason.label.toLowerCase().includes(substring.toLowerCase())
-						)
-				)
-
-				setReasons(filteredReasons)
-			})
-			.catch(console.error)
-	}, [])
+	const { data: reasons = [], isLoading: reasonsLoading } = useReasons()
+	const { mutateAsync: createReport, isPending: creating } = useCreateReport()
 
 	const handleSubmit = async () => {
-		if (
-			!selectedId ||
-			!reason ||
-			!value?.trim() ||
-			Number(days) < 0 ||
-			Number(days) > 30
-		) {
-			alert('Пожалуйста, заполните все поля корректно.')
-			return
-		}
-		const confirm = window.confirm('Нету ли ошибок в тексте?')
-		if (!confirm) return
-
+		if (!selectedId || !user) return
 		try {
 			const report = await createReport({
 				userId: selectedId,
 				reasonId: Number(reason),
 				days: Number(days),
-				description: value,
+				description: value || '',
 				creatorId: user?.id || 'unknown',
 			})
 			const reportId = report.id
@@ -77,34 +44,35 @@ const ReportForm: React.FC = () => {
 				body: formData,
 			})
 
-			alert('Рапорт успешно создан и прикреплён как PDF!')
+			alert('Рапорт успешно создан')
+			setSelectedId(null)
 			setReason('')
 			setDays('0')
 			setValue('**Текст рапорта**')
-		} catch (err: any) {
-			console.error(err)
-			alert(`Ошибка: ${err.message}`)
+		} catch (e) {
+			console.error(e)
+			alert('Ошибка при создании рапорта')
 		}
 	}
 
 	return (
 		<div className='center'>
-			<SoldierList
-				selectedId={selectedId}
-				onSelect={setSelectedId}
-				excludeId={excludeSelf ? user?.id : undefined}
-			/>
+			<SoldierList selectedId={selectedId} onSelect={id => setSelectedId(id)} />
+
 			<div className='center-panel report-form'>
-				<h3>Создание рапорта</h3>
-
-				{!selectedId && <p className='placeholder'></p>}
-
-				{selectedId && (
+				{selectedId ? (
 					<>
 						<div className='form-group reason'>
-							<label>Номер причины:</label>
-							<select value={reason} onChange={e => setReason(e.target.value)}>
-								{reasons.map(r => (
+							<label>Причина</label>
+							<select
+								value={reason}
+								onChange={e => setReason(e.target.value)}
+								disabled={reasonsLoading}
+							>
+								<option value='' disabled>
+									Выберите причину
+								</option>
+								{reasons.map((r: any) => (
 									<option key={r.id} value={r.id}>
 										{r.label}
 									</option>
@@ -134,10 +102,17 @@ const ReportForm: React.FC = () => {
 								<MDEditor value={value} onChange={setValue} height={300} />
 							</div>
 						</div>
-						<button className='submit-btn' onClick={handleSubmit}>
-							Добавить рапорт
+
+						<button
+							className='submit-btn'
+							onClick={handleSubmit}
+							disabled={creating}
+						>
+							{creating ? 'Сохранение...' : 'Добавить рапорт'}
 						</button>
 					</>
+				) : (
+					<p className='placeholder'></p>
 				)}
 			</div>
 		</div>
