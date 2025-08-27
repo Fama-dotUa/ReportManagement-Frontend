@@ -48,7 +48,6 @@ const OfficerPage: React.FC = () => {
 				<div className='left-nav'>
 					<BurgerMenu />
 					<ThemeToggleButton />
-					<div className='menu'>STV_sqúad</div>
 				</div>
 
 				<div className='center-nav'>
@@ -84,7 +83,7 @@ const OfficerPage: React.FC = () => {
 					<button className='nav-button' onClick={() => navigate('/store')}>
 						Магазин
 					</button>
-										{/* Добавлена кнопка для перехода в казино */}
+					{/* Добавлена кнопка для перехода в казино */}
 					<button className='nav-button' onClick={() => navigate('/casino')}>
 						Казино
 					</button>

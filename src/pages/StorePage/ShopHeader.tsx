@@ -11,7 +11,7 @@ export const ShopHeader: React.FC<ShopHeaderProps> = ({ title, balance }) => {
 	return (
 		<header className='header'>
 			<h1>{title}</h1>
-			<div className='balance-display'>
+			<div className='balance-display-shop'>
 				<span>{balance.toLocaleString()}</span>
 				<span> CR</span>
 			</div>

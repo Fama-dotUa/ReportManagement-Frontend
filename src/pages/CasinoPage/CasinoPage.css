@@ -1,226 +1,234 @@
 .casino-page {
-    position: relative;
-    height: 100vh;
-    width: 100%;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-color);
+	position: relative;
+	height: 100vh;
+	width: 100%;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--text-color);
 }
 
 .casino-panel {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    max-width: 1100px;
-    height: 1000px;
-    background: var(--panel-background);
-    border-radius: 8px;
-    padding: 20px 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    
-    /* Анимация неоновой рамки */
-    border: 2px solid #ff0000;
-    animation: neon-border-glow 4s linear infinite;
+	position: relative;
+	z-index: 2;
+	width: 100%;
+	max-width: 1100px;
+	height: 1000px;
+	background: var(--panel-background);
+	border-radius: 8px;
+	padding: 20px 40px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+	/* Анимация неоновой рамки */
+	border: 2px solid #ff0000;
+	animation: neon-border-glow 4s linear infinite;
 }
 /* Анимация градиента для текста */
 .casino-header h1.animated-gradient-text {
-    background-image: linear-gradient(90deg, #ff0000, #8a2be2, #ff0000);
-    background-size: 200% auto;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: gradient-animation 4s linear infinite;
+	background-image: linear-gradient(90deg, #ff0000, #8a2be2, #ff0000);
+	background-size: 200% auto;
+	color: transparent;
+	-webkit-background-clip: text;
+	background-clip: text;
+	animation: gradient-animation 4s linear infinite;
 }
 
 .casino-header {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    margin-bottom: 20px;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	margin-bottom: 20px;
 }
 
 .casino-header h1 {
-    margin: 0;
-    font-size: 3rem;
-    text-align: center;
+	margin: 0;
+	font-size: 3rem;
+	text-align: center;
 }
 
 .casino-content {
-    width: 100%;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    position: relative;
+	width: 100%;
+	flex-grow: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	position: relative;
 }
 
 .game-selection h2 {
-    margin-bottom: 30px;
-    font-weight: 500;
+	margin-bottom: 30px;
+	font-weight: 500;
 }
 
 .game-buttons {
-    display: flex;
-    gap: 20px;
+	display: flex;
+	gap: 20px;
 }
 
 .game-buttons button {
-    padding: 20px 40px;
-    font-size: 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: rgba(138, 183, 107, 0.5);
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    transition: transform 0.2s ease, background-color 0.2s ease;
+	padding: 20px 40px;
+	font-size: 1.5rem;
+	border-radius: 8px;
+	cursor: pointer;
+	background-color: rgba(138, 183, 107, 0.5);
+	border: 1px solid var(--border-color);
+	color: var(--text-color);
+	transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .game-buttons button:hover {
-    transform: translateY(-5px);
-    background-color: rgba(138, 183, 107, 0.7);
+	transform: translateY(-5px);
+	background-color: rgba(138, 183, 107, 0.7);
 }
 
 .game-placeholder {
-    font-size: 2rem;
-    font-style: italic;
-    color: var(--text-color);
-    opacity: 0.7;
-    text-align: center;
+	font-size: 2rem;
+	font-style: italic;
+	color: var(--text-color);
+	opacity: 0.7;
+	text-align: center;
 }
 
-.back-button, .coupon-button, .ingame-back-button {
-    position: absolute;
-    top: 20px;
-    padding: 10px 15px;
-    font-size: 1rem;
-    background: var(--report-background);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    cursor: pointer;
-    z-index: 10;
+.back-button-casino,
+.coupon-button,
+.ingame-back-button {
+	position: absolute;
+	top: 20px;
+	padding: 10px 15px;
+	font-size: 1rem;
+	background: var(--report-background);
+	border: 1px solid var(--border-color);
+	border-radius: 4px;
+	cursor: pointer;
+	z-index: 10;
 }
 
-.back-button {
-    left: 20px;
+.back-button-casino {
+	left: 20px;
 }
 
 .coupon-button {
-    right: 20px;
+	right: 20px;
 }
 
 .ingame-back-button {
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: auto;
+	position: absolute;
+	top: 0;
+	right: 0;
+	left: auto;
 }
 .ingame-back-button.back-to-main {
-    top: -72px;
+	top: -72px;
 }
 
 /* Стили для конвертера */
 .coupon-converter {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
 }
 
 .coupon-converter h2 {
-    margin-bottom: 30px;
+	margin-bottom: 30px;
 }
 
 .converter-forms {
-    display: flex;
-    width: 100%;
-    justify-content: space-around;
-    gap: 40px;
+	display: flex;
+	width: 100%;
+	justify-content: space-around;
+	gap: 40px;
 }
 
 .converter-form {
-    background: var(--background-color);
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    width: 300px;
+	background: var(--background-color);
+	padding: 20px;
+	border-radius: 8px;
+	border: 1px solid var(--border-color);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 15px;
+	width: 300px;
 }
 
 .converter-form h3 {
-    margin: 0;
+	margin: 0;
 }
 
 .converter-form input {
-    width: 80%;
-    padding: 10px;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    background: var(--panel-background);
-    color: var(--text-color);
-    font-size: 1rem;
+	width: 80%;
+	padding: 10px;
+	border-radius: 4px;
+	border: 1px solid var(--border-color);
+	background: var(--panel-background);
+	color: var(--text-color);
+	font-size: 1rem;
 }
 
 .converter-form button {
-    width: 90%;
-    padding: 10px;
+	width: 90%;
+	padding: 10px;
 }
 .roulette-history {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    padding: 5px 10px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    color: var(--text-color);
-    min-height: 40px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 10px;
+	padding: 5px 10px;
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	color: var(--text-color);
+	min-height: 40px;
 }
 
 .roulette-history span {
-    font-weight: 500;
+	font-weight: 500;
 }
 
 .history-number {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    color: white;
-    font-size: 14px;
-    flex-shrink: 0;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	color: white;
+	font-size: 14px;
+	flex-shrink: 0;
 }
 
-.history-number.red { background-color: #d9534f; }
-.history-number.black { background-color: #333; }
-.history-number.green { background-color: #5cb85c; }
+.history-number.red {
+	background-color: #d9534f;
+}
+.history-number.black {
+	background-color: #333;
+}
+.history-number.green {
+	background-color: #5cb85c;
+}
 .casino-header h1.animated-gradient-text {
-    /* Создаем градиент от красного к сиреневому и обратно к красному */
-    background-image: linear-gradient(90deg, #ff0000, #8a2be2, #ff0000);
-    
-    /* Делаем фон в два раза шире текста для анимации */
-    background-size: 200% auto;
-    
-    /* Обрезаем фон по форме текста */
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    
-    /* Запускаем анимацию */
-    animation: gradient-animation 4s linear infinite;
+	/* Создаем градиент от красного к сиреневому и обратно к красному */
+	background-image: linear-gradient(90deg, #ff0000, #8a2be2, #ff0000);
+
+	/* Делаем фон в два раза шире текста для анимации */
+	background-size: 200% auto;
+
+	/* Обрезаем фон по форме текста */
+	color: transparent;
+	-webkit-background-clip: text;
+	background-clip: text;
+
+	/* Запускаем анимацию */
+	animation: gradient-animation 4s linear infinite;
 }
 /* ... ваши существующие стили ... */
 
@@ -228,80 +236,79 @@
    Обновленные стили для минималистичной панели уровня игрока.
 */
 .player-level-bar {
-    position: absolute;
-    top: -85px; /* Отрицательное значение, чтобы поднять бар НАД панелью */
-    right: 40px; /* Выравниваем по правому краю контента */
-    width: 280px; /* Фиксированная ширина для компактности */
-    display: flex;
-    flex-direction: column; /* Элементы в столбец */
-    align-items: flex-start; /* Выравнивание по левому краю */
-    gap: 5px; /* Уменьшенный отступ между элементами */
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 8px 12px; /* Уменьшенные внутренние отступы */
-    border-radius: 6px;
-    z-index: 100;
-    border: 1px solid rgba(255, 255, 255, 0.2); /* Тонкая рамка для стиля */
+	position: absolute;
+	top: -85px; /* Отрицательное значение, чтобы поднять бар НАД панелью */
+	right: 40px; /* Выравниваем по правому краю контента */
+	width: 280px; /* Фиксированная ширина для компактности */
+	display: flex;
+	flex-direction: column; /* Элементы в столбец */
+	align-items: flex-start; /* Выравнивание по левому краю */
+	gap: 5px; /* Уменьшенный отступ между элементами */
+	background-color: rgba(0, 0, 0, 0.5);
+	padding: 8px 12px; /* Уменьшенные внутренние отступы */
+	border-radius: 6px;
+	z-index: 100;
+	border: 1px solid rgba(255, 255, 255, 0.2); /* Тонкая рамка для стиля */
 
-    border: 2px solid #ff0000;
-    animation: neon-border-glow 4s linear infinite;
+	border: 2px solid #ff0000;
+	animation: neon-border-glow 4s linear infinite;
 }
 
 .level-display {
-    font-size: 0.9rem; /* Уменьшенный шрифт */
-    font-weight: 500;
-    color: #ffc107;
-    margin: 0;
-    padding: 0;
+	font-size: 0.9rem; /* Уменьшенный шрифт */
+	font-weight: 500;
+	color: #ffc107;
+	margin: 0;
+	padding: 0;
 }
 
 .xp-bar-container {
-    width: 100%; /* На всю ширину нового контейнера */
-    height: 18px; /* Панель стала тоньше */
-    background-color: #16213e;
-    border-radius: 4px;
-    border: 1px solid #e94560;
-    overflow: hidden;
-    position: relative;
+	width: 100%; /* На всю ширину нового контейнера */
+	height: 18px; /* Панель стала тоньше */
+	background-color: #16213e;
+	border-radius: 4px;
+	border: 1px solid #e94560;
+	overflow: hidden;
+	position: relative;
 }
 
 .xp-bar-progress {
-    height: 100%;
-    background: linear-gradient(to right, #5cb85c, #86e086);
-    border-radius: 4px;
-    transition: width 0.5s ease-in-out;
+	height: 100%;
+	background: linear-gradient(to right, #5cb85c, #86e086);
+	border-radius: 4px;
+	transition: width 0.5s ease-in-out;
 }
 
 .xp-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.75rem; /* Уменьшенный шрифт для XP */
-    font-weight: bold;
-    color: white;
-    text-shadow: 1px 1px 2px black;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	font-size: 0.75rem; /* Уменьшенный шрифт для XP */
+	font-weight: bold;
+	color: white;
+	text-shadow: 1px 1px 2px black;
 }
-
 
 @keyframes gradient-animation {
-    0% {
-        background-position: 0% 50%;
-    }
-    100% {
-        background-position: 200% 50%;
-    }
+	0% {
+		background-position: 0% 50%;
+	}
+	100% {
+		background-position: 200% 50%;
+	}
 }
 @keyframes neon-border-glow {
-    0% {
-        border-color: #ff0000;
-        box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000;
-    }
-    50% {
-        border-color: #8a2be2;
-        box-shadow: 0 0 5px #8a2be2, 0 0 10px #8a2be2, 0 0 15px #8a2be2;
-    }
-    100% {
-        border-color: #ff0000;
-        box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000;
-    }
+	0% {
+		border-color: #ff0000;
+		box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000;
+	}
+	50% {
+		border-color: #8a2be2;
+		box-shadow: 0 0 5px #8a2be2, 0 0 10px #8a2be2, 0 0 15px #8a2be2;
+	}
+	100% {
+		border-color: #ff0000;
+		box-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000;
+	}
 }
