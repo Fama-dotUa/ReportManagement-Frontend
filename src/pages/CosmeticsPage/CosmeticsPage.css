@@ -1,3 +1,4 @@
+@layer components {
 .page-header h1 {
 	color: #a78bfa; /* text-purple-400 */
 }
@@ -214,4 +215,6 @@
 	padding: 0.3rem 0.8rem;
 	border-radius: 9999px;
 	border: 1px solid #48bb78;
+}
+
 }

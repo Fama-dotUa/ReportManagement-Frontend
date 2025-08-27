@@ -1,3 +1,4 @@
+@layer components {
 .modal-content.modal-content-briefing {
 	width: 600px;
 	padding: 2rem;
@@ -23,4 +24,6 @@
 }
 #take_on {
 	background-color: rgba(114, 190, 42, 0.8);
+}
+
 }

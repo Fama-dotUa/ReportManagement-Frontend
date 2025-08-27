@@ -1,3 +1,4 @@
+@layer components {
 .officer-page {
 	position: relative;
 	height: 100vh;
@@ -261,4 +262,6 @@
 #CR_for_all_time {
 	font-size: 16px;
 	color: var(--CR_for_all_time-color);
+}
+
 }

@@ -1,3 +1,4 @@
+@layer components {
 .briefing-item {
 	position: relative;
 	padding: 15px;
@@ -51,4 +52,6 @@
 	color: rgb(255, 0, 0, 0.2);
 	pointer-events: none;
 	z-index: 0;
+}
+
 }

@@ -1,3 +1,4 @@
+@layer components {
 .user-awards-container {
 	display: flex;
 	align-items: center;
@@ -93,4 +94,6 @@
 	background-color: rgba(26, 26, 26, 0.15);
 	color: var(--text-color);
 	border: var(--border-color) solid 1px;
+}
+
 }

@@ -1,158 +1,160 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+@layer components {
+	@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-:root {
-	font-family: 'Inter', sans-serif;
-	font-optical-sizing: auto;
-	font-style: normal;
-	line-height: 1.5;
-	font-weight: 400;
-	font-synthesis: none;
+	:root {
+		font-family: 'Inter', sans-serif;
+		font-optical-sizing: auto;
+		font-style: normal;
+		line-height: 1.5;
+		font-weight: 400;
+		font-synthesis: none;
 
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	--background-color: #ffffff;
-	--text-color: #222222;
-	--primary-color: #007bff;
-	--panel-background: rgba(255, 255, 255, 0.65);
-	--border-color: #444444;
-	--report-background: rgba(92, 92, 92, 0.45);
-	--border-bottom-left-right-panel: rgba(0, 0, 0, 0.4);
-	--report-permanent: rgba(136, 136, 47, 0.4);
-	--report-active: rgba(20, 120, 20, 0.25);
-	--report-expired: rgba(92, 92, 92, 0.45);
-	--profile-background: rgba(255, 255, 255, 0.5);
-	--description-color: rgba(106, 0, 255, 0.8);
-	--chiher-color: rgba(120, 20, 20, 0.8);
-	--status-text-color: rgba(20, 120, 20, 0.8);
-	--form-background: rgba(255, 255, 255, 0.8);
-	--cosmetic-border-color: rgba(91, 117, 143, 0.15);
-	--CR_for_all_time-color: rgba(82, 105, 123, 1);
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		--background-color: #ffffff;
+		--text-color: #222222;
+		--primary-color: #007bff;
+		--panel-background: rgba(255, 255, 255, 0.65);
+		--border-color: #444444;
+		--report-background: rgba(92, 92, 92, 0.45);
+		--border-bottom-left-right-panel: rgba(0, 0, 0, 0.4);
+		--report-permanent: rgba(136, 136, 47, 0.4);
+		--report-active: rgba(20, 120, 20, 0.25);
+		--report-expired: rgba(92, 92, 92, 0.45);
+		--profile-background: rgba(255, 255, 255, 0.5);
+		--description-color: rgba(106, 0, 255, 0.8);
+		--chiher-color: rgba(120, 20, 20, 0.8);
+		--status-text-color: rgba(20, 120, 20, 0.8);
+		--form-background: rgba(255, 255, 255, 0.8);
+		--cosmetic-border-color: rgba(91, 117, 143, 0.15);
+		--CR_for_all_time-color: rgba(82, 105, 123, 1);
 
-	--background-gradient-1: linear-gradient(
-		135deg,
-		var(--background-color),
-		#00a6ff 100%
-	);
-	--background-gradient-2: linear-gradient(
-		135deg,
-		var(--background-color),
-		#abda81 100%
-	);
-	--background-gradient-3: linear-gradient(
-		135deg,
-		var(--background-color),
-		#dec14a 100%
-	);
-	--background-gradient-4: linear-gradient(
-		135deg,
-		var(--background-color),
-		#d15246 100%
-	);
-	--background-gradient-5: linear-gradient(
-		135deg,
-		var(--background-color),
-		#d15246 100%
-	);
-	--background-gradient-6: linear-gradient(
-		135deg,
-		var(--background-color),
-		#d15246 100%
-	);
-}
-[data-theme='dark'] {
-	--background-color: rgba(92, 92, 92, 0.45);
-	--text-color: #e0e0e0;
-	--primary-color: #64b5f6;
-	--panel-background: rgba(18, 18, 18, 0.65);
-	--border-color: #dee2e6;
-	--report-background: rgba(180, 176, 176, 0.5);
-	--border-bottom-left-right-panel: rgba(255, 255, 255, 0.4);
-	--report-permanent: rgba(136, 136, 47, 0.8);
-	--report-active: rgba(20, 120, 20, 0.5);
-	--report-expired: rgba(180, 176, 176, 0.5);
-	--profile-background: rgba(79, 77, 77, 0.5);
-	--description-color: rgba(38, 255, 0, 0.8);
-	--chiher-color: rgba(255, 0, 0, 0.8);
-	--status-text-color: rgba(48, 115, 223, 0.8);
-	--form-background: rgb(11, 11, 11, 0.8);
-	--cosmetic-border-color: rgba(171, 171, 171, 0.24);
-	--CR_for_all_time-color: rgb(114, 141, 151);
+		--background-gradient-1: linear-gradient(
+			135deg,
+			var(--background-color),
+			#00a6ff 100%
+		);
+		--background-gradient-2: linear-gradient(
+			135deg,
+			var(--background-color),
+			#abda81 100%
+		);
+		--background-gradient-3: linear-gradient(
+			135deg,
+			var(--background-color),
+			#dec14a 100%
+		);
+		--background-gradient-4: linear-gradient(
+			135deg,
+			var(--background-color),
+			#d15246 100%
+		);
+		--background-gradient-5: linear-gradient(
+			135deg,
+			var(--background-color),
+			#d15246 100%
+		);
+		--background-gradient-6: linear-gradient(
+			135deg,
+			var(--background-color),
+			#d15246 100%
+		);
+	}
+	[data-theme='dark'] {
+		--background-color: rgba(92, 92, 92, 0.45);
+		--text-color: #e0e0e0;
+		--primary-color: #64b5f6;
+		--panel-background: rgba(18, 18, 18, 0.65);
+		--border-color: #dee2e6;
+		--report-background: rgba(180, 176, 176, 0.5);
+		--border-bottom-left-right-panel: rgba(255, 255, 255, 0.4);
+		--report-permanent: rgba(136, 136, 47, 0.8);
+		--report-active: rgba(20, 120, 20, 0.5);
+		--report-expired: rgba(180, 176, 176, 0.5);
+		--profile-background: rgba(79, 77, 77, 0.5);
+		--description-color: rgba(38, 255, 0, 0.8);
+		--chiher-color: rgba(255, 0, 0, 0.8);
+		--status-text-color: rgba(48, 115, 223, 0.8);
+		--form-background: rgb(11, 11, 11, 0.8);
+		--cosmetic-border-color: rgba(171, 171, 171, 0.24);
+		--CR_for_all_time-color: rgb(114, 141, 151);
 
-	--background-gradient-1: linear-gradient(
-		135deg,
-		var(--background-color),
-		#00a6ff 100%
-	);
-	--background-gradient-2: linear-gradient(
-		135deg,
-		var(--background-color),
-		#d9f7be 100%
-	);
-	--background-gradient-3: linear-gradient(
-		135deg,
-		var(--background-color),
-		#fff1b8 100%
-	);
-	--background-gradient-4: linear-gradient(
-		135deg,
-		var(--background-color),
-		#ffccc7 100%
-	);
-	--background-gradient-5: linear-gradient(
-		135deg,
-		var(--background-color),
-		#ffccc7 100%
-	);
-	--background-gradient-6: linear-gradient(
-		135deg,
-		var(--background-color),
-		#ffccc7 100%
-	);
-}
-a {
-	font-weight: 500;
-	color: #646cff;
-	text-decoration: inherit;
-}
-a:hover {
-	color: #535bf2;
-}
+		--background-gradient-1: linear-gradient(
+			135deg,
+			var(--background-color),
+			#00a6ff 100%
+		);
+		--background-gradient-2: linear-gradient(
+			135deg,
+			var(--background-color),
+			#d9f7be 100%
+		);
+		--background-gradient-3: linear-gradient(
+			135deg,
+			var(--background-color),
+			#fff1b8 100%
+		);
+		--background-gradient-4: linear-gradient(
+			135deg,
+			var(--background-color),
+			#ffccc7 100%
+		);
+		--background-gradient-5: linear-gradient(
+			135deg,
+			var(--background-color),
+			#ffccc7 100%
+		);
+		--background-gradient-6: linear-gradient(
+			135deg,
+			var(--background-color),
+			#ffccc7 100%
+		);
+	}
+	a {
+		font-weight: 500;
+		color: #646cff;
+		text-decoration: inherit;
+	}
+	a:hover {
+		color: #535bf2;
+	}
 
-body {
-	margin: 0;
-	place-items: center;
-	overflow-x: hidden;
-	min-width: 320px;
-	min-height: 100%;
-	background-image: url('./assets/background.png');
-	background-size: cover;
-	background-position: center;
-	background-color: var(--background-color);
-	color: var(--text-color);
-	transition: background-color 0.3s ease, color 0.3s ease;
-}
+	body {
+		margin: 0;
+		place-items: center;
+		overflow-x: hidden;
+		min-width: 320px;
+		min-height: 100%;
+		background-image: url('./assets//background.png');
+		background-size: cover;
+		background-position: center;
+		background-color: var(--background-color);
+		color: var(--text-color);
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
 
-h1 {
-	font-size: 3.2em;
-	line-height: 1.1;
-}
+	h1 {
+		font-size: 3.2em;
+		line-height: 1.1;
+	}
 
-button {
-	border-radius: 8px;
-	border: 1px solid transparent;
-	padding: 0.6em 1.2em;
-	font-size: 1.5em;
-	font-weight: 400;
-	font-family: inherit;
-	color: var(--text-color);
-	background-color: var(--background-color);
-	border: 1px solid var(--border-color);
-	cursor: pointer;
-	transition: transform 0.3s ease, box-shadow 0.2s ease;
-}
+	button {
+		border-radius: 8px;
+		border: 1px solid transparent;
+		padding: 0.6em 1.2em;
+		font-size: 1.5em;
+		font-weight: 400;
+		font-family: inherit;
+		color: var(--text-color);
+		background-color: var(--background-color);
+		border: 1px solid var(--border-color);
+		cursor: pointer;
+		transition: transform 0.3s ease, box-shadow 0.2s ease;
+	}
 
-button:hover {
-	transform: scale(1.05);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	button:hover {
+		transform: scale(1.05);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
 }

@@ -1,3 +1,4 @@
+@layer components {
 /* Общее модальное окно */
 .create-soldier-overlay {
 	position: fixed;
@@ -126,4 +127,6 @@
 .create-soldier-form button[type='submit']:hover {
 	transform: scale(1.05);
 	background-color: #0056b3;
+}
+
 }

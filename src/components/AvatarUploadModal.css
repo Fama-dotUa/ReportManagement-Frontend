@@ -1,3 +1,4 @@
+@layer components {
 /* Затемнение и модальное окно */
 .avatar-upload-modal__overlay {
 	position: fixed;
@@ -109,4 +110,6 @@
 .avatar-upload-modal__button--apply {
 	background-color: #4caf50;
 	color: #131313;
+}
+
 }

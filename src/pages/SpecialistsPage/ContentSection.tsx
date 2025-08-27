@@ -35,13 +35,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
 	return (
 		<section className={sectionClassName}>
 			{/* Общий заголовок и кнопки управления */}
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'center',
-				}}
-			>
+			<div>
 				<h2>{title}</h2>
 				<div className='scroll-buttons'>
 					<button

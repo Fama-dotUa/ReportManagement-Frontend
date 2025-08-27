@@ -1,0 +1,990 @@
+@layer base {
+	@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+	:root {
+		font-family: 'Inter', sans-serif;
+		font-optical-sizing: auto;
+		font-style: normal;
+		line-height: 1.5;
+		font-weight: 400;
+		font-synthesis: none;
+
+		text-rendering: optimizeLegibility;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		--background-color: #ffffff;
+		--text-color: #222222;
+		--primary-color: #007bff;
+		--panel-background: rgba(255, 255, 255, 0.65);
+		--border-color: #444444;
+		--report-background: rgba(92, 92, 92, 0.45);
+		--border-bottom-left-right-panel: rgba(0, 0, 0, 0.4);
+		--report-permanent: rgba(136, 136, 47, 0.4);
+		--report-active: rgba(20, 120, 20, 0.25);
+		--report-expired: rgba(92, 92, 92, 0.45);
+		--profile-background: rgba(255, 255, 255, 0.5);
+		--description-color: rgba(106, 0, 255, 0.8);
+		--chiher-color: rgba(120, 20, 20, 0.8);
+		--status-text-color: rgba(20, 120, 20, 0.8);
+		--form-background: rgba(255, 255, 255, 0.8);
+		--cosmetic-border-color: rgba(91, 117, 143, 0.15);
+		--CR_for_all_time-color: rgba(82, 105, 123, 1);
+
+		--background-gradient-1: linear-gradient(
+			135deg,
+			var(--background-color),
+			#00a6ff 100%
+		);
+		--background-gradient-2: linear-gradient(
+			135deg,
+			var(--background-color),
+			#abda81 100%
+		);
+		--background-gradient-3: linear-gradient(
+			135deg,
+			var(--background-color),
+			#dec14a 100%
+		);
+		--background-gradient-4: linear-gradient(
+			135deg,
+			var(--background-color),
+			#d15246 100%
+		);
+		--background-gradient-5: linear-gradient(
+			135deg,
+			var(--background-color),
+			#d15246 100%
+		);
+		--background-gradient-6: linear-gradient(
+			135deg,
+			var(--background-color),
+			#d15246 100%
+		);
+		body {
+			margin: 0;
+			place-items: center;
+			overflow-x: hidden;
+			min-width: 320px;
+			min-height: 100%;
+			background-size: cover;
+			background-position: center;
+			background-color: var(--background-color);
+			color: var(--text-color);
+			transition: background-color 0.3s ease, color 0.3s ease;
+		}
+		/* Затемнение и модальное окно */
+		.avatar-upload-modal__overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background: rgba(0, 0, 0, 0.45);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 10000;
+		}
+		/* Кнопка закрытия (крестик) */
+		.avatar-upload-modal__close {
+			position: absolute;
+			top: 10px;
+			right: 12px;
+			background: none;
+			border: none;
+			font-size: 28px;
+			padding: 0;
+			color: rgba(149, 63, 54, 0.7);
+			cursor: pointer;
+			transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+		}
+		/* Область drag-and-drop */
+		.avatar-upload-modal__dropzone {
+			border: 3px dashed #aaa;
+			border-radius: 6px;
+			padding: 1.2rem;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			background-color: #c8dcba;
+			transition: border-color 0.3s ease;
+			cursor: pointer;
+		}
+		/* Кнопки управления */
+		.avatar-upload-modal__actions {
+			display: flex;
+			justify-content: flex-end;
+			gap: 0.5rem;
+		}
+		/* Контейнер для позиционирования выпадающего списка */
+		.burger-menu {
+			position: relative;
+			display: inline-block;
+		}
+		/* Стилизация самой кнопки-бургера */
+		.burger-button {
+			position: relative;
+			background: none !important;
+			border: none !important;
+			cursor: pointer !important;
+			padding: 10px !important;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-around;
+			width: 40px;
+			height: 40px;
+		}
+		/* Стилизация линий бургера */
+		.burger-line {
+			width: 100%;
+			height: 3px;
+			background-color: var(--text-color);
+			border-radius: 3px;
+			transition: all 0.3s ease-in-out;
+		}
+		/* Анимация линий в крестик, когда меню открыто */
+		.burger-button.open .burger-line:nth-child(1) {
+			transform: translateY(10px) rotate(45deg);
+		}
+		/* Стилизация выпадающего списка */
+		.dropdown-list {
+			position: absolute;
+			top: 40px; /* Располагаем под кнопкой */
+			right: -170px;
+			background-color: var(--panel-background);
+			backdrop-filter: blur(10px);
+			border: 1px solid #4a5568;
+			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+			list-style: none;
+			padding: 0.5rem 0;
+			z-index: 30;
+			margin: 0;
+			min-width: 200px;
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(-10px);
+			transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+		}
+		/* Стилизация пунктов списка */
+		.dropdown-item {
+			padding: 0.75rem 1.5rem;
+			color: var(--text-color);
+			cursor: pointer;
+			font-size: 1rem;
+			transition: background-color 0.2s;
+		}
+		/* Общий контейнер редактора */
+		.w-md-editor {
+			background-color: #1e1e2f !important;
+			border: 1px solid #444 !important;
+			border-radius: 4px !important;
+		}
+		/* Поле ввода */
+		.w-md-editor .w-md-editor-text {
+			background-color: #1e1e2f !important;
+			color: #f8f8f2 !important;
+		}
+		/* Textarea ввода */
+		.w-md-editor-text-input {
+			background-color: #1e1e2f !important;
+			color: #ffffff !important;
+			caret-color: #ffffff;
+			border: none !important;
+			outline: none !important;
+			font-family: 'Fira Code', monospace;
+			-webkit-text-fill-color: #ffffff !important;
+		}
+		.w-md-editor-text-input::placeholder {
+			color: #888 !important;
+		}
+		/* Панель инструментов */
+		.w-md-editor-toolbar {
+			background-color: #2c2f3a !important;
+			color: #aaa !important;
+			border-bottom: 1px solid #444;
+		}
+		/* Предпросмотр */
+		.w-md-editor-preview {
+			background-color: #1e1e2f !important;
+			color: #dcdcdc !important;
+		}
+		/* Зеленый фон для выдачи */
+		.bookkeeping-item.issue {
+			background: linear-gradient(
+				135deg,
+				rgba(40, 167, 69, 0.4),
+				rgba(40, 167, 69, 0.6)
+			);
+		}
+		/* Красный фон для взыскания */
+		.bookkeeping-item.collect {
+			background: linear-gradient(
+				135deg,
+				rgba(220, 53, 69, 0.4),
+				rgba(220, 53, 69, 0.6)
+			);
+		}
+		.bookkeeping-body {
+			display: flex;
+		}
+		.bookkeeping-body .label {
+			font-weight: bold;
+			margin-right: 5px;
+		}
+		.briefing-item .body {
+			text-align: center;
+			font-size: 1.2em;
+			font-weight: bold;
+		}
+		.briefing-item .body p {
+			padding: 0;
+			margin: 0;
+		}
+		/* Контейнер для прокручиваемых элементов */
+		.items-container {
+			display: flex;
+			position: relative;
+			gap: 1rem;
+			overflow-x: auto;
+			scroll-behavior: smooth;
+			padding: 0.5rem 4rem;
+		}
+		/* Скрываем стандартный скроллбар */
+		.items-container::-webkit-scrollbar {
+			display: none;
+		}
+		/* Стиль одного элемента кастомизации */
+		.cosmetic-item-preview {
+			position: relative;
+			flex-shrink: 0;
+			cursor: pointer;
+			border: 1px var(--cosmetic-border-color) solid; /* Прозрачная рамка для стабильности размеров */
+			border-radius: 0.5rem;
+			transition: transform 0.2s ease, border-color 0.2s ease;
+			overflow: hidden; /* Чтобы оверлей не вылезал за скругленные углы */
+		}
+		/* Стиль для активного/выбранного элемента */
+		.cosmetic-item-preview.active {
+			border-color: #48bb78; /* Зеленая рамка */
+			transform: scale(1.05);
+		}
+		/* Увеличение при наведении */
+		.cosmetic-item-preview:hover {
+			transform: scale(1.1);
+		}
+		/* Оверлей с названием, который появляется при наведении */
+		.item-name-overlay {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			background: rgba(0, 0, 0, 0.7);
+			color: white;
+			padding: 0.5rem;
+			text-align: center;
+			font-size: 0.875rem;
+			font-weight: 600;
+			opacity: 0;
+			transition: opacity 0.2s ease;
+			pointer-events: none; /* Чтобы не мешал клику */
+		}
+		/* Кнопка сохранения */
+		.save-cosmetics-button {
+			display: block;
+			width: 100%;
+			background-color: #38a169;
+			color: white;
+			font-weight: 700;
+			padding: 0.75rem;
+			border-radius: 0.5rem;
+			font-size: 1.125rem;
+			cursor: pointer;
+			border: none;
+			margin-top: 1rem;
+			transition: background-color 0.2s;
+		}
+		/* Уникальный стиль для фонов профиля (например, более широкие) */
+		.cosmetic-item-preview.background-item {
+			width: 180px;
+		}
+		/* Уникальный стиль для шильдиков */
+		.cosmetic-item-preview.schildik-item {
+			width: 181px;
+			height: 28px;
+		}
+		/* Стили для изображения внутри награды */
+		.award-item-cosmetic img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain; /* Чтобы изображение не искажалось */
+		}
+		/* Общее модальное окно */
+		.create-soldier-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background: rgba(0, 0, 0, 0.45);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 9999;
+		}
+		/* Закрытие */
+		.create-soldier-form .close-button {
+			position: absolute;
+			top: 4px;
+			right: 4px;
+			z-index: 10;
+			font-size: 28px;
+			background: none;
+			border: none;
+			box-shadow: none;
+			padding: 0;
+			cursor: pointer;
+			transition: transform 0.3s ease-in-out;
+			color: rgba(149, 63, 54, 0.7);
+		}
+		/* Сетка */
+		.create-soldier-grid {
+			display: flex;
+			gap: 1rem;
+		}
+		/* Левая колонка (аватар) */
+		.create-soldier-avatar {
+			display: flex;
+			position: relative;
+			flex-direction: column;
+			align-items: center;
+			width: 140px;
+			height: 140px;
+		}
+		/* Правая колонка (поля) */
+		.create-soldier-fields {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			gap: 0;
+		}
+		/* Кнопка */
+		.create-soldier-form button[type='submit'] {
+			align-self: flex-end;
+			padding: 0.5rem 1.2rem;
+			background-color: #007bff;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			font-size: 15px;
+			cursor: pointer;
+			transition: background 0.25s ease-in-out, transform 0.25s ease-in-out;
+		}
+		.awards-list::-webkit-scrollbar {
+			display: none;
+		}
+		/* Модальное окно */
+		.modal-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+			background: rgba(0, 0, 0, 0.45);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 9999;
+		}
+		/* Форма */
+		.user-profile-form {
+			display: grid;
+			grid-template-rows: auto 1fr auto;
+			height: 100%;
+			background: initial;
+			position: relative;
+		}
+		/* Кнопка редактирования аватара */
+		.edit-avatar-button {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: 88%;
+			height: 88%;
+			padding: 0;
+			border-radius: 50%;
+			border: none;
+			background: rgba(26, 26, 26, 0.15);
+			color: white;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow: none;
+			transition: background-color 0.2s ease;
+		}
+		/* InfoPanel.css */
+		.info-panel {
+			width: 100%;
+			width: 600px;
+			max-height: 650px;
+			margin: 20px auto;
+			padding: 24px 24px 40px;
+			background: #2c2f33;
+			color: #fff;
+			border-radius: 12px;
+			box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+				Helvetica, Arial, sans-serif;
+			animation: fadeIn 0.5s ease-in-out;
+		}
+		/* Вставьте в UserProfileForm.css или создайте новый файл */
+
+		.info-panel-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.6);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 1000; /* Убедитесь, что он поверх других элементов */
+			animation: fadeInOverlay 0.3s ease-in-out;
+		}
+		/* --- ИЗМЕНЕНИЕ: Стили для группы ввода ставки --- */
+		.bet-input-group {
+			display: flex;
+			align-items: center;
+			gap: 15px;
+			flex-grow: 1;
+			justify-content: center;
+		}
+		.bet-slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 22px;
+			height: 22px;
+			background: #f0ad4e;
+			cursor: pointer;
+			border-radius: 50%;
+			border: 3px solid white;
+		}
+		.bet-slider::-moz-range-thumb {
+			width: 22px;
+			height: 22px;
+			background: #f0ad4e;
+			cursor: pointer;
+			border-radius: 50%;
+			border: 3px solid white;
+		}
+		/* --- НОВЫЕ СТИЛИ ИЗ РУЛЕТКИ --- */
+		.slider-and-buttons-wrapper {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 8px;
+			flex-grow: 1;
+		}
+		/* Анимация градиента для текста */
+		.casino-header h1.animated-gradient-text {
+			background-image: linear-gradient(90deg, #ff0000, #8a2be2, #ff0000);
+			background-size: 200% auto;
+			color: transparent;
+			-webkit-background-clip: text;
+			background-clip: text;
+			animation: gradient-animation 4s linear infinite;
+		}
+		/* Стили для конвертера */
+		.coupon-converter {
+			width: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+		/* ... ваши существующие стили ... */
+
+		/* ЗАМЕНИТЕ СТАРЫЙ БЛОК СТИЛЕЙ .player-level-bar НА ЭТОТ.
+   Обновленные стили для минималистичной панели уровня игрока.
+*/
+		.player-level-bar {
+			position: absolute;
+			top: -85px; /* Отрицательное значение, чтобы поднять бар НАД панелью */
+			right: 40px; /* Выравниваем по правому краю контента */
+			width: 280px; /* Фиксированная ширина для компактности */
+			display: flex;
+			flex-direction: column; /* Элементы в столбец */
+			align-items: flex-start; /* Выравнивание по левому краю */
+			gap: 5px; /* Уменьшенный отступ между элементами */
+			background-color: rgba(0, 0, 0, 0.5);
+			padding: 8px 12px; /* Уменьшенные внутренние отступы */
+			border-radius: 6px;
+			z-index: 100;
+			border: 1px solid rgba(255, 255, 255, 0.2); /* Тонкая рамка для стиля */
+
+			border: 2px solid #ff0000;
+			animation: neon-border-glow 4s linear infinite;
+		}
+		/* --- Стили для динамичного фона со звездами --- */
+		.stars-wrapper {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: 1;
+			pointer-events: none;
+		}
+		/* Запускаем анимацию звезд, когда игра в состоянии 'running' */
+		.game-running .stars,
+		.game-running .stars2,
+		.game-running .stars3 {
+			animation-play-state: running;
+		}
+		/* --- НОВЫЕ СТИЛИ: Свечение для множителя --- */
+		.multiplier.green-glow {
+			text-shadow: 0 0 50px #28a745, 0 0 20px #28a745;
+		}
+		/* --- НОВЫЙ СТИЛЬ: для дополнительных ракет --- */
+		.ghost-rocket {
+			z-index: 9;
+			opacity: 0.5;
+			transform: scale(0.8);
+		}
+		/* --- НОВЫЙ СТИЛЬ: для ракет, которые забрали ставку --- */
+		.cashed-out-rocket {
+			font-size: 2.5rem;
+			z-index: 11;
+			animation: cash-out-effect 0.8s ease-out forwards;
+		}
+		/* --- НОВАЯ АНИМАЦИЯ: Плавное появление облаков --- */
+		@keyframes cloud-fade-in {
+			from {
+				opacity: 0;
+			}
+		}
+
+		/* --- НОВЫЙ СТИЛЬ: для панели баланса --- */
+		.balance-display {
+			width: 20%;
+			text-align: center;
+			font-size: 1rem;
+			font-weight: 500;
+			padding: 6px;
+			margin-bottom: 1px; /* Отступ снизу */
+			color: #ffc107; /* Золотой цвет */
+			background-color: rgba(46, 58, 89, 0.6); /* Полупрозрачный фон */
+			border-radius: 8px;
+			border: 1px solid rgba(255, 193, 7, 0.3);
+		}
+		.bet-slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 18px;
+			height: 18px;
+			background: #f0ad4e;
+			cursor: pointer;
+			border-radius: 50%;
+			border: 2px solid white;
+		}
+		.bet-slider::-moz-range-thumb {
+			width: 18px;
+			height: 18px;
+			background: #f0ad4e;
+			cursor: pointer;
+			border-radius: 50%;
+			border: 2px solid white;
+		}
+
+		/* --- Стили для мониторов 1080p и выше --- */
+		@media (min-width: 1080px) {
+			.multiplier,
+			.crash-message {
+				font-size: 4rem;
+			}
+			.emoji-bubble::after {
+				content: '';
+				position: absolute;
+				top: 100%;
+				left: 50%;
+				margin-left: -5px;
+				border-width: 5px;
+				border-style: solid;
+				border-color: white transparent transparent transparent;
+			}
+			/* Wheel Animation */
+			.roulette-wheel-container {
+				width: 100%;
+				height: 80px;
+				overflow: hidden;
+				position: relative;
+				border: 2px solid var(--border-color);
+				background: var(--background-color);
+				border-radius: 4px;
+				margin-bottom: 15px;
+			}
+			/* Info Bar with Timer and Controls */
+			.roulette-info-bar {
+				width: 100%;
+				text-align: center;
+				font-size: 1.25rem;
+				font-weight: 500;
+				padding: 8px;
+				margin-bottom: 10px;
+				border-radius: 4px;
+				background: var(--panel-background);
+			}
+			/* --- ИЗМЕНЕНИЕ: Стили для кнопок --- */
+			.roulette-controls button {
+				padding: 8px 16px;
+				border: none;
+				border-radius: 4px;
+				color: white;
+				font-weight: bold;
+				cursor: pointer;
+				transition: background-color 0.3s ease, opacity 0.3s ease;
+			}
+			/* Betting Grid */
+			.betting-grid {
+				display: grid;
+				grid-template-areas:
+					'zero numbers columns'
+					'zero dozens dozens'
+					'zero outside outside';
+				grid-template-columns: 60px 1fr 100px;
+				grid-template-rows: auto auto auto;
+				width: 100%;
+				max-width: 800px;
+				gap: 2px;
+				transition: opacity 0.3s ease;
+			}
+			/* --- ИЗМЕНЕНИЕ: Стили для группы ввода ставки --- */
+			.bet-input-group {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				flex-grow: 1;
+				justify-content: center;
+			}
+			/* --- НОВЫЙ КОНТЕЙНЕР ДЛЯ СЛАЙДЕРА И КНОПОК --- */
+			.slider-and-buttons-wrapper {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				gap: 8px;
+				flex-grow: 1;
+			}
+			.bet-slider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 22px;
+				height: 22px;
+				background: #ffc107;
+				cursor: pointer;
+				border-radius: 50%;
+				border: 3px solid white;
+			}
+			.bet-slider::-moz-range-thumb {
+				width: 22px;
+				height: 22px;
+				background: #ffc107;
+				cursor: pointer;
+				border-radius: 50%;
+				border: 3px solid white;
+			}
+			/* --- СТИЛИ ДЛЯ КНОПОК УВЕЛИЧЕНИЯ СТАВКИ --- */
+			.bet-increments {
+				display: flex;
+				gap: 5px;
+			}
+			/* --- ИЗМЕНЕНИЕ: Контейнер для двух панелей --- */
+			.all-betting-controls {
+				display: flex;
+				gap: 20px;
+				width: 100%;
+				max-width: 900px; /* Увеличена ширина для двух панелей */
+				justify-content: center;
+			}
+			.bet-slider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 22px;
+				height: 22px;
+				background: #e94560;
+				cursor: pointer;
+				border-radius: 50%;
+				border: 3px solid white;
+			}
+			.bet-slider::-moz-range-thumb {
+				width: 22px;
+				height: 22px;
+				background: #e94560;
+				cursor: pointer;
+				border-radius: 50%;
+				border: 3px solid white;
+			}
+			/* Основное содержимое: Разделы косметики */
+			.main-content {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 2rem;
+			}
+			/* Секция */
+			.section-green h2 {
+				color: #48bb78;
+			}
+			/* Контейнер для карточек косметики */
+			.cards-grid.frames-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+
+		/* Карточка косметики */
+		.cosmetic-card {
+			background-color: #2d3748;
+			padding: 1.25rem;
+			border-radius: 0.5rem;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+				0 2px 4px -2px rgba(0, 0, 0, 0.1);
+			border: 1px solid #4a5568;
+			transition: border-color 300ms;
+			text-align: center;
+			display: flex;
+			flex-direction: column;
+		}
+		/* Превью рамки */
+		.cosmetic-card .frame-preview {
+			width: 140px;
+			height: 140px;
+			margin: 0 auto 0.75rem;
+			object-fit: cover;
+		}
+		/* Превью фона профиля */
+		.cosmetic-card .profile-bg-preview {
+			width: 100%;
+			height: 140px;
+			object-fit: cover;
+			border-radius: 0.375rem;
+			margin-bottom: 0.75rem;
+			border: 2px solid #a0aec0;
+		}
+		/* Превью фона шеврона */
+		.cosmetic-card .chevron-bg-preview {
+			width: 100%;
+			height: 4rem;
+			border-radius: 0.375rem;
+			margin: 0 auto 0.75rem;
+			border: 2px solid #a0aec0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.75rem;
+			font-weight: 700;
+		}
+		/* Кнопка покупки специфична для этой страницы */
+		.cosmetic-card .buy-button {
+			background-color: #9f7aea;
+			color: white;
+			font-weight: 700;
+			padding: 0.5rem 1rem;
+			border-radius: 9999px;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+				0 2px 4px -2px rgba(0, 0, 0, 0.1);
+			transition: background-color 300ms;
+			cursor: pointer;
+			border: none;
+		}
+		/* Cosmetic.css или другой файл стилей */
+
+		.owned-badge {
+			font-size: 0.9rem;
+			font-weight: 700;
+			color: #48bb78; /* Зеленый цвет */
+			background-color: rgba(72, 187, 120, 0.1);
+			padding: 0.3rem 0.8rem;
+			border-radius: 9999px;
+			border: 1px solid #48bb78;
+		}
+		/* --- НОВЫЕ СТИЛИ ДЛЯ СООБЩЕНИЙ СТАТУСА --- */
+		.status-message {
+			margin-top: 15px;
+			padding: 10px;
+			border-radius: 6px;
+			font-weight: 500;
+			width: 100%;
+			max-width: 500px;
+			text-align: center;
+			border: 1px solid transparent;
+		}
+		/* Центрированная навигация */
+		.officer-nav {
+			width: 100%;
+			max-width: 1320px;
+			margin: 0 auto;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 2px 40px;
+			gap: 20px;
+			background: var(--panel-background);
+			border-radius: 4px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+			position: relative;
+			margin-bottom: 20px;
+		}
+		/* Боковые панели */
+		.left-panel,
+		.right-panel {
+			width: 200px;
+			color: var(--text-color);
+			background: var(--panel-background);
+			padding: 8px;
+			overflow: hidden;
+			border-radius: 2px;
+			z-index: 30;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+		/* Центральный блок */
+		.officer-content {
+			flex: 1;
+			background: var(--panel-background);
+			padding: 20px;
+			border-radius: 4px;
+			overflow-y: auto;
+			display: flex;
+			flex-direction: column;
+			justify-content: flex-start;
+		}
+		/* Основное содержимое */
+		.main-content {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+		/* Секция */
+		.Contentsection {
+			background-color: #4a5568;
+			position: relative;
+			padding: 1.5rem 3.8rem;
+			border-radius: 0.75rem;
+			box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+				0 4px 6px -4px rgba(0, 0, 0, 0.1);
+		}
+		/* Стилизация заголовков секций */
+		.section-sky h2 {
+			color: #7dd3fc;
+		}
+	}
+
+	/* Карточка должности */
+	.purchasable-card {
+		background-color: #2d3748;
+		padding: 1.25rem;
+		border-radius: 0.5rem;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+			0 2px 4px -2px rgba(0, 0, 0, 0.1);
+		border: 1px solid #4a5568;
+		transition: border-color 300ms;
+		display: flex;
+		flex-direction: column;
+	}
+	/* Hover эффекты для карточек */
+	.purchasable-card.hover-sky:hover {
+		border-color: #0ea5e9;
+	}
+	/* Старый цвет для обратной совместимости */
+	.purchasable-card.hover-blue:hover {
+		border-color: #4299e1;
+	}
+	/* CSS для компонента ContentSection */
+
+	.section-wrapper {
+		position: relative; /* Необходимо для позиционирования кнопок */
+	}
+	/* Скрываем стандартный скроллбар */
+
+	/* Важно: заменяем grid на flex в cards-grid, когда он внутри scrollable-content */
+	/* Этот класс у нас уже есть, но теперь он будет внутри .scrollable-content */
+	.cards-grid {
+		display: flex;
+		flex-wrap: nowrap; /* Запрещаем перенос на новую строку */
+	}
+	/* Чтобы карточки не сжимались */
+	.cards-grid > * {
+		flex-shrink: 0;
+		width: 300px; /* Задаем фиксированную ширину карточкам, можно настроить */
+	}
+}
+
+/* Заголовок магазина и баланс CR */
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: 1rem; /* pb-4 */
+	border-bottom: 1px solid #4a5568; /* border-b border-gray-700 */
+}
+/* Основное содержимое магазина */
+.main-content {
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+}
+
+/* Секция */
+.sectionstore {
+	background-color: #4a5568; /* bg-gray-700 */
+	padding: 1.5rem; /* p-6 */
+	border-radius: 0.75rem; /* rounded-xl */
+	box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+		0 4px 6px -4px rgba(0, 0, 0, 0.1); /* shadow-lg */
+}
+
+/* Карточка товара/должности */
+.card {
+	background-color: #2d3748; /* bg-gray-800 */
+	padding: 1.25rem; /* p-5 */
+	border-radius: 0.5rem; /* rounded-lg */
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		0 2px 4px -2px rgba(0, 0, 0, 0.1); /* shadow-md */
+	border: 1px solid #4a5568; /* border border-gray-600 */
+	transition: border-color 300ms;
+	display: flex;
+	flex-direction: column;
+}
+/* Добавьте или измените эти стили в файле Store.css */
+
+/* Изменяем существующий стиль, чтобы он подходил под новый макет */
+.section-cosmetics-link {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 0.5rem; /* Добавляем отступ между элементами */
+}
+/* Новый контейнер для карточек-превью */
+.cosmetic-previews-container {
+	display: flex;
+	justify-content: space-around;
+	width: 100%;
+	gap: 1.5rem; /* Отступ между карточками */
+	margin-top: 1rem;
+}
+/* Стили для каждой карточки-превью */
+.cosmetic-preview-item {
+	background-color: #2d3748; /* bg-gray-800 */
+	padding: 1rem;
+	border-radius: 0.75rem; /* rounded-xl */
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex: 1; /* Чтобы карточки занимали равное пространство */
+	border: 1px solid #4a5568;
+	transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}

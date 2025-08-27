@@ -1,3 +1,4 @@
+@layer components {
 .auth-overlay {
 	position: fixed;
 	top: 0;
@@ -74,4 +75,6 @@
 	color: #fff;
 	cursor: pointer;
 	z-index: 10000;
+}
+
 }

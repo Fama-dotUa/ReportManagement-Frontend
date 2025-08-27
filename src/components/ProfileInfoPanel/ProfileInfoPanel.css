@@ -1,3 +1,4 @@
+@layer components {
 /* InfoPanel.css */
 .info-panel {
 	width: 100%;
@@ -149,4 +150,6 @@
 .info-panel-header .header-buttons {
 	display: flex;
 	align-items: center;
+}
+
 }

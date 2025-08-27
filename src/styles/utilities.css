@@ -1,0 +1,38 @@
+@layer utilities {
+.modal-overlay{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 9999;
+}
+.controls{
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 15px;
+	padding-top: 20px;
+}
+.bet-increments{
+	display: flex;
+	gap: 5px;
+}
+.history-bad{
+	background-color: #e94560;
+}
+.history-good{
+	background-color: #5cb85c;
+}
+.card-footer{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: auto;
+}
+}

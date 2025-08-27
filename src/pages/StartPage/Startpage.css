@@ -1,3 +1,4 @@
+@layer components {
 .start-pages {
 	display: flex;
 	flex-direction: column;
@@ -28,4 +29,6 @@
 	display: flex;
 	gap: 2.7rem;
 	justify-content: center;
+}
+
 }

@@ -1,3 +1,4 @@
+@layer components {
 .bookkeeping-list {
 	display: flex;
 	flex-direction: column;
@@ -48,4 +49,6 @@
 .bookkeeping-body .label {
 	font-weight: bold;
 	margin-right: 5px;
+}
+
 }

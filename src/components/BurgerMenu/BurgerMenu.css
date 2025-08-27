@@ -1,3 +1,4 @@
+@layer components {
 /* Контейнер для позиционирования выпадающего списка */
 .burger-menu {
 	position: relative;
@@ -76,4 +77,6 @@
 
 .dropdown-item:hover {
 	background-color: #4a5568;
+}
+
 }

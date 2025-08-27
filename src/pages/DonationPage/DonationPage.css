@@ -1,3 +1,4 @@
+@layer components {
 .donation-page {
 	position: relative;
 	height: 100vh;
@@ -181,4 +182,6 @@
 	background-color: rgba(220, 53, 69, 0.2);
 	color: #dc3545;
 	border-color: #dc3545;
+}
+
 }

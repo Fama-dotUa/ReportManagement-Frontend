@@ -21,7 +21,7 @@ const ChanceryReportForm: React.FC<ChanceryReportFormProps> = ({
 	const [value, setValue] = useState<string | undefined>('**Текст рапорта**')
 	const [reasons, setReasons] = useState<{ id: number; label: string }[]>([])
 	const { user, token } = useAuth()
-
+	const createReportMutation = useCreateReport()
 	useEffect(() => {
 		getReasons()
 			.then(allReasons => {
@@ -55,7 +55,6 @@ const ChanceryReportForm: React.FC<ChanceryReportFormProps> = ({
 		if (!confirm) return
 
 		try {
-			const createReportMutation = useCreateReport()
 			const report = await createReportMutation.mutateAsync({
 				userId: finalUserId,
 				reasonId: Number(reason),
