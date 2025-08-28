@@ -908,12 +908,17 @@
 		position: relative; /* Необходимо для позиционирования кнопок */
 	}
 	/* Скрываем стандартный скроллбар */
-
+	.scrollable-content {
+		overflow-x: auto;
+		scrollbar-width: none; /* Firefox */
+		-ms-overflow-style: none; /* Internet Explorer 10+ */
+	}
 	/* Важно: заменяем grid на flex в cards-grid, когда он внутри scrollable-content */
 	/* Этот класс у нас уже есть, но теперь он будет внутри .scrollable-content */
 	.cards-grid {
 		display: flex;
 		flex-wrap: nowrap; /* Запрещаем перенос на новую строку */
+		gap: 1rem; /* Отступ между карточками */
 	}
 	/* Чтобы карточки не сжимались */
 	.cards-grid > * {

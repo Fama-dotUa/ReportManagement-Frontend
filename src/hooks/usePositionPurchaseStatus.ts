@@ -1,9 +1,7 @@
 // src/hooks/usePositionPurchaseStatus.ts
 import { useMemo } from 'react'
 import { useAuth } from './useAuth'
-import { useTrainingRequests } from './useTrainingRequests' // твой готовый хук
-// status_request предполагаем: 'pending' | 'approved' | 'rejected'
-// Если у тебя другие значения — подставь свои.
+import { useTrainingRequests } from './useTrainingRequests'
 
 export type PositionPurchaseStatus =
 	| 'owned'
@@ -14,33 +12,46 @@ export type PositionPurchaseStatus =
 export function usePositionPurchaseStatus() {
 	const { user } = useAuth()
 	const userId = user?.id
-	const userCR = Number(user?.CR || 0)
 
-	// получаем список заявок пользователя
-	const { data: requests = [] } = useTrainingRequests()
+	const { data: requests, isLoading, error } = useTrainingRequests()
 
-	const ownedPositionIds = useMemo(() => {
-		// позиции, которые уже есть у пользователя (или аналогично — прошёл обучение)
-		const positions = user?.positions || []
-		return new Set<number>(positions.map((p: any) => Number(p.id)))
-	}, [user])
+	const myRequests = useMemo(() => {
+		if (!userId) return []
+
+		const list = requests ?? []
+		return list.filter((r: any) => {
+			const applicantId = r?.applicant?.id
+
+			return String(applicantId) === String(userId)
+		})
+	}, [requests, userId])
 
 	const pendingPositionIds = useMemo(() => {
-		const set = new Set<number>()
-		for (const r of requests) {
-			if (
-				['обучается', 'рассматривается', 'халтура начальства'].includes(
-					String(r?.status_request).toLowerCase()
-				) &&
-				r?.position?.id
-			) {
-				set.add(Number(r.position.id))
-			}
-		}
-		return set
-	}, [requests])
+		const PENDING_STATUSES = new Set([
+			'обучается',
+			'рассматривается',
+			'халтура начальства',
+		])
+		return new Set<number>(
+			myRequests
+				.filter((r: any) => PENDING_STATUSES.has(String(r?.status_request)))
+				.map((r: any) => Number(r?.position?.id))
+				.filter((id: any) => Number.isFinite(id))
+		)
+	}, [myRequests])
 
-	// функция-оценщик
+	const ownedPositionIds = useMemo(() => {
+		const DONE_STATUSES = new Set(['обучен'])
+		return new Set<number>(
+			myRequests
+				.filter((r: any) => DONE_STATUSES.has(String(r?.status_request)))
+				.map((r: any) => Number(r?.position?.id))
+				.filter((id: any) => Number.isFinite(id))
+		)
+	}, [myRequests])
+
+	const userCR = Number(user?.CR ?? user?.CR ?? 0)
+
 	const getPositionStatus = (
 		positionId: number,
 		price: number
@@ -51,5 +62,11 @@ export function usePositionPurchaseStatus() {
 		return 'canBuy'
 	}
 
-	return { getPositionStatus, ownedPositionIds, pendingPositionIds }
+	return {
+		getPositionStatus,
+		ownedPositionIds,
+		pendingPositionIds,
+		isLoading,
+		error,
+	}
 }

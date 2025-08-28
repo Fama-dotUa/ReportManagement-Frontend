@@ -1,4 +1,17 @@
 @layer components {
+	.shop-container {
+		position: relative;
+		max-width: 1280px;
+		margin-left: auto;
+		margin-right: auto;
+		background-color: #2d3748;
+		border-radius: 0.75rem;
+		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+			0 8px 10px -6px rgba(0, 0, 0, 0.1);
+		padding: 1.5rem;
+		z-index: 10;
+	}
+
 	.page-header {
 		display: flex;
 		flex-direction: column;
@@ -147,7 +160,11 @@
 		cursor: pointer;
 		border: none;
 	}
-
+	.buy-button:disabled {
+		background-color: #555;
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
 	.buy-button:hover {
 		background-color: #1d4ed8;
 	}
@@ -207,7 +224,19 @@
 	.scroll-button-icon.left {
 		margin-left: 10px;
 	}
-
+	.back-button {
+		background-color: #4a5568;
+		color: white;
+		font-weight: 700;
+		padding: 0.5rem 1.5rem;
+		border-radius: 9999px;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+			0 2px 4px -2px rgba(0, 0, 0, 0.1);
+		transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+		text-decoration: none;
+		cursor: pointer;
+		border: none;
+	}
 	.scrollable-content {
 		display: flex; /* Используем flexbox для расположения элементов в ряд */
 		gap: 1.5rem; /* Расстояние между карточками */
