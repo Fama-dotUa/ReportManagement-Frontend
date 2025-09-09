@@ -28,12 +28,12 @@ const fetchTrainingRequests = async (): Promise<TrainingRequest[]> => {
 	const token = localStorage.getItem('jwt')
 	if (!token) throw new Error('Нет авторизации')
 
-	const { data } = await axios.get(`${API_URL}/api/training-requests`, {
-		headers: { Authorization: `Bearer ${token}` },
-		params: {
-			populate: '*',
-		},
-	})
+	const { data } = await axios.get(
+		`${API_URL}/api/training-requests?populate=*&pagination[limit]=150`,
+		{
+			headers: { Authorization: `Bearer ${token}` },
+		}
+	)
 	return data.data.map((item: any) => ({
 		id: item.documentId,
 		...item,

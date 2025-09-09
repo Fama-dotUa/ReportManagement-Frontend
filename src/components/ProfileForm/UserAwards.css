@@ -1,99 +1,62 @@
 @layer components {
-.user-awards-container {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	position: relative;
-	overflow: hidden;
-}
+	.user-awards-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 100%;
+		position: relative;
+		overflow: hidden;
+	}
 
-.awards-list {
-	display: flex;
-	overflow-y: hidden;
-	overflow-x: auto;
-	scroll-behavior: smooth;
-	-ms-overflow-style: none;
-	scrollbar-width: none;
-	gap: 20px;
-	width: 120%;
-	padding: 0 20px;
-}
+	.awards-list {
+		display: flex;
+		overflow-y: hidden;
+		overflow-x: auto;
+		scroll-behavior: smooth;
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+		gap: 20px;
+		width: 120%;
+		padding: 0 20px;
+	}
 
-.awards-list::-webkit-scrollbar {
-	display: none;
-}
+	.awards-list::-webkit-scrollbar {
+		display: none;
+	}
 
-.award-item {
-	position: relative;
-	flex-shrink: 0;
-	border-radius: 8px;
-	display: flex;
-	margin-top: -1px;
-	align-items: center;
-	justify-content: center;
-}
+	.award-item {
+		position: relative;
+		flex-shrink: 0;
+		border-radius: 8px;
+		display: flex;
+		margin-top: -1px;
+		align-items: center;
+		justify-content: center;
+	}
 
-.award-image {
-	width: 100%;
-	height: 100%;
-	object-fit: contain;
-	overflow: hidden;
-}
+	.award-image {
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
+		overflow: hidden;
+	}
 
-.award-image-placeholder {
-	font-size: 2rem;
-	color: #a0a0a0;
-}
+	.award-image-placeholder {
+		font-size: 2rem;
+		color: #a0a0a0;
+	}
 
-.award-count {
-	position: absolute;
-	top: 0;
-	right: 0;
-	color: rgb(226, 190, 17);
-	border-radius: 50%;
-	width: 24px;
-	height: 24px;
-	display: flex;
-	justify-content: center;
-	font-size: 16px;
-	font-weight: bold;
-}
-
-.scroll-button {
-	background: rgba(44, 44, 62, 0.8);
-	border: none;
-	color: white;
-	cursor: pointer;
-	padding: 10px;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 2;
-	transition: background-color 0.2s ease;
-}
-
-.scroll-button:hover {
-	background: #7b1fa2;
-}
-
-.scroll-button.left {
-	margin-right: 10px;
-}
-
-.scroll-button.right {
-	margin-left: 10px;
-}
-
-.scroll-button.medal-button.left,
-.scroll-button.medal-button.right {
-	width: 20px;
-	height: 60px;
-	font-size: 14px;
-	background-color: rgba(26, 26, 26, 0.15);
-	color: var(--text-color);
-	border: var(--border-color) solid 1px;
-}
-
+	.award-count {
+		position: absolute;
+		top: 0;
+		right: 0;
+		color: rgb(226, 190, 17);
+		border-radius: 50%;
+		width: 24px;
+		height: 24px;
+		display: flex;
+		justify-content: center;
+		font-size: 16px;
+		font-weight: bold;
+	}
 }

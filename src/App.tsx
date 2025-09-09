@@ -13,6 +13,7 @@ import { useUpdateActivity } from './hooks/useUpdateActivity'
 import { useAuth } from './hooks/useAuth'
 
 const StartPages = lazy(() => import('./pages/StartPage/StartPage'))
+const CrashTest = lazy(() => import('./gamehooks/CrashTest'))
 const OfficerPage = lazy(() => import('./pages/OfficerPage/OfficerPage'))
 const CasinoPage = lazy(() => import('./pages/CasinoPage/CasinoPage'))
 const CosmeticsPage = lazy(() => import('./pages/CosmeticsPage/CosmeticsPage'))
@@ -95,6 +96,14 @@ function AppContent() {
 						element={
 							<Suspense fallback={null}>
 								<StorePage />
+							</Suspense>
+						}
+					/>
+					<Route
+						path='test'
+						element={
+							<Suspense fallback={null}>
+								<CrashTest />
 							</Suspense>
 						}
 					/>

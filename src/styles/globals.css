@@ -162,8 +162,6 @@
 			z-index: 30;
 			margin: 0;
 			min-width: 200px;
-			opacity: 0;
-			visibility: hidden;
 			transform: translateY(-10px);
 			transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
 		}
