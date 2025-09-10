@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlayerStats } from '../CasinoPage/PlayerStatsContext';
 import collectiblesService from '../../services/collectiblesService';
-import type { CollectibleItem } from '../../components/Types/collectibles';
+import type { CollectibleItem, UserInventoryItem } from '../../components/Types/collectibles';
 import './CollectiblesShopPage.css';
 
 const CollectiblesShopPage: React.FC = () => {
@@ -10,10 +10,10 @@ const CollectiblesShopPage: React.FC = () => {
     const { balance, updateBalance } = usePlayerStats();
     
     const [items, setItems] = useState<CollectibleItem[]>([]);
-    const [inventory, setInventory] = useState<number[]>([]);
+    const [inventory, setInventory] = useState<UserInventoryItem[]>([]);
 
     useEffect(() => {
-        const handleStateUpdate = (newState: { items: CollectibleItem[], inventory: number[] }) => {
+        const handleStateUpdate = (newState: { items: CollectibleItem[], inventory: UserInventoryItem[] }) => {
             setItems(newState.items);
             setInventory(newState.inventory);
         };
@@ -25,7 +25,6 @@ const CollectiblesShopPage: React.FC = () => {
         const result = collectiblesService.buyItem(itemId, balance);
         if (result.success && result.newBalance !== undefined) {
             updateBalance(result.newBalance);
-            alert(result.message);
         } else {
             alert(result.message);
         }
@@ -42,26 +41,34 @@ const CollectiblesShopPage: React.FC = () => {
             </div>
             <div className="items-grid">
                 {items.map(item => {
-                    const isOwned = inventory.includes(item.id);
                     const canAfford = balance >= item.price;
                     const isOutOfStock = item.stock <= 0;
+                    const ownedEntry = inventory.find(invItem => invItem.itemId === item.id);
+                    const ownedQuantity = ownedEntry ? ownedEntry.quantity : 0;
 
                     return (
                         <div key={item.id} className={`item-card rarity-${item.rarity}`}>
-                            {isOwned && <span className="owned-badge">В коллекции</span>}
-                            <div className="item-image-wrapper">
-                                <div className="item-image">{item.image}</div>
+                            {ownedQuantity > 0 && (
+                                <span className="item-owned-count">В коллекции: {ownedQuantity}</span>
+                            )}
+                            <div className={`item-icon rarity-${item.rarity}`}>
+                                {item.name.charAt(0)}
                             </div>
-                            <div className="item-name">{item.name}</div>
+                            <div className="item-name-wrapper">
+                                <div className="item-name">{item.name}</div>
+                                {item.collection !== 'any' && (
+                                    <div className="item-collection">[{item.collection}]</div>
+                                )}
+                            </div>
                             <div className="item-details">
                                 <div className="item-price">{item.price} CPN</div>
                                 <div className="item-stock">Осталось: {item.stock}</div>
                             </div>
                             <button 
                                 onClick={() => handleBuy(item.id)}
-                                disabled={isOwned || !canAfford || isOutOfStock}
+                                disabled={!canAfford || isOutOfStock}
                             >
-                                {isOwned ? 'Куплено' : (isOutOfStock ? 'Нет в наличии' : 'Купить')}
+                                {isOutOfStock ? 'Нет в наличии' : 'Купить'}
                             </button>
                         </div>
                     );

@@ -1,42 +1,36 @@
-import type { CollectibleItem } from '../components/Types/collectibles';
+import type { CollectibleItem, UserInventoryItem } from '../components/Types/collectibles';
 
 // --- //! СИМУЛЯЦИЯ БАЗЫ ДАННЫХ НА СЕРВЕРЕ ---
 const shopItems: CollectibleItem[] = [
-    // White (Обычные)
-    { id: 1, name: 'Древняя монета', price: 1000, rarity: 'White', stock: 99, image: '🪙' },
-    { id: 13, name: 'Потускневший ключ', price: 1200, rarity: 'White', stock: 99, image: '🗝️' },
-    { id: 14, name: 'Старая кость', price: 1500, rarity: 'White', stock: 99, image: '🦴' },
+    // Коллекция "Древние реликвии"
+    { id: 1, name: 'Древняя монета', price: 1000, rarity: 'White', stock: 99, description: 'Потертая монета неизвестного происхождения.', collection: 'Древние реликвии' },
+    { id: 13, name: 'Потускневший ключ', price: 1200, rarity: 'White', stock: 99, description: 'Кажется, он мог бы что-то открыть.', collection: 'Древние реликвии' },
+    { id: 17, name: 'Рунический камень', price: 9000, rarity: 'Blue', stock: 20, description: 'Древние символы на нем светятся в темноте.', collection: 'Древние реликвии' },
+    { id: 20, name: 'Запретный гримуар', price: 30000, rarity: 'Purple', stock: 5, description: 'Книга, содержащая темные и могущественные заклинания.', collection: 'Древние реликвии' },
 
-    // Green (Необычные)
-    { id: 2, name: 'Клевер Удачи', price: 2500, rarity: 'Green', stock: 50, image: '🍀' },
-    { id: 7, name: 'Карта Джокера', price: 3333, rarity: 'Green', stock: 30, image: '🃏' },
-    { id: 15, name: 'Эльфийская стрела', price: 4000, rarity: 'Green', stock: 40, image: '🏹' },
-    { id: 16, name: 'Зелье лечения', price: 5500, rarity: 'Green', stock: 25, image: '🧪' },
+    // Коллекция "Дары природы"
+    { id: 2, name: 'Клевер Удачи', price: 2500, rarity: 'Green', stock: 50, description: 'Говорят, приносит удачу в азартных играх.', collection: 'Дары природы' },
+    { id: 15, name: 'Эльфийская стрела', price: 4000, rarity: 'Green', stock: 40, description: 'Легкая и острая, почти не имеет веса.', collection: 'Дары природы' },
+    { id: 21, name: 'Перо Феникса', price: 95000, rarity: 'Gold', stock: 2, description: 'Одно прикосновение исцеляет любые раны... или кошелек.', collection: 'Дары природы' },
 
-    // Blue (Редкие)
-    { id: 3, name: 'Сапфировый глаз', price: 7000, rarity: 'Blue', stock: 25, image: '🧿' },
-    { id: 17, name: 'Рунический камень', price: 9000, rarity: 'Blue', stock: 20, image: '🗿' },
-    { id: 18, name: 'Морозный кристалл', price: 11000, rarity: 'Blue', stock: 18, image: '❄️' },
+    // Коллекция "Стихийные артефакты"
+    { id: 18, name: 'Морозный кристалл', price: 11000, rarity: 'Blue', stock: 18, description: 'Холодный на ощупь, даже в самый жаркий день.', collection: 'Стихийные артефакты' },
+    { id: 6, name: 'Сердце вулкана', price: 120000, rarity: 'Red', stock: 2, description: 'Камень, что хранит в себе жар огненной горы.', collection: 'Стихийные артефакты' },
     
-    // Purple (Эпические)
-    { id: 4, name: 'Амулет Тени', price: 15000, rarity: 'Purple', stock: 10, image: '🔮' },
-    { id: 19, name: 'Осколок Бездны', price: 22000, rarity: 'Purple', stock: 8, image: '🌌' },
-    { id: 20, name: 'Запретный гримуар', price: 30000, rarity: 'Purple', stock: 5, image: '📖' },
-
-    // Gold (Легендарные)
-    { id: 5, name: 'Золотой Дракон', price: 50000, rarity: 'Gold', stock: 5, image: '🐲' },
-    { id: 8, name: 'Корона Короля', price: 75000, rarity: 'Gold', stock: 3, image: '👑' },
-    { id: 21, name: 'Перо Феникса', price: 95000, rarity: 'Gold', stock: 2, image: '🪶' },
-
-    // Red (Мифические)
-    { id: 6, name: 'Сердце вулкана', price: 120000, rarity: 'Red', stock: 2, image: '❤️‍🔥' },
-    { id: 22, name: 'Философский камень', price: 250000, rarity: 'Red', stock: 1, image: '♦️' },
+    // Предметы без коллекции
+    { id: 14, name: 'Старая кость', price: 1500, rarity: 'White', stock: 99, description: 'Кому она принадлежала? Загадка.', collection: 'any' },
+    { id: 7, name: 'Карта Джокера', price: 3333, rarity: 'Green', stock: 30, description: 'Дикая карта, способная изменить ход игры.', collection: 'any' },
+    { id: 3, name: 'Сапфировый глаз', price: 7000, rarity: 'Blue', stock: 25, description: 'Смотрит в самую душу, раскрывая тайны.', collection: 'any' },
+    { id: 4, name: 'Амулет Тени', price: 15000, rarity: 'Purple', stock: 10, description: 'Позволяет владельцу становиться невидимым... для неудач.', collection: 'any' },
+    { id: 5, name: 'Золотой Дракон', price: 50000, rarity: 'Gold', stock: 5, description: 'Статуэтка дракона, отлитая из чистого золота.', collection: 'any' },
+    { id: 8, name: 'Корона Короля', price: 75000, rarity: 'Gold', stock: 3, description: 'Символ абсолютной власти и несметного богатства.', collection: 'any' },
+    { id: 22, name: 'Философский камень', price: 250000, rarity: 'Red', stock: 1, description: 'Легендарный артефакт, превращающий CPN в... еще больше CPN.', collection: 'any' },
 ];
 
-// //! Таблица в БД, хранящая предметы пользователя (user_id -> item_id[])
-let userInventory: number[] = [1, 13]; // Предположим, у пользователя уже есть пара предметов
-
-// ---------------------------------------------
+let userInventory: UserInventoryItem[] = [
+    { itemId: 1, quantity: 2 },
+    { itemId: 13, quantity: 1 },
+];
 
 const collectiblesService = {
     state: {
@@ -56,44 +50,23 @@ const collectiblesService = {
         this.subscribers.forEach(callback => callback(this.state));
     },
 
-    // --- //! ЛОГИКА ПОКУПКИ ПРЕДМЕТА НА СЕРВЕРЕ ---
     buyItem(itemId: number, userBalance: number): { success: boolean, message: string, newBalance?: number } {
-        //! 1. Найти предмет в "базе данных" магазина.
         const item = this.state.items.find(i => i.id === itemId);
 
-        if (!item) {
-            return { success: false, message: 'Предмет не найден!' };
-        }
+        if (!item) return { success: false, message: 'Предмет не найден!' };
+        if (item.stock <= 0) return { success: false, message: 'Этого предмета больше нет в наличии.' };
+        if (userBalance < item.price) return { success: false, message: 'Недостаточно CPN для покупки.' };
 
-        //! 2. Проверить, есть ли предмет в наличии.
-        if (item.stock <= 0) {
-            return { success: false, message: 'Этого предмета больше нет в наличии.' };
-        }
-
-        //! 3. Проверить, достаточно ли у пользователя средств.
-        if (userBalance < item.price) {
-            return { success: false, message: 'Недостаточно CPN для покупки.' };
+        item.stock -= 1;
+        const inventoryEntry = this.state.inventory.find(invItem => invItem.itemId === itemId);
+        if (inventoryEntry) {
+            inventoryEntry.quantity += 1;
+        } else {
+            this.state.inventory.push({ itemId: itemId, quantity: 1 });
         }
         
-        //! 4. Проверить, нет ли у пользователя уже этого предмета.
-        if (this.state.inventory.includes(itemId)) {
-            return { success: false, message: 'У вас уже есть этот предмет.' };
-        }
-
-        //! 5. Все проверки пройдены. Начинаем "транзакцию".
-        // Уменьшаем количество в магазине
-        item.stock -= 1;
-        // Добавляем предмет в инвентарь пользователя
-        this.state.inventory.push(itemId);
-        // Высчитываем новый баланс пользователя
         const newBalance = userBalance - item.price;
-
-        console.log(`//! Пользователь купил ${item.name}. Списано ${item.price} CPN.`);
-
-        // Уведомляем всех подписчиков об изменении состояния
         this.notify();
-
-        //! 6. Возвращаем успешный результат и новый баланс.
         return { success: true, message: `Вы успешно купили "${item.name}"!`, newBalance };
     }
 };

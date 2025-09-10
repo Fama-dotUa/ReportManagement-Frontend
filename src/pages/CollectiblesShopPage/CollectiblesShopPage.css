@@ -46,10 +46,9 @@
 	padding: 10px;
 }
 
-/* --- Стили для карточки предмета --- */
 .item-card {
 	background: linear-gradient(145deg, #2a3a5a, #1a2238);
-	border: 2px solid; /* Цвет будет задаваться классом редкости */
+	border: 2px solid;
 	border-radius: 12px;
 	padding: 15px;
 	display: flex;
@@ -67,28 +66,43 @@
 	box-shadow: 0 0 25px -5px var(--glow-color);
 }
 
-.item-image-wrapper {
-	width: 100px;
-	height: 100px;
+.item-icon {
+	width: 90px;
+	height: 90px;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	margin-bottom: 10px;
 	background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 70%);
+	border: 2px solid var(--glow-color);
+	color: var(--glow-color);
+	font-size: 3rem;
+	font-weight: bold;
+	text-shadow: 0 0 15px var(--glow-color);
 }
 
-.item-image {
-	font-size: 4.5rem;
-	line-height: 1;
-	filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+/* --- НОВАЯ ОБЕРТКА ДЛЯ НАЗВАНИЯ И КОЛЛЕКЦИИ --- */
+.item-name-wrapper {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 58px;
+	gap: 4px;
 }
 
 .item-name {
 	font-size: 1.2rem;
 	font-weight: 600;
 	color: #fff;
-	min-height: 58px;
+}
+
+/* --- СТИЛИ ДЛЯ НАЗВАНИЯ КОЛЛЕКЦИИ --- */
+.item-collection {
+	font-size: 0.8rem;
+	font-weight: 500;
+	color: #aaa;
 }
 
 .item-details {
@@ -140,15 +154,14 @@
 	cursor: not-allowed;
 }
 
-/* --- Стили для редкости --- */
-.rarity-White { --glow-color: #b0bec5; border-color: #b0bec5; }
-.rarity-Green { --glow-color: #66bb6a; border-color: #66bb6a; }
-.rarity-Blue { --glow-color: #42a5f5; border-color: #42a5f5; }
-.rarity-Purple { --glow-color: #ab47bc; border-color: #ab47bc; }
-.rarity-Gold { --glow-color: #ffee58; border-color: #ffee58; }
-.rarity-Red { --glow-color: #ef5350; border-color: #ef5350; }
+.rarity-White { --glow-color: #b0bec5; }
+.rarity-Green { --glow-color: #66bb6a; }
+.rarity-Blue { --glow-color: #42a5f5; }
+.rarity-Purple { --glow-color: #ab47bc; }
+.rarity-Gold { --glow-color: #ffee58; }
+.rarity-Red { --glow-color: #ef5350; }
 
-.owned-badge {
+.item-owned-count {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -161,18 +174,7 @@
 	box-shadow: 0 0 10px var(--glow-color);
 }
 
-/* --- Кастомный скроллбар --- */
-.items-grid::-webkit-scrollbar {
-    width: 8px;
-}
-.items-grid::-webkit-scrollbar-track {
-    background: #1a2238;
-    border-radius: 4px;
-}
-.items-grid::-webkit-scrollbar-thumb {
-    background-color: #42a5f5;
-    border-radius: 4px;
-}
-.items-grid::-webkit-scrollbar-thumb:hover {
-    background-color: #64b5f6;
-}
+.items-grid::-webkit-scrollbar { width: 8px; }
+.items-grid::-webkit-scrollbar-track { background: #1a2238; border-radius: 4px; }
+.items-grid::-webkit-scrollbar-thumb { background-color: #42a5f5; border-radius: 4px; }
+.items-grid::-webkit-scrollbar-thumb:hover { background-color: #64b5f6; }

@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import collectiblesService from '../../services/collectiblesService';
-import type { CollectibleItem } from '../../components/Types/collectibles';
+import type { CollectibleItem, UserInventoryItem } from '../../components/Types/collectibles';
 import './InventoryPage.css';
+
+type OwnedItem = CollectibleItem & { quantity: number };
 
 const InventoryPage: React.FC = () => {
     const navigate = useNavigate();
-    const [ownedItems, setOwnedItems] = useState<CollectibleItem[]>([]);
+    const [ownedItems, setOwnedItems] = useState<OwnedItem[]>([]);
 
     useEffect(() => {
-        const handleStateUpdate = (newState: { items: CollectibleItem[], inventory: number[] }) => {
-            const userOwned = newState.items.filter(item => newState.inventory.includes(item.id));
+        const handleStateUpdate = (newState: { items: CollectibleItem[], inventory: UserInventoryItem[] }) => {
+            const userOwned: OwnedItem[] = newState.inventory.map(invItem => {
+                const itemDetails = newState.items.find(shopItem => shopItem.id === invItem.itemId);
+                return { ...itemDetails!, quantity: invItem.quantity };
+            }).filter(item => item.id);
+
             setOwnedItems(userOwned);
         };
         collectiblesService.subscribe(handleStateUpdate);
@@ -24,16 +30,22 @@ const InventoryPage: React.FC = () => {
                     Назад в казино
                 </button>
                 <h2>Ваш Инвентарь</h2>
-                <div></div> {/* Пустой div для выравнивания */}
+                <div></div>
             </div>
             {ownedItems.length > 0 ? (
                 <div className="items-grid">
                     {ownedItems.map(item => (
                         <div key={item.id} className={`item-card rarity-${item.rarity}`}>
-                            <div className="item-image-wrapper">
-                                <div className="item-image">{item.image}</div>
+                            <span className="item-owned-count">Количество: {item.quantity}</span>
+                            <div className={`item-icon rarity-${item.rarity}`}>
+                                {item.name.charAt(0)}
                             </div>
-                            <div className="item-name">{item.name}</div>
+                            <div className="item-name-wrapper">
+                                <div className="item-name">{item.name}</div>
+                                {item.collection !== 'any' && (
+                                    <div className="item-collection">[{item.collection}]</div>
+                                )}
+                            </div>
                             <div className="item-details">
                                 <span style={{color: '#ccc'}}>Стоимость:</span>
                                 <span className="item-price">{item.price} CPN</span>

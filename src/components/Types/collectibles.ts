@@ -5,6 +5,12 @@ export interface CollectibleItem {
   name: string;
   price: number;
   rarity: Rarity;
-  stock: number; // Количество в магазине
-  image: string; // Используем emoji для простоты
+  stock: number;
+  description: string;
+  collection: string; // НОВОЕ ПОЛЕ
+}
+
+export interface UserInventoryItem {
+  itemId: number;
+  quantity: number;
 }
