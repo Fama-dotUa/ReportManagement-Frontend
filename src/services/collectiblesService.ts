@@ -3,7 +3,7 @@ import type { CollectibleItem, Rarity, UserInventoryItem, CollectionPack } from 
 export const DUST_ITEM_ID = 999;
 
 const RARITY_ORDER: Rarity[] = ['White', 'Green', 'Blue', 'Purple', 'Gold', 'Red'];
-const RARITY_SCORES: Record<Rarity, number> = { 'White': 1, 'Green': 3, 'Blue': 6, 'Purple': 12, 'Gold': 35, 'Red': 80 };
+const RARITY_SCORES: Record<Rarity, number> = { 'White': 1, 'Green': 3, 'Blue': 5, 'Purple': 10, 'Gold': 35, 'Red': 80 };
 const DUST_SCORE_MODIFIER = 10; 
 
 export const collectionPacks: CollectionPack[] = [
