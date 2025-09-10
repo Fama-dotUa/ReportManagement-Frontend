@@ -7,7 +7,9 @@ export interface CollectibleItem {
   rarity: Rarity;
   stock: number;
   description: string;
-  collection: string; // НОВОЕ ПОЛЕ
+  collection: string;
+  salvageValue: number; // СКОЛЬКО ПЫЛИ ДАЕТ ПРИ РАЗБОРЕ
+  isPurchasable: boolean; // МОЖНО ЛИ КУПИТЬ ЗА CPN
 }
 
 export interface UserInventoryItem {

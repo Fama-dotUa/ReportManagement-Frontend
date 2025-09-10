@@ -9,12 +9,14 @@ const CollectiblesShopPage: React.FC = () => {
     const navigate = useNavigate();
     const { balance, updateBalance } = usePlayerStats();
     
-    const [items, setItems] = useState<CollectibleItem[]>([]);
+    const [shopItems, setShopItems] = useState<CollectibleItem[]>([]);
     const [inventory, setInventory] = useState<UserInventoryItem[]>([]);
 
     useEffect(() => {
         const handleStateUpdate = (newState: { items: CollectibleItem[], inventory: UserInventoryItem[] }) => {
-            setItems(newState.items);
+            // --- ИЗМЕНЕНИЕ: Фильтруем предметы, чтобы показывать только те, что можно купить ---
+            const purchasableItems = newState.items.filter(item => item.isPurchasable);
+            setShopItems(purchasableItems);
             setInventory(newState.inventory);
         };
         collectiblesService.subscribe(handleStateUpdate);
@@ -40,7 +42,8 @@ const CollectiblesShopPage: React.FC = () => {
                 <div className="balance-display">Баланс: {balance.toFixed(2)} CPN</div>
             </div>
             <div className="items-grid">
-                {items.map(item => {
+                {/* Используем отфильтрованный список shopItems */}
+                {shopItems.map(item => {
                     const canAfford = balance >= item.price;
                     const isOutOfStock = item.stock <= 0;
                     const ownedEntry = inventory.find(invItem => invItem.itemId === item.id);
@@ -61,7 +64,6 @@ const CollectiblesShopPage: React.FC = () => {
                                 )}
                             </div>
                             
-                            {/* ДОБАВЛЕН БЛОК ОПИСАНИЯ */}
                             <p className="item-description">{item.description}</p>
 
                             <div className="item-details">
