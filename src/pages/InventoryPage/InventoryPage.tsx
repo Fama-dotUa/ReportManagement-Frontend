@@ -46,6 +46,10 @@ const InventoryPage: React.FC = () => {
                                     <div className="item-collection">[{item.collection}]</div>
                                 )}
                             </div>
+
+                            {/* ДОБАВЛЕН БЛОК ОПИСАНИЯ */}
+                            <p className="item-description">{item.description}</p>
+                            
                             <div className="item-details">
                                 <span style={{color: '#ccc'}}>Стоимость:</span>
                                 <span className="item-price">{item.price} CPN</span>

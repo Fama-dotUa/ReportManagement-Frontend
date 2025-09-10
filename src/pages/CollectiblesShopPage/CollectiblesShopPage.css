@@ -55,7 +55,7 @@
 	flex-direction: column;
 	align-items: center;
 	text-align: center;
-	gap: 10px;
+	gap: 8px; /* Уменьшил gap для более плотного вида */
 	transition: transform 0.2s ease, box-shadow 0.2s ease;
 	position: relative;
 	overflow: hidden;
@@ -73,16 +73,16 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	margin-bottom: 10px;
+	margin-bottom: 5px; /* Уменьшил отступ */
 	background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0) 70%);
 	border: 2px solid var(--glow-color);
 	color: var(--glow-color);
 	font-size: 3rem;
 	font-weight: bold;
 	text-shadow: 0 0 15px var(--glow-color);
+	flex-shrink: 0;
 }
 
-/* --- НОВАЯ ОБЕРТКА ДЛЯ НАЗВАНИЯ И КОЛЛЕКЦИИ --- */
 .item-name-wrapper {
 	display: flex;
 	flex-direction: column;
@@ -98,19 +98,29 @@
 	color: #fff;
 }
 
-/* --- СТИЛИ ДЛЯ НАЗВАНИЯ КОЛЛЕКЦИИ --- */
 .item-collection {
 	font-size: 0.8rem;
 	font-weight: 500;
 	color: #aaa;
 }
 
+/* --- СТИЛИ ДЛЯ ОПИСАНИЯ --- */
+.item-description {
+	font-size: 0.85rem;
+	color: #b0bec5;
+	font-style: italic;
+	min-height: 54px; /* Место для ~3 строк текста */
+	margin: auto 0; /* Заставляет описание занимать доступное место */
+	padding: 0 5px;
+}
+
+
 .item-details {
 	width: 100%;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	margin: 5px 0;
+	margin-top: 5px;
 }
 
 .item-price {
@@ -140,6 +150,7 @@
 	transition: all 0.2s;
 	text-transform: uppercase;
 	letter-spacing: 1px;
+	margin-top: auto; /* Прижимает кнопку к низу */
 }
 
 .item-card button:hover:not(:disabled) {

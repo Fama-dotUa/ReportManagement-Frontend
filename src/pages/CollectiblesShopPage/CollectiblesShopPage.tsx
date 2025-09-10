@@ -60,6 +60,10 @@ const CollectiblesShopPage: React.FC = () => {
                                     <div className="item-collection">[{item.collection}]</div>
                                 )}
                             </div>
+                            
+                            {/* ДОБАВЛЕН БЛОК ОПИСАНИЯ */}
+                            <p className="item-description">{item.description}</p>
+
                             <div className="item-details">
                                 <div className="item-price">{item.price} CPN</div>
                                 <div className="item-stock">Осталось: {item.stock}</div>
