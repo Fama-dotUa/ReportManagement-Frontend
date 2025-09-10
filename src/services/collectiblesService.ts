@@ -136,7 +136,7 @@ const collectiblesService = {
             chances,
         };
     },
-    performContract(inputItemIds: number[], dustToAdd: number): { success: boolean, message: string } {
+    performContract(inputItemIds: number[], dustToAdd: number): { success: boolean, message: string, newItemId?: number } {
         if (inputItemIds.length !== 5) return { success: false, message: 'Для контракта нужно 5 предметов.' };
         const inputItems = inputItemIds.map(id => this.state.items.find(i => i.id === id)).filter(Boolean) as CollectibleItem[];
         if (inputItems.length !== 5) return { success: false, message: 'Один или несколько предметов не найдены.' };
@@ -165,7 +165,6 @@ const collectiblesService = {
             lootTable = this.state.items.filter(i => i.rarity === finalRarity && i.isPurchasable);
         }
         if (lootTable.length === 0) {
-             // Если даже в any нет, даем случайный белый предмет
             lootTable = this.state.items.filter(i => i.rarity === 'White' && i.isPurchasable);
             if (lootTable.length === 0) return { success: false, message: 'Не удалось создать предмет. Ресурсы возвращены.' };
         }
@@ -188,7 +187,8 @@ const collectiblesService = {
         newInventory = newInventory.filter(i => i.quantity > 0);
         this.state = { ...this.state, inventory: newInventory };
         this.notify();
-        return { success: true, message: `Контракт исполнен! Вы получили: [${resultItem.rarity}] "${resultItem.name}".` };
+        // Возвращаем ID нового предмета
+        return { success: true, message: `Контракт исполнен!`, newItemId: resultItem.id };
     },
     buyPack(collectionName: string): { success: boolean, message: string, itemsReceived?: string[] } {
         const packInfo = collectionPacks.find(p => p.collectionName === collectionName);

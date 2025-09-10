@@ -14,7 +14,7 @@ const ContractPage: React.FC = () => {
     const [slots, setSlots] = useState<(CollectibleItem | null)[]>([null, null, null, null, null]);
     const [dustToAdd, setDustToAdd] = useState(0);
 
-    const { userDust, availableItems } = useMemo(() => {
+    const { userDust, availableItems, totalInputValue } = useMemo(() => {
         const dust = inventory.find(i => i.itemId === DUST_ITEM_ID)?.quantity ?? 0;
         
         const slotCounts: Record<number, number> = {};
@@ -30,8 +30,11 @@ const ContractPage: React.FC = () => {
                 return { ...details, userQuantity: invItem.quantity - quantityInSlots };
             })
             .filter(item => item.userQuantity > 0);
+        
+        // --- НОВЫЙ РАСЧЕТ: Суммируем стоимость предметов в слотах ---
+        const currentTotalValue = slots.reduce((sum, item) => sum + (item?.price || 0), 0);
 
-        return { userDust: dust, availableItems: available };
+        return { userDust: dust, availableItems: available, totalInputValue: currentTotalValue };
     }, [inventory, items, slots]);
 
     const preview = useMemo(() => {
@@ -56,11 +59,18 @@ const ContractPage: React.FC = () => {
 
     const handlePerformContract = () => {
         const itemIds = slots.map(item => item?.id).filter(Boolean) as number[];
+        // --- ИЗМЕНЕНИЕ: Теперь performContract будет возвращать и сам предмет ---
         const result = collectiblesService.performContract(itemIds, dustToAdd);
-        alert(result.message);
+        
+        // --- ИЗМЕНЕНИЕ: Формируем более информативное сообщение ---
         if (result.success) {
+            const resultItemDetails = items.find(i => i.id === result.newItemId);
+            const message = `Контракт исполнен!\n\nВы получили: [${resultItemDetails?.rarity}] "${resultItemDetails?.name}"\nСтоимость: ${resultItemDetails?.price} CPN`;
+            alert(message);
             setSlots([null, null, null, null, null]);
             setDustToAdd(0);
+        } else {
+            alert(result.message);
         }
     };
 
@@ -124,6 +134,12 @@ const ContractPage: React.FC = () => {
                                 </>
                             ) : <p>Добавьте предметы для прогноза</p>}
                         </div>
+                        
+                        {/* --- НОВЫЙ БЛОК ДЛЯ ОТОБРАЖЕНИЯ СУММЫ --- */}
+                        <div className="contract-summary">
+                            Общая стоимость вложенных предметов: <span className="summary-value">{totalInputValue} CPN</span>
+                        </div>
+
                         <button 
                             className="perform-contract-btn"
                             disabled={slots.some(s => s === null)}

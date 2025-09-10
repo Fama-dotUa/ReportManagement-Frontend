@@ -110,7 +110,6 @@
     color: #ffc107;
 }
 
-/* --- НОВЫЕ СТИЛИ ДЛЯ СПИСКА ШАНСОВ --- */
 .chance-list {
     display: flex;
     flex-wrap: wrap;
@@ -123,6 +122,19 @@
     padding: 4px 8px;
     border-radius: 4px;
     background-color: rgba(0,0,0,0.3);
+}
+
+/* --- НОВЫЕ СТИЛИ ДЛЯ СУММЫ --- */
+.contract-summary {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #444;
+    text-align: center;
+    font-size: 1.1rem;
+}
+.summary-value {
+    color: #ffc107;
+    font-weight: bold;
 }
 
 .perform-contract-btn {
@@ -140,7 +152,6 @@
     cursor: not-allowed;
 }
 
-/* Наследуем цвета редкости из другого файла */
 .rarity-White { color: #b0bec5; }
 .rarity-Green { color: #66bb6a; }
 .rarity-Blue { color: #42a5f5; }
