@@ -12,8 +12,10 @@ import { AnimatedLayout } from './AnimatedLayout'
 import { useUpdateActivity } from './hooks/useUpdateActivity'
 import { useAuth } from './hooks/useAuth'
 
+// ИМПОРТИРУЕМ НОВЫЙ МАКЕТ
+import CasinoLayout from './pages/CasinoPage/CasinoLayout'
+
 const StartPages = lazy(() => import('./pages/StartPage/StartPage'))
-const CrashTest = lazy(() => import('./gamehooks/CrashTest'))
 const OfficerPage = lazy(() => import('./pages/OfficerPage/OfficerPage'))
 const CasinoPage = lazy(() => import('./pages/CasinoPage/CasinoPage'))
 const CosmeticsPage = lazy(() => import('./pages/CosmeticsPage/CosmeticsPage'))
@@ -22,6 +24,9 @@ const SpecialistsPage = lazy(
 	() => import('./pages/SpecialistsPage/SpecialistsPage')
 )
 const StorePage = lazy(() => import('./pages/StorePage/Store'))
+const CollectiblesShopPage = lazy(() => import('./pages/CollectiblesShopPage/CollectiblesShopPage'));
+const InventoryPage = lazy(() => import('./pages/InventoryPage/InventoryPage'));
+
 
 function AppContent() {
 	const location = useLocation()
@@ -59,14 +64,36 @@ function AppContent() {
 							</Suspense>
 						}
 					/>
-					<Route
-						path='casino'
-						element={
-							<Suspense fallback={null}>
-								<CasinoPage />
-							</Suspense>
-						}
-					/>
+					
+                    {/* --- ОБНОВЛЕННАЯ СТРУКТУРА МАРШРУТОВ КАЗИНО --- */}
+                    <Route path='casino' element={<CasinoLayout />}>
+                        <Route
+                            index // 'index' означает, что это компонент для пути '/casino'
+                            element={
+                                <Suspense fallback={null}>
+                                    <CasinoPage />
+                                </Suspense>
+                            }
+                        />
+                        <Route
+                            path='shop' // теперь это '/casino/shop'
+                            element={
+                                <Suspense fallback={null}>
+                                    <CollectiblesShopPage />
+                                </Suspense>
+                            }
+                        />
+                         <Route
+                            path='inventory' // теперь это '/casino/inventory'
+                            element={
+                                <Suspense fallback={null}>
+                                    <InventoryPage />
+                                </Suspense>
+                            }
+                        />
+                    </Route>
+                    {/* ------------------------------------------- */}
+
 					<Route
 						path='cosmetics'
 						element={
@@ -96,14 +123,6 @@ function AppContent() {
 						element={
 							<Suspense fallback={null}>
 								<StorePage />
-							</Suspense>
-						}
-					/>
-					<Route
-						path='test'
-						element={
-							<Suspense fallback={null}>
-								<CrashTest />
 							</Suspense>
 						}
 					/>

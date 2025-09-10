@@ -2,16 +2,13 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import './CasinoPage.css'
 
-// Импортируем компоненты и новые провайдеры/компоненты
+// Импортируем только компоненты игр
 import RouletteGame from './RouletteGame'
 import BlackjackGame from './BlackjackGame'
 import SlotsGame from './SlotsGame'
-import CrashGame from './CrashGame' // <-- Импорт новой игры
+import CrashGame from './CrashGame'
 import CouponConverter from './CouponConverter'
-import { PlayerStatsProvider } from './PlayerStatsContext'
 import PlayerLevelBar from './PlayerLevelBar'
-import { GameEventProvider } from './GameEventContext'
-import EmojiAssistant from './EmojiAssistant'
 
 const CasinoPage: React.FC = () => {
 	const [view, setView] = useState<'menu' | 'game' | 'converter'>('menu')
@@ -35,7 +32,7 @@ const CasinoPage: React.FC = () => {
 						return <BlackjackGame />
 					case 'slots':
 						return <SlotsGame />
-					case 'crash': // <-- Добавляем новую игру
+					case 'crash':
 						return <CrashGame />
 					default:
 						setView('menu')
@@ -55,6 +52,12 @@ const CasinoPage: React.FC = () => {
 							</button>
 							<button onClick={() => handleSelectGame('slots')}>Слоты</button>
 							<button onClick={() => handleSelectGame('crash')}>SCUD X</button>
+                            <button onClick={() => navigate('/casino/shop')}>
+                                Магазин предметов
+                            </button>
+                            <button onClick={() => navigate('/casino/inventory')}>
+                                Инвентарь
+                            </button>
 						</div>
 					</div>
 				)
@@ -62,51 +65,47 @@ const CasinoPage: React.FC = () => {
 	}
 
 	return (
-		<PlayerStatsProvider>
-			<GameEventProvider>
-				<EmojiAssistant />
-				<div className='casino-page'>
-					<div className='blur-background'></div>
-					<div className='casino-panel'>
-						{view === 'menu' && (
-							<button
-								className='back-button-casino'
-								onClick={() => navigate('/officer')}
-							>
-								Назад
-							</button>
-						)}
+        // Убираем все обертки, оставляем только внутреннее содержимое
+        <>
+            <div className='blur-background'></div>
+            <div className='casino-panel'>
+                {view === 'menu' && (
+                    <button
+                        className='back-button-casino'
+                        onClick={() => navigate('/officer')}
+                    >
+                        Назад
+                    </button>
+                )}
 
-						{view === 'menu' && (
-							<button
-								className='coupon-button'
-								onClick={() => setView('converter')}
-							>
-								Перевести купоны
-							</button>
-						)}
+                {view === 'menu' && (
+                    <button
+                        className='coupon-button'
+                        onClick={() => setView('converter')}
+                    >
+                        Перевести купоны
+                    </button>
+                )}
 
-						<div className='casino-header'>
-							<h1 className='animated-gradient-text'>
-								Казино "НЕ бритые яйца"
-							</h1>
-							{view === 'game' && (
-								<button
-									className='ingame-back-button'
-									onClick={() => setView('menu')}
-								>
-									К выбору игр
-								</button>
-							)}
-						</div>
+                <div className='casino-header'>
+                    <h1 className='animated-gradient-text'>
+                        Казино "НЕ бритые яйца"
+                    </h1>
+                    {view === 'game' && (
+                        <button
+                            className='ingame-back-button'
+                            onClick={() => setView('menu')}
+                        >
+                            К выбору игр
+                        </button>
+                    )}
+                </div>
 
-						<div className='casino-content'>{renderContent()}</div>
+                <div className='casino-content'>{renderContent()}</div>
 
-						<PlayerLevelBar />
-					</div>
-				</div>
-			</GameEventProvider>
-		</PlayerStatsProvider>
+                <PlayerLevelBar />
+            </div>
+        </>
 	)
 }
 
