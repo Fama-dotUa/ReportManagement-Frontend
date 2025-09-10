@@ -1,61 +1,67 @@
-// --- START OF FILE src/components/CollectibleCard/CollectibleCard.tsx ---
-
 import React from 'react';
-import { Collectible, Rarity } from '../../types/collectibles';
-import './CollectibleCard.css'; // Создадим этот CSS файл ниже
 
+// --- ИСПРАВЛЕННЫЙ ПУТЬ ---
+import type { CollectibleItem } from '../Types/collectibles'; 
+// -------------------------
+
+import './CollectibleCard.css'; // Предполагаем, что стили будут в этом файле
+
+// Определяем props для компонента
 interface CollectibleCardProps {
-    item: Collectible;
-    quantity?: number; // Опционально для инвентаря
-    onBuy?: (itemId: string) => void; // Опционально для магазина
-    canBuy?: boolean; // Опционально для магазина, чтобы отключить кнопку
-    availableQuantity?: number; // Опционально для магазина
+    item: CollectibleItem;
+    quantity?: number; // Количество, опционально (для инвентаря)
+    onBuy?: (itemId: number) => void; // Функция покупки, опционально (для магазина)
+    isShopCard: boolean; // Флаг, чтобы различать карточку магазина и инвентаря
+    balance?: number; // Баланс игрока, нужен для магазина
 }
 
-const rarityColors: Record<Rarity, string> = {
-    'Белый': '#e0e0e0', // Светло-серый
-    'Зеленый': '#6dd47e', // Светло-зеленый
-    'Синий': '#6d99d4', // Светло-синий
-    'Фиолетовый': '#b06dd4', // Светло-фиолетовый
-    'Золотой': '#d4b06d', // Золотистый
-    'Красный': '#d46d6d', // Светло-красный
-};
-
-const CollectibleCard: React.FC<CollectibleCardProps> = ({ item, quantity, onBuy, canBuy = true, availableQuantity }) => {
-    const cardStyle = {
-        borderColor: rarityColors[item.rarity] || '#ccc',
-        boxShadow: `0 0 10px ${rarityColors[item.rarity] || '#ccc'}`
-    };
+const CollectibleCard: React.FC<CollectibleCardProps> = ({ item, quantity, onBuy, isShopCard, balance }) => {
+    
+    const canAfford = isShopCard ? (balance ?? 0) >= item.price : false;
+    const isOutOfStock = item.stock <= 0;
 
     return (
-        <div className="collectible-card" style={cardStyle}>
-            <div className="collectible-image-container">
-                <img src={item.imageUrl} alt={item.name} className="collectible-image" />
+        <div className={`item-card rarity-${item.rarity}`}>
+            {quantity !== undefined && (
+                <span className="item-owned-count">
+                    {isShopCard ? `В коллекции: ${quantity}` : `Количество: ${quantity}`}
+                </span>
+            )}
+            <div className={`item-icon rarity-${item.rarity}`}>
+                {item.name.charAt(0)}
             </div>
-            <h3 className="collectible-name">{item.name}</h3>
-            <p className="collectible-rarity" style={{ color: rarityColors[item.rarity] }}>
-                {item.rarity}
-            </p>
-            {quantity !== undefined && <p className="collectible-quantity">Кол-во: {quantity}</p>}
-            {onBuy && (
+            <div className="item-name-wrapper">
+                <div className="item-name">{item.name}</div>
+                {item.collection !== 'any' && (
+                    <div className="item-collection">[{item.collection}]</div>
+                )}
+            </div>
+            
+            <p className="item-description">{item.description}</p>
+
+            {isShopCard ? (
+                // --- Разметка для магазина ---
                 <>
-                    <p className="collectible-cost">Цена: {item.cost} CPN</p>
-                    {availableQuantity !== undefined && (
-                        <p className="collectible-available">Доступно: {availableQuantity}</p>
-                    )}
-                    <button
-                        className="buy-button"
-                        onClick={() => onBuy(item.id)}
-                        disabled={!canBuy || availableQuantity === 0}
+                    <div className="item-details">
+                        <div className="item-price">{item.price} CPN</div>
+                        <div className="item-stock">Осталось: {item.stock}</div>
+                    </div>
+                    <button 
+                        onClick={() => onBuy && onBuy(item.id)}
+                        disabled={!canAfford || isOutOfStock}
                     >
-                        {availableQuantity === 0 ? 'Нет в наличии' : 'Купить'}
+                        {isOutOfStock ? 'Нет в наличии' : 'Купить'}
                     </button>
                 </>
+            ) : (
+                // --- Разметка для инвентаря ---
+                <div className="item-details">
+                    <span style={{color: '#ccc'}}>Стоимость:</span>
+                    <span className="item-price">{item.price} CPN</span>
+                </div>
             )}
         </div>
     );
 };
 
 export default CollectibleCard;
-
-// --- END OF FILE src/components/CollectibleCard/CollectibleCard.tsx ---
