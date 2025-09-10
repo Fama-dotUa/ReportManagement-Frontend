@@ -12,7 +12,6 @@ import { AnimatedLayout } from './AnimatedLayout'
 import { useUpdateActivity } from './hooks/useUpdateActivity'
 import { useAuth } from './hooks/useAuth'
 
-// ИМПОРТИРУЕМ НОВЫЙ МАКЕТ
 import CasinoLayout from './pages/CasinoPage/CasinoLayout'
 
 const StartPages = lazy(() => import('./pages/StartPage/StartPage'))
@@ -26,7 +25,7 @@ const SpecialistsPage = lazy(
 const StorePage = lazy(() => import('./pages/StorePage/Store'))
 const CollectiblesShopPage = lazy(() => import('./pages/CollectiblesShopPage/CollectiblesShopPage'));
 const InventoryPage = lazy(() => import('./pages/InventoryPage/InventoryPage'));
-
+const ContractPage = lazy(() => import('./pages/ContractPage/ContractPage'));
 
 function AppContent() {
 	const location = useLocation()
@@ -65,10 +64,9 @@ function AppContent() {
 						}
 					/>
 					
-                    {/* --- ОБНОВЛЕННАЯ СТРУКТУРА МАРШРУТОВ КАЗИНО --- */}
                     <Route path='casino' element={<CasinoLayout />}>
                         <Route
-                            index // 'index' означает, что это компонент для пути '/casino'
+                            index
                             element={
                                 <Suspense fallback={null}>
                                     <CasinoPage />
@@ -76,7 +74,7 @@ function AppContent() {
                             }
                         />
                         <Route
-                            path='shop' // теперь это '/casino/shop'
+                            path='shop'
                             element={
                                 <Suspense fallback={null}>
                                     <CollectiblesShopPage />
@@ -84,15 +82,18 @@ function AppContent() {
                             }
                         />
                          <Route
-                            path='inventory' // теперь это '/casino/inventory'
+                            path='inventory'
                             element={
                                 <Suspense fallback={null}>
                                     <InventoryPage />
                                 </Suspense>
                             }
                         />
+                        <Route 
+                            path='contract' 
+                            element={ <Suspense fallback={null}><ContractPage /></Suspense> } 
+                        />
                     </Route>
-                    {/* ------------------------------------------- */}
 
 					<Route
 						path='cosmetics'

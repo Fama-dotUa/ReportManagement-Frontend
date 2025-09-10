@@ -30,7 +30,7 @@ export const PlayerStatsProvider: React.FC<{ children: ReactNode }> = ({ childre
     const { user } = useAuth();
 
     // Используем функцию в useState, чтобы начальное значение было установлено только один раз
-    const [initialBalance] = useState(() => user?.CPN || 5000);
+    const [initialBalance] = useState(() => user?.CPN || 500000);
     const [balance, setBalance] = useState(initialBalance);
     
     const [level, setLevel] = useState(0);
