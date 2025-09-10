@@ -3,8 +3,8 @@ import type { CollectibleItem, Rarity, UserInventoryItem, CollectionPack } from 
 export const DUST_ITEM_ID = 999;
 
 const RARITY_ORDER: Rarity[] = ['White', 'Green', 'Blue', 'Purple', 'Gold', 'Red'];
-const RARITY_SCORES: Record<Rarity, number> = { 'White': 1, 'Green': 2, 'Blue': 3, 'Purple': 4, 'Gold': 5, 'Red': 6 };
-const DUST_INFLUENCE_FACTOR = 1000;
+const RARITY_SCORES: Record<Rarity, number> = { 'White': 1, 'Green': 3, 'Blue': 6, 'Purple': 12, 'Gold': 20, 'Red': 35 };
+const DUST_SCORE_MODIFIER = 20; 
 
 export const collectionPacks: CollectionPack[] = [
     { collectionName: 'Древние реликвии', dustCost: 200, description: 'Содержит 3 случайных предмета из коллекции "Древние реликвии".' },
@@ -31,11 +31,7 @@ const shopItems: CollectibleItem[] = [
     { id: 22, name: 'Философский камень', price: 250000, rarity: 'Red', stock: 1, description: 'Легендарный артефакт, превращающий CPN в... еще больше CPN.', collection: 'any', salvageValue: 1000, isPurchasable: true },
 ];
 
-let userInventory: UserInventoryItem[] = [
-    { itemId: 1, quantity: 5 },
-    { itemId: 13, quantity: 1 },
-    { itemId: DUST_ITEM_ID, quantity: 50 },
-];
+let userInventory: UserInventoryItem[] = [ { itemId: 1, quantity: 5 }, { itemId: 13, quantity: 1 }, { itemId: DUST_ITEM_ID, quantity: 50 }, ];
 
 const collectiblesService = {
     state: { items: shopItems, inventory: userInventory },
@@ -43,21 +39,16 @@ const collectiblesService = {
     subscribe(callback: (state: any) => void) { this.subscribers.push(callback); callback(this.state); },
     unsubscribe(callback: (state: any) => void) { this.subscribers = this.subscribers.filter(sub => sub !== callback); },
     notify() { this.subscribers.forEach(callback => callback(this.state)); },
-
     buyItem(itemId: number, userBalance: number): { success: boolean; message: string; newBalance?: number } {
         const item = this.state.items.find((i) => i.id === itemId);
         if (!item || !item.isPurchasable) return { success: false, message: "Предмет не найден или не продается!" };
         if (item.stock <= 0) return { success: false, message: "Этого предмета больше нет в наличии." };
         if (userBalance < item.price) return { success: false, message: "Недостаточно CPN для покупки." };
-        const newShopItems = this.state.items.map(shopItem =>
-            shopItem.id === itemId ? { ...shopItem, stock: shopItem.stock - 1 } : shopItem
-        );
+        const newShopItems = this.state.items.map(shopItem => shopItem.id === itemId ? { ...shopItem, stock: shopItem.stock - 1 } : shopItem);
         const inventoryEntry = this.state.inventory.find((invItem) => invItem.itemId === itemId);
         let newInventory;
         if (inventoryEntry) {
-            newInventory = this.state.inventory.map(invItem =>
-                invItem.itemId === itemId ? { ...invItem, quantity: invItem.quantity + 1 } : invItem
-            );
+            newInventory = this.state.inventory.map(invItem => invItem.itemId === itemId ? { ...invItem, quantity: invItem.quantity + 1 } : invItem);
         } else {
             newInventory = [...this.state.inventory, { itemId: itemId, quantity: 1 }];
         }
@@ -66,7 +57,6 @@ const collectiblesService = {
         const newBalance = userBalance - item.price;
         return { success: true, message: `Вы успешно купили "${item.name}"!`, newBalance };
     },
-
     salvageItem(itemId: number, quantity: number): { success: boolean, message: string } {
         const itemDetails = this.state.items.find(i => i.id === itemId);
         if (!itemDetails || itemDetails.id === DUST_ITEM_ID) return { success: false, message: 'Неверный предмет для разбора.' };
@@ -79,14 +69,13 @@ const collectiblesService = {
             if (invItem.itemId === DUST_ITEM_ID) return { ...invItem, quantity: invItem.quantity + dustGained };
             return invItem;
         }).filter(invItem => invItem.quantity > 0);
-        if (!dustExists) {
+        if (!dustExists && dustGained > 0) {
             newInventory = [...newInventory, { itemId: DUST_ITEM_ID, quantity: dustGained }];
         }
         this.state = { ...this.state, inventory: newInventory };
         this.notify();
         return { success: true, message: `Вы разобрали ${quantity}x "${itemDetails.name}" и получили ${dustGained} Магической пыли.` };
     },
-
     transferItem(targetUserId: string, itemId: number, quantity: number): { success: boolean, message: string } {
         const inventoryEntry = this.state.inventory.find(i => i.itemId === itemId);
         const itemDetails = this.state.items.find(i => i.id === itemId);
@@ -98,7 +87,6 @@ const collectiblesService = {
         this.notify();
         return { success: true, message: `Вы успешно передали ${quantity}x "${itemDetails.name}" игроку ${targetUserId}.` };
     },
-
     deleteItem(itemId: number): { success: boolean, message: string } {
         const itemDetails = this.state.items.find(i => i.id === itemId);
         if (!itemDetails) return { success: false, message: 'Предмет не найден.' };
@@ -107,7 +95,6 @@ const collectiblesService = {
         this.notify();
         return { success: true, message: `Вы навсегда удалили все "${itemDetails.name}" из инвентаря.` };
     },
-
     getContractPreview(inputItems: CollectibleItem[], dustToAdd: number) {
         if (inputItems.length === 0) return null;
         const collectionCounts: Record<string, number> = {};
@@ -124,24 +111,31 @@ const collectiblesService = {
                 targetCollection = collection;
             }
         }
-        const totalRarityScore = inputItems.reduce((sum, item) => sum + RARITY_SCORES[item.rarity], 0);
-        const avgRarityScore = totalRarityScore / inputItems.length;
-        const baseRarityIndex = Math.floor(avgRarityScore) - 1;
-        const baseRarity = RARITY_ORDER[baseRarityIndex < 0 ? 0 : baseRarityIndex];
-        let upgradeChance = 0;
-        if (baseRarityIndex < RARITY_ORDER.length - 1) {
-            const fractionalPart = avgRarityScore - Math.floor(avgRarityScore);
-            const dustBonus = dustToAdd / (dustToAdd + DUST_INFLUENCE_FACTOR);
-            upgradeChance = Math.min(95, (fractionalPart + dustBonus) * 100);
-        }
+        const totalItemScore = inputItems.reduce((sum, item) => sum + RARITY_SCORES[item.rarity], 0);
+        const dustScore = dustToAdd / DUST_SCORE_MODIFIER;
+        const totalContractScore = totalItemScore + dustScore;
+        const avgScore = totalContractScore / 5;
+        const rarityWeights: Record<string, number> = {};
+        let totalWeight = 0;
+        RARITY_ORDER.forEach(rarity => {
+            const score = RARITY_SCORES[rarity];
+            const distance = Math.abs(score - avgScore);
+            const weight = 1 / (Math.pow(distance, 1.5) + 1); // Сделал спад чуть резче
+            rarityWeights[rarity] = weight;
+            totalWeight += weight;
+        });
+        const chances = RARITY_ORDER.map(rarity => {
+            const chance = (rarityWeights[rarity] / totalWeight) * 100;
+            return {
+                rarity,
+                chance: chance < 0.1 && chance > 0 ? '<0.1' : chance.toFixed(1),
+            };
+        }).filter(r => parseFloat(r.chance) > 0 || r.chance === '<0.1');
         return {
             targetCollection,
-            baseRarity,
-            nextRarity: RARITY_ORDER[baseRarityIndex + 1],
-            upgradeChance: upgradeChance.toFixed(0),
+            chances,
         };
     },
-
     performContract(inputItemIds: number[], dustToAdd: number): { success: boolean, message: string } {
         if (inputItemIds.length !== 5) return { success: false, message: 'Для контракта нужно 5 предметов.' };
         const inputItems = inputItemIds.map(id => this.state.items.find(i => i.id === id)).filter(Boolean) as CollectibleItem[];
@@ -155,13 +149,26 @@ const collectiblesService = {
             entry.quantity -= 1;
         }
         const preview = this.getContractPreview(inputItems, dustToAdd)!;
-        const isUpgrade = Math.random() * 100 < parseFloat(preview.upgradeChance);
-        const finalRarity = isUpgrade ? preview.nextRarity : preview.baseRarity;
+        const random = Math.random() * 100;
+        let cumulativeChance = 0;
+        let finalRarity: Rarity = 'White';
+        for (const rarityChance of preview.chances) {
+            const chance = parseFloat(rarityChance.chance === '<0.1' ? '0.09' : rarityChance.chance);
+            cumulativeChance += chance;
+            if (random < cumulativeChance) {
+                finalRarity = rarityChance.rarity as Rarity;
+                break;
+            }
+        }
         let lootTable = this.state.items.filter(i => i.collection === preview.targetCollection && i.rarity === finalRarity);
         if (lootTable.length === 0) {
             lootTable = this.state.items.filter(i => i.rarity === finalRarity && i.isPurchasable);
         }
-        if (lootTable.length === 0) return { success: false, message: 'Не удалось создать предмет. Ресурсы возвращены.' };
+        if (lootTable.length === 0) {
+             // Если даже в any нет, даем случайный белый предмет
+            lootTable = this.state.items.filter(i => i.rarity === 'White' && i.isPurchasable);
+            if (lootTable.length === 0) return { success: false, message: 'Не удалось создать предмет. Ресурсы возвращены.' };
+        }
         const resultItem = lootTable[Math.floor(Math.random() * lootTable.length)];
         let newInventory = [...this.state.inventory];
         inputItemIds.forEach(id => {
@@ -183,7 +190,6 @@ const collectiblesService = {
         this.notify();
         return { success: true, message: `Контракт исполнен! Вы получили: [${resultItem.rarity}] "${resultItem.name}".` };
     },
-    
     buyPack(collectionName: string): { success: boolean, message: string, itemsReceived?: string[] } {
         const packInfo = collectionPacks.find(p => p.collectionName === collectionName);
         if (!packInfo) return { success: false, message: 'Набор не найден.' };

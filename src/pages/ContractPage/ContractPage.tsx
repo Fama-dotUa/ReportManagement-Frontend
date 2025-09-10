@@ -5,35 +5,23 @@ import collectiblesService, { DUST_ITEM_ID } from '../../services/collectiblesSe
 import type { CollectibleItem } from '../../components/Types/collectibles';
 import './ContractPage.css';
 
-// Создаем локальный тип для удобства работы с инвентарем в этом компоненте
 type InventoryDisplayItem = CollectibleItem & { userQuantity: number };
 
 const ContractPage: React.FC = () => {
     const navigate = useNavigate();
-    
-    // Получаем всегда актуальные данные из нашего кастомного хука
     const { items, inventory } = useCollectibles();
 
-    // Состояние для 5 слотов контракта. null означает пустой слот.
     const [slots, setSlots] = useState<(CollectibleItem | null)[]>([null, null, null, null, null]);
-    // Состояние для количества пыли, добавленной через слайдер
     const [dustToAdd, setDustToAdd] = useState(0);
 
-    // useMemo используется для оптимизации: эти сложные вычисления будут запускаться только
-    // когда inventory, items или slots изменятся.
     const { userDust, availableItems } = useMemo(() => {
         const dust = inventory.find(i => i.itemId === DUST_ITEM_ID)?.quantity ?? 0;
         
-        // Сначала считаем, сколько предметов каждого типа уже находится в слотах
         const slotCounts: Record<number, number> = {};
         slots.forEach(item => {
-            if (item) {
-                slotCounts[item.id] = (slotCounts[item.id] || 0) + 1;
-            }
+            if (item) slotCounts[item.id] = (slotCounts[item.id] || 0) + 1;
         });
 
-        // Теперь формируем список доступных для добавления предметов.
-        // Мы берем общее количество из инвентаря и вычитаем то, что уже в слотах.
         const available = inventory
             .filter(invItem => invItem.itemId !== DUST_ITEM_ID)
             .map(invItem => {
@@ -41,41 +29,36 @@ const ContractPage: React.FC = () => {
                 const quantityInSlots = slotCounts[invItem.itemId] || 0;
                 return { ...details, userQuantity: invItem.quantity - quantityInSlots };
             })
-            .filter(item => item.userQuantity > 0); // Показываем только те, что еще остались
+            .filter(item => item.userQuantity > 0);
 
         return { userDust: dust, availableItems: available };
     }, [inventory, items, slots]);
 
-    // useMemo для прогноза. Пересчитывается только при изменении слотов или количества пыли.
     const preview = useMemo(() => {
         const filledSlots = slots.filter(Boolean) as CollectibleItem[];
         return collectiblesService.getContractPreview(filledSlots, dustToAdd);
     }, [slots, dustToAdd]);
 
-    // Добавляет предмет в первый доступный пустой слот
     const handleAddItemToSlot = (item: InventoryDisplayItem) => {
         const nextEmptySlotIndex = slots.findIndex(slot => slot === null);
         if (nextEmptySlotIndex !== -1) {
-            const newSlots = [...slots]; // Создаем новый массив
+            const newSlots = [...slots];
             newSlots[nextEmptySlotIndex] = item;
-            setSlots(newSlots); // Обновляем состояние
+            setSlots(newSlots);
         }
     };
 
-    // Убирает предмет из слота по клику, делая слот снова пустым
     const handleRemoveItemFromSlot = (index: number) => {
-        const newSlots = [...slots]; // Создаем новый массив
+        const newSlots = [...slots];
         newSlots[index] = null;
-        setSlots(newSlots); // Обновляем состояние
+        setSlots(newSlots);
     };
 
-    // Выполняет контракт
     const handlePerformContract = () => {
         const itemIds = slots.map(item => item?.id).filter(Boolean) as number[];
         const result = collectiblesService.performContract(itemIds, dustToAdd);
         alert(result.message);
         if (result.success) {
-            // Сбрасываем состояние после успешного контракта
             setSlots([null, null, null, null, null]);
             setDustToAdd(0);
         }
@@ -97,12 +80,7 @@ const ContractPage: React.FC = () => {
                     <h3>Ваши предметы</h3>
                     <div className="inventory-list">
                         {availableItems.map(item => (
-                            <div 
-                                key={item.id} 
-                                className={`inventory-item rarity-${item.rarity}`} 
-                                onClick={() => handleAddItemToSlot(item)}
-                                title="Нажмите, чтобы добавить в слот"
-                            >
+                            <div key={item.id} className={`inventory-item rarity-${item.rarity}`} onClick={() => handleAddItemToSlot(item)}>
                                 <div className={`item-icon inventory-item-icon rarity-${item.rarity}`}>{item.name.charAt(0)}</div>
                                 <div className="inventory-item-name">{item.name}</div>
                                 <div className="inventory-item-qty">x{item.userQuantity}</div>
@@ -113,12 +91,7 @@ const ContractPage: React.FC = () => {
                 <div className="contract-main-panel">
                     <div className="contract-slots">
                         {slots.map((item, index) => (
-                            <div 
-                                key={index} 
-                                className={`contract-slot ${item ? `filled rarity-${item.rarity}` : ''}`} 
-                                onClick={() => handleRemoveItemFromSlot(index)}
-                                title={item ? "Нажмите, чтобы убрать предмет" : "Пустой слот"}
-                            >
+                            <div key={index} className={`contract-slot ${item ? `filled rarity-${item.rarity}` : ''}`} onClick={() => handleRemoveItemFromSlot(index)}>
                                 {item && <div className={`item-icon slot-item-icon rarity-${item.rarity}`}>{item.name.charAt(0)}</div>}
                             </div>
                         ))}
@@ -137,11 +110,17 @@ const ContractPage: React.FC = () => {
                             />
                         </div>
                         <div className="contract-preview">
+                            <h4>Прогноз результата</h4>
                             {preview ? (
                                 <>
-                                    <h4>Прогноз результата</h4>
                                     <p>Целевая коллекция: {preview.targetCollection}</p>
-                                    <p>Результат: {preview.baseRarity} (Шанс на {preview.nextRarity}: {preview.upgradeChance}%)</p>
+                                    <div className="chance-list">
+                                        {preview.chances.map(c => (
+                                            <span key={c.rarity} className={`rarity-${c.rarity}`}>
+                                                {c.rarity}: {c.chance}%
+                                            </span>
+                                        ))}
+                                    </div>
                                 </>
                             ) : <p>Добавьте предметы для прогноза</p>}
                         </div>

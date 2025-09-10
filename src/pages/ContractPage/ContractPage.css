@@ -110,6 +110,21 @@
     color: #ffc107;
 }
 
+/* --- НОВЫЕ СТИЛИ ДЛЯ СПИСКА ШАНСОВ --- */
+.chance-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+.chance-list span {
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: rgba(0,0,0,0.3);
+}
+
 .perform-contract-btn {
     padding: 15px;
     font-size: 1.2rem;
@@ -124,3 +139,11 @@
     background-color: #555;
     cursor: not-allowed;
 }
+
+/* Наследуем цвета редкости из другого файла */
+.rarity-White { color: #b0bec5; }
+.rarity-Green { color: #66bb6a; }
+.rarity-Blue { color: #42a5f5; }
+.rarity-Purple { color: #ab47bc; }
+.rarity-Gold { color: #ffee58; }
+.rarity-Red { color: #ef5350; }

@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, type ReactNode } from 'react';
 import { useAuth } from '../../hooks/useAuth'; // Убедитесь, что путь правильный
 
 // --- Конфигурация системы уровней ---

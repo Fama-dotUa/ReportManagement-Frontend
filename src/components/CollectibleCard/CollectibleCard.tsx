@@ -1,13 +1,13 @@
-// --- ИСПРАВЛЕННЫЙ ИМПОРТ ---
 import type { CollectibleItem, Rarity, UserInventoryItem, CollectionPack } from '../components/Types/collectibles';
 
 export const DUST_ITEM_ID = 999;
 
+// --- КОНФИГУРАЦИЯ СИСТЕМЫ КОНТРАКТОВ ---
 const RARITY_ORDER: Rarity[] = ['White', 'Green', 'Blue', 'Purple', 'Gold', 'Red'];
-const UPGRADE_CONFIG = {
-    itemsRequired: 3,
-    dustCost: { 'White': 50, 'Green': 150, 'Blue': 400, 'Purple': 1000, 'Gold': 2500 }
-};
+// "Сила" каждого уровня редкости. Используется для расчета.
+const RARITY_SCORES: Record<Rarity, number> = { 'White': 1, 'Green': 3, 'Blue': 6, 'Purple': 12, 'Gold': 20, 'Red': 35 };
+// Модификатор влияния пыли. Чем меньше число, тем сильнее влияет пыль.
+const DUST_SCORE_MODIFIER = 20; 
 
 export const collectionPacks: CollectionPack[] = [
     { collectionName: 'Древние реликвии', dustCost: 200, description: 'Содержит 3 случайных предмета из коллекции "Древние реликвии".' },
@@ -46,114 +46,187 @@ const collectiblesService = {
     subscribe(callback: (state: any) => void) { this.subscribers.push(callback); callback(this.state); },
     unsubscribe(callback: (state: any) => void) { this.subscribers = this.subscribers.filter(sub => sub !== callback); },
     notify() { this.subscribers.forEach(callback => callback(this.state)); },
+
     buyItem(itemId: number, userBalance: number): { success: boolean; message: string; newBalance?: number } {
         const item = this.state.items.find((i) => i.id === itemId);
         if (!item || !item.isPurchasable) return { success: false, message: "Предмет не найден или не продается!" };
         if (item.stock <= 0) return { success: false, message: "Этого предмета больше нет в наличии." };
         if (userBalance < item.price) return { success: false, message: "Недостаточно CPN для покупки." };
-        item.stock -= 1;
+        const newShopItems = this.state.items.map(shopItem =>
+            shopItem.id === itemId ? { ...shopItem, stock: shopItem.stock - 1 } : shopItem
+        );
         const inventoryEntry = this.state.inventory.find((invItem) => invItem.itemId === itemId);
+        let newInventory;
         if (inventoryEntry) {
-            inventoryEntry.quantity += 1;
+            newInventory = this.state.inventory.map(invItem =>
+                invItem.itemId === itemId ? { ...invItem, quantity: invItem.quantity + 1 } : invItem
+            );
         } else {
-            this.state.inventory.push({ itemId: itemId, quantity: 1 });
+            newInventory = [...this.state.inventory, { itemId: itemId, quantity: 1 }];
         }
-        const newBalance = userBalance - item.price;
+        this.state = { items: newShopItems, inventory: newInventory };
         this.notify();
+        const newBalance = userBalance - item.price;
         return { success: true, message: `Вы успешно купили "${item.name}"!`, newBalance };
     },
+
     salvageItem(itemId: number, quantity: number): { success: boolean, message: string } {
         const itemDetails = this.state.items.find(i => i.id === itemId);
         if (!itemDetails || itemDetails.id === DUST_ITEM_ID) return { success: false, message: 'Неверный предмет для разбора.' };
         const inventoryEntry = this.state.inventory.find(i => i.itemId === itemId);
         if (!inventoryEntry || inventoryEntry.quantity < quantity) return { success: false, message: 'Недостаточно предметов для разбора.' };
         const dustGained = itemDetails.salvageValue * quantity;
-        inventoryEntry.quantity -= quantity;
-        if (inventoryEntry.quantity <= 0) {
-            this.state.inventory = this.state.inventory.filter(i => i.itemId !== itemId);
+        const dustExists = this.state.inventory.some(i => i.itemId === DUST_ITEM_ID);
+        let newInventory = this.state.inventory.map(invItem => {
+            if (invItem.itemId === itemId) return { ...invItem, quantity: invItem.quantity - quantity };
+            if (invItem.itemId === DUST_ITEM_ID) return { ...invItem, quantity: invItem.quantity + dustGained };
+            return invItem;
+        }).filter(invItem => invItem.quantity > 0);
+        if (!dustExists) {
+            newInventory = [...newInventory, { itemId: DUST_ITEM_ID, quantity: dustGained }];
         }
-        const dustEntry = this.state.inventory.find(i => i.itemId === DUST_ITEM_ID);
-        if (dustEntry) {
-            dustEntry.quantity += dustGained;
-        } else {
-            this.state.inventory.push({ itemId: DUST_ITEM_ID, quantity: dustGained });
-        }
+        this.state = { ...this.state, inventory: newInventory };
         this.notify();
         return { success: true, message: `Вы разобрали ${quantity}x "${itemDetails.name}" и получили ${dustGained} Магической пыли.` };
     },
+
     transferItem(targetUserId: string, itemId: number, quantity: number): { success: boolean, message: string } {
         const inventoryEntry = this.state.inventory.find(i => i.itemId === itemId);
         const itemDetails = this.state.items.find(i => i.id === itemId);
         if (!inventoryEntry || !itemDetails || inventoryEntry.quantity < quantity) return { success: false, message: 'Недостаточно предметов для передачи.' };
-        inventoryEntry.quantity -= quantity;
-        if (inventoryEntry.quantity <= 0) {
-            this.state.inventory = this.state.inventory.filter(i => i.itemId !== itemId);
-        }
+        const newInventory = this.state.inventory.map(invItem =>
+            invItem.itemId === itemId ? { ...invItem, quantity: invItem.quantity - quantity } : invItem
+        ).filter(invItem => invItem.quantity > 0);
+        this.state = { ...this.state, inventory: newInventory };
         this.notify();
         return { success: true, message: `Вы успешно передали ${quantity}x "${itemDetails.name}" игроку ${targetUserId}.` };
     },
+
     deleteItem(itemId: number): { success: boolean, message: string } {
         const itemDetails = this.state.items.find(i => i.id === itemId);
         if (!itemDetails) return { success: false, message: 'Предмет не найден.' };
-        this.state.inventory = this.state.inventory.filter(i => i.itemId !== itemId);
+        const newInventory = this.state.inventory.filter(i => i.itemId !== itemId);
+        this.state = { ...this.state, inventory: newInventory };
         this.notify();
         return { success: true, message: `Вы навсегда удалили все "${itemDetails.name}" из инвентаря.` };
     },
-    getUpgradeInfo(itemId: number) {
-        const item = this.state.items.find(i => i.id === itemId);
-        if (!item || item.collection === 'any') return null;
-        const currentRarityIndex = RARITY_ORDER.indexOf(item.rarity);
-        if (currentRarityIndex === -1 || currentRarityIndex >= RARITY_ORDER.length - 1) return null;
-        const nextRarity = RARITY_ORDER[currentRarityIndex + 1];
-        const possibleOutcomes = this.state.items.filter(i => i.collection === item.collection && i.rarity === nextRarity);
-        if (possibleOutcomes.length === 0) return null;
+
+    getContractPreview(inputItems: CollectibleItem[], dustToAdd: number) {
+        if (inputItems.length === 0) return null;
+        const collectionCounts: Record<string, number> = {};
+        inputItems.forEach(item => {
+            if (item.collection !== 'any') {
+                collectionCounts[item.collection] = (collectionCounts[item.collection] || 0) + 1;
+            }
+        });
+        let targetCollection = 'any';
+        let maxCount = 0;
+        for (const collection in collectionCounts) {
+            if (collectionCounts[collection] > maxCount) {
+                maxCount = collectionCounts[collection];
+                targetCollection = collection;
+            }
+        }
+        const totalItemScore = inputItems.reduce((sum, item) => sum + RARITY_SCORES[item.rarity], 0);
+        const dustScore = dustToAdd / DUST_SCORE_MODIFIER;
+        const totalContractScore = totalItemScore + dustScore;
+        const avgScore = totalContractScore / 5;
+        const rarityWeights: Record<string, number> = {};
+        let totalWeight = 0;
+        RARITY_ORDER.forEach(rarity => {
+            const score = RARITY_SCORES[rarity];
+            const distance = Math.abs(score - avgScore);
+            const weight = 1 / (Math.pow(distance, 2) + 1);
+            rarityWeights[rarity] = weight;
+            totalWeight += weight;
+        });
+        const chances = RARITY_ORDER.map(rarity => {
+            const chance = (rarityWeights[rarity] / totalWeight) * 100;
+            return {
+                rarity,
+                chance: chance < 1 && chance > 0 ? '<1' : chance.toFixed(0),
+            };
+        }).filter(r => parseFloat(r.chance) > 0 || r.chance === '<1');
         return {
-            itemsRequired: UPGRADE_CONFIG.itemsRequired,
-            dustCost: (UPGRADE_CONFIG.dustCost as any)[item.rarity],
-            outcomes: possibleOutcomes,
+            targetCollection,
+            chances,
         };
     },
-    performUpgrade(itemId: number): { success: boolean, message: string } {
-        const upgradeInfo = this.getUpgradeInfo(itemId);
-        if (!upgradeInfo) return { success: false, message: 'Этот предмет нельзя улучшить.' };
-        const userItemEntry = this.state.inventory.find(i => i.itemId === itemId);
-        const userDustEntry = this.state.inventory.find(i => i.itemId === DUST_ITEM_ID);
-        if (!userItemEntry || userItemEntry.quantity < upgradeInfo.itemsRequired) return { success: false, message: `Недостаточно предметов. Нужно: ${upgradeInfo.itemsRequired}.` };
-        if (!userDustEntry || userDustEntry.quantity < upgradeInfo.dustCost) return { success: false, message: `Недостаточно пыли. Нужно: ${upgradeInfo.dustCost}.` };
-        userItemEntry.quantity -= upgradeInfo.itemsRequired;
-        userDustEntry.quantity -= upgradeInfo.dustCost;
-        if (userItemEntry.quantity <= 0) {
-            this.state.inventory = this.state.inventory.filter(i => i.itemId !== itemId);
+
+    performContract(inputItemIds: number[], dustToAdd: number): { success: boolean, message: string } {
+        if (inputItemIds.length !== 5) return { success: false, message: 'Для контракта нужно 5 предметов.' };
+        const inputItems = inputItemIds.map(id => this.state.items.find(i => i.id === id)).filter(Boolean) as CollectibleItem[];
+        if (inputItems.length !== 5) return { success: false, message: 'Один или несколько предметов не найдены.' };
+        const userDust = this.state.inventory.find(i => i.itemId === DUST_ITEM_ID)?.quantity ?? 0;
+        if (userDust < dustToAdd) return { success: false, message: 'Недостаточно пыли.' };
+        let tempInventoryCheck = [...this.state.inventory.map(i => ({...i}))];
+        for (const id of inputItemIds) {
+            const entry = tempInventoryCheck.find(i => i.itemId === id);
+            if (!entry || entry.quantity < 1) return { success: false, message: `Недостаточно предмета для контракта.` };
+            entry.quantity -= 1;
         }
-        const newItem = upgradeInfo.outcomes[Math.floor(Math.random() * upgradeInfo.outcomes.length)];
-        const newItemEntry = this.state.inventory.find(i => i.itemId === newItem.id);
-        if (newItemEntry) {
-            newItemEntry.quantity += 1;
+        const preview = this.getContractPreview(inputItems, dustToAdd)!;
+        const random = Math.random() * 100;
+        let cumulativeChance = 0;
+        let finalRarity: Rarity = 'White';
+        for (const rarityChance of preview.chances) {
+            const chance = parseFloat(rarityChance.chance === '<1' ? '0.9' : rarityChance.chance);
+            cumulativeChance += chance;
+            if (random < cumulativeChance) {
+                finalRarity = rarityChance.rarity as Rarity;
+                break;
+            }
+        }
+        let lootTable = this.state.items.filter(i => i.collection === preview.targetCollection && i.rarity === finalRarity);
+        if (lootTable.length === 0) {
+            lootTable = this.state.items.filter(i => i.rarity === finalRarity && i.isPurchasable);
+        }
+        if (lootTable.length === 0) return { success: false, message: 'Не удалось создать предмет. Ресурсы возвращены.' };
+        const resultItem = lootTable[Math.floor(Math.random() * lootTable.length)];
+        let newInventory = [...this.state.inventory];
+        inputItemIds.forEach(id => {
+            const index = newInventory.findIndex(i => i.itemId === id);
+            newInventory[index] = { ...newInventory[index], quantity: newInventory[index].quantity - 1 };
+        });
+        const dustIndex = newInventory.findIndex(i => i.itemId === DUST_ITEM_ID);
+        if (dustIndex > -1) {
+            newInventory[dustIndex] = { ...newInventory[dustIndex], quantity: newInventory[dustIndex].quantity - dustToAdd };
+        }
+        const resultIndex = newInventory.findIndex(i => i.itemId === resultItem.id);
+        if (resultIndex > -1) {
+            newInventory[resultIndex] = { ...newInventory[resultIndex], quantity: newInventory[resultIndex].quantity + 1 };
         } else {
-            this.state.inventory.push({ itemId: newItem.id, quantity: 1 });
+            newInventory.push({ itemId: resultItem.id, quantity: 1 });
         }
+        newInventory = newInventory.filter(i => i.quantity > 0);
+        this.state = { ...this.state, inventory: newInventory };
         this.notify();
-        return { success: true, message: `Контракт исполнен! Вы получили: "${newItem.name}".` };
+        return { success: true, message: `Контракт исполнен! Вы получили: [${resultItem.rarity}] "${resultItem.name}".` };
     },
+    
     buyPack(collectionName: string): { success: boolean, message: string, itemsReceived?: string[] } {
         const packInfo = collectionPacks.find(p => p.collectionName === collectionName);
         if (!packInfo) return { success: false, message: 'Набор не найден.' };
         const userDustEntry = this.state.inventory.find(i => i.itemId === DUST_ITEM_ID);
         if (!userDustEntry || userDustEntry.quantity < packInfo.dustCost) return { success: false, message: 'Недостаточно пыли для покупки набора.' };
-        userDustEntry.quantity -= packInfo.dustCost;
         const lootTable = this.state.items.filter(i => i.collection === collectionName);
         if (lootTable.length === 0) return { success: false, message: 'В этой коллекции нет предметов.' };
         const itemsReceived: string[] = [];
+        let updatedInventory = [...this.state.inventory];
         for (let i = 0; i < 3; i++) {
             const randomItem = lootTable[Math.floor(Math.random() * lootTable.length)];
             itemsReceived.push(randomItem.name);
-            const itemEntry = this.state.inventory.find(inv => inv.itemId === randomItem.id);
-            if (itemEntry) {
-                itemEntry.quantity += 1;
+            const itemEntryIndex = updatedInventory.findIndex(inv => inv.itemId === randomItem.id);
+            if (itemEntryIndex > -1) {
+                updatedInventory = updatedInventory.map((item, index) => 
+                    index === itemEntryIndex ? { ...item, quantity: item.quantity + 1 } : item
+                );
             } else {
-                this.state.inventory.push({ itemId: randomItem.id, quantity: 1 });
+                updatedInventory = [...updatedInventory, { itemId: randomItem.id, quantity: 1 }];
             }
         }
+        const finalInventory = updatedInventory.map(i => i.itemId === DUST_ITEM_ID ? {...i, quantity: i.quantity - packInfo.dustCost} : i);
+        this.state = { ...this.state, inventory: finalInventory };
         this.notify();
         return { success: true, message: 'Набор успешно открыт!', itemsReceived };
     }
