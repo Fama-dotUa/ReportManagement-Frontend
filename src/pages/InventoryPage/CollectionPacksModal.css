@@ -1,0 +1,61 @@
+/* Стили почти такие же, как у ItemActionsModal, но с небольшими отличиями */
+.pack-modal-content {
+    background: #1a2238;
+    padding: 25px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px; /* Немного шире */
+    border: 1px solid #ab47bc; /* Фиолетовый цвет */
+    box-shadow: 0 0 20px rgba(171, 71, 188, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pack-card {
+    background-color: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #ab47bc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pack-info h4 {
+    margin: 0 0 5px 0;
+    color: white;
+}
+
+.pack-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.pack-buy-section {
+    text-align: right;
+}
+
+.pack-cost {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #ab47bc;
+    margin-bottom: 10px;
+}
+
+.pack-buy-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    background-color: #ab47bc;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+.pack-buy-btn:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+}

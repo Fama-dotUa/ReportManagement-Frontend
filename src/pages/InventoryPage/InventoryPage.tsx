@@ -1,43 +1,39 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import collectiblesService, { DUST_ITEM_ID } from '../../services/collectiblesService';
-import type { CollectibleItem, UserInventoryItem } from '../../components/Types/collectibles';
+import { DUST_ITEM_ID } from '../../services/collectiblesService';
+import type { CollectibleItem } from '../../components/Types/collectibles';
+import { useCollectibles } from '../../hooks/useCollectibles'; // <-- ИМПОРТ НАШЕГО ХУКА
 import ItemActionsModal from './ItemActionsModal';
+import CollectionPacksModal from './CollectionPacksModal';
 import './InventoryPage.css';
 
 export type OwnedItem = CollectibleItem & { quantity: number };
 
 const InventoryPage: React.FC = () => {
     const navigate = useNavigate();
-    const [ownedItems, setOwnedItems] = useState<OwnedItem[]>([]);
-    const [dustAmount, setDustAmount] = useState(0); // <-- НОВОЕ СОСТОЯНИЕ ДЛЯ ПЫЛИ
+    // --- ИСПОЛЬЗУЕМ ХУК ДЛЯ ПОЛУЧЕНИЯ ДАННЫХ ---
+    const { items, inventory } = useCollectibles(); 
+    
     const [selectedItem, setSelectedItem] = useState<OwnedItem | null>(null);
+    const [isPacksModalOpen, setIsPacksModalOpen] = useState(false);
 
-    useEffect(() => {
-        const handleStateUpdate = (newState: { items: CollectibleItem[], inventory: UserInventoryItem[] }) => {
-            // --- ИЗМЕНЕНИЕ: Разделяем логику для пыли и остальных предметов ---
+    // --- ПЕРЕСЧИТЫВАЕМ ДАННЫЕ ПРИ КАЖДОМ РЕНДЕРЕ (ЭТО ЭФФЕКТИВНО) ---
+    const { ownedItems, dustAmount } = useMemo(() => {
+        const dustEntry = inventory.find(invItem => invItem.itemId === DUST_ITEM_ID);
+        const currentDustAmount = dustEntry ? dustEntry.quantity : 0;
 
-            // 1. Находим пыль в инвентаре пользователя
-            const dustEntry = newState.inventory.find(invItem => invItem.itemId === DUST_ITEM_ID);
-            setDustAmount(dustEntry ? dustEntry.quantity : 0);
+        const currentOwnedItems: OwnedItem[] = inventory
+            .filter(invItem => invItem.itemId !== DUST_ITEM_ID)
+            .map(invItem => {
+                const itemDetails = items.find(shopItem => shopItem.id === invItem.itemId);
+                return { ...itemDetails!, quantity: invItem.quantity };
+            })
+            .filter(item => item.id);
 
-            // 2. Формируем список остальных предметов, исключая пыль
-            const userOwned: OwnedItem[] = newState.inventory
-                .filter(invItem => invItem.itemId !== DUST_ITEM_ID) // Исключаем пыль из списка
-                .map(invItem => {
-                    const itemDetails = newState.items.find(shopItem => shopItem.id === invItem.itemId);
-                    return { ...itemDetails!, quantity: invItem.quantity };
-                })
-                .filter(item => item.id);
-
-            setOwnedItems(userOwned);
-        };
-        collectiblesService.subscribe(handleStateUpdate);
-        return () => collectiblesService.unsubscribe(handleStateUpdate);
-    }, []);
+        return { ownedItems: currentOwnedItems, dustAmount: currentDustAmount };
+    }, [items, inventory]); // useMemo будет пересчитывать только если items или inventory изменились
 
     const handleItemClick = (item: OwnedItem) => {
-        // Запрещаем открывать модальное окно для пыли, если она вдруг попадет в список
         if (item.id === DUST_ITEM_ID) return;
         setSelectedItem(item);
     };
@@ -50,8 +46,11 @@ const InventoryPage: React.FC = () => {
                         Назад в казино
                     </button>
                     <h2>Ваш Инвентарь</h2>
-                    {/* --- НОВЫЙ БЛОК ДЛЯ ОТОБРАЖЕНИЯ ПЫЛИ --- */}
-                    <div className="balance-display" style={{borderColor: '#ab47bc'}}>
+                    <div 
+                        className="balance-display" 
+                        style={{borderColor: '#ab47bc', cursor: 'pointer'}}
+                        onClick={() => setIsPacksModalOpen(true)}
+                    >
                         Магическая пыль: {dustAmount} ✨
                     </div>
                 </div>
@@ -85,6 +84,12 @@ const InventoryPage: React.FC = () => {
                 <ItemActionsModal 
                     item={selectedItem}
                     onClose={() => setSelectedItem(null)}
+                />
+            )}
+            {isPacksModalOpen && (
+                <CollectionPacksModal
+                    userDust={dustAmount}
+                    onClose={() => setIsPacksModalOpen(false)}
                 />
             )}
         </>

@@ -8,11 +8,18 @@ export interface CollectibleItem {
   stock: number;
   description: string;
   collection: string;
-  salvageValue: number; // СКОЛЬКО ПЫЛИ ДАЕТ ПРИ РАЗБОРЕ
-  isPurchasable: boolean; // МОЖНО ЛИ КУПИТЬ ЗА CPN
+  salvageValue: number;
+  isPurchasable: boolean;
 }
 
 export interface UserInventoryItem {
   itemId: number;
   quantity: number;
+}
+
+// --- НОВЫЙ ЭКСПОРТИРУЕМЫЙ ТИП ---
+export interface CollectionPack {
+    collectionName: string;
+    dustCost: number;
+    description: string;
 }

@@ -1,27 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePlayerStats } from '../CasinoPage/PlayerStatsContext';
 import collectiblesService from '../../services/collectiblesService';
-import type { CollectibleItem, UserInventoryItem } from '../../components/Types/collectibles';
+import { useCollectibles } from '../../hooks/useCollectibles'; // <-- ИМПОРТ НАШЕГО ХУКА
 import './CollectiblesShopPage.css';
 
 const CollectiblesShopPage: React.FC = () => {
     const navigate = useNavigate();
     const { balance, updateBalance } = usePlayerStats();
-    
-    const [shopItems, setShopItems] = useState<CollectibleItem[]>([]);
-    const [inventory, setInventory] = useState<UserInventoryItem[]>([]);
+    // --- ИСПОЛЬЗУЕМ ХУК ДЛЯ ПОЛУЧЕНИЯ ДАННЫХ ---
+    const { items, inventory } = useCollectibles();
 
-    useEffect(() => {
-        const handleStateUpdate = (newState: { items: CollectibleItem[], inventory: UserInventoryItem[] }) => {
-            // --- ИЗМЕНЕНИЕ: Фильтруем предметы, чтобы показывать только те, что можно купить ---
-            const purchasableItems = newState.items.filter(item => item.isPurchasable);
-            setShopItems(purchasableItems);
-            setInventory(newState.inventory);
-        };
-        collectiblesService.subscribe(handleStateUpdate);
-        return () => collectiblesService.unsubscribe(handleStateUpdate);
-    }, []);
+    // --- ВЫЧИСЛЯЕМ СПИСОК ТОВАРОВ ДЛЯ МАГАЗИНА ---
+    const shopItems = useMemo(() => items.filter(item => item.isPurchasable), [items]);
 
     const handleBuy = (itemId: number) => {
         const result = collectiblesService.buyItem(itemId, balance);
@@ -42,7 +33,6 @@ const CollectiblesShopPage: React.FC = () => {
                 <div className="balance-display">Баланс: {balance.toFixed(2)} CPN</div>
             </div>
             <div className="items-grid">
-                {/* Используем отфильтрованный список shopItems */}
                 {shopItems.map(item => {
                     const canAfford = balance >= item.price;
                     const isOutOfStock = item.stock <= 0;
@@ -63,9 +53,7 @@ const CollectiblesShopPage: React.FC = () => {
                                     <div className="item-collection">[{item.collection}]</div>
                                 )}
                             </div>
-                            
                             <p className="item-description">{item.description}</p>
-
                             <div className="item-details">
                                 <div className="item-price">{item.price} CPN</div>
                                 <div className="item-stock">Осталось: {item.stock}</div>

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import type { OwnedItem } from './InventoryPage'; // Импортируем тип из родителя
+import React, { useState, useMemo } from 'react';
+import type { OwnedItem } from './InventoryPage';
 import collectiblesService from '../../services/collectiblesService';
 import './ItemActionsModal.css';
 
@@ -12,6 +12,15 @@ const ItemActionsModal: React.FC<ItemActionsModalProps> = ({ item, onClose }) =>
     const [salvageQuantity, setSalvageQuantity] = useState(1);
     const [transferQuantity, setTransferQuantity] = useState(1);
     const [targetUser, setTargetUser] = useState('');
+    
+    const upgradeInfo = useMemo(() => collectiblesService.getUpgradeInfo(item.id), [item.id]);
+
+    const handleUpgrade = () => {
+        if (!upgradeInfo) return;
+        const result = collectiblesService.performUpgrade(item.id);
+        alert(result.message);
+        if (result.success) onClose();
+    };
 
     const handleSalvage = () => {
         const result = collectiblesService.salvageItem(item.id, salvageQuantity);
@@ -45,7 +54,22 @@ const ItemActionsModal: React.FC<ItemActionsModalProps> = ({ item, onClose }) =>
                     <button onClick={onClose} className="modal-close-btn">&times;</button>
                 </div>
                 <div className="modal-body">
-                    {/* Секция Передачи/Продажи */}
+                    
+                    {upgradeInfo && (
+                        <div className="action-section">
+                            <h4>Контракт улучшения</h4>
+                            <p>Обменяйте {upgradeInfo.itemsRequired}x "{item.name}" и {upgradeInfo.dustCost}✨ на случайный предмет той же коллекции более высокой редкости.</p>
+                            <button 
+                                className="action-btn" 
+                                style={{backgroundColor: '#f0ad4e'}}
+                                disabled={item.quantity < upgradeInfo.itemsRequired}
+                                onClick={handleUpgrade}
+                            >
+                                Улучшить
+                            </button>
+                        </div>
+                    )}
+
                     <div className="action-section">
                         <h4>Передать предмет</h4>
                         <div className="input-group">
@@ -57,7 +81,6 @@ const ItemActionsModal: React.FC<ItemActionsModalProps> = ({ item, onClose }) =>
                         <button className="action-btn btn-transfer" onClick={handleTransfer}>Передать</button>
                     </div>
 
-                    {/* Секция Разбора */}
                     {item.salvageValue > 0 && (
                         <div className="action-section">
                             <h4>Разобрать на пыль</h4>
@@ -70,7 +93,6 @@ const ItemActionsModal: React.FC<ItemActionsModalProps> = ({ item, onClose }) =>
                         </div>
                     )}
 
-                     {/* Секция Удаления */}
                     <div className="action-section">
                         <h4>Опасная зона</h4>
                         <button className="action-btn btn-delete" onClick={handleDelete}>Удалить все предметы</button>
